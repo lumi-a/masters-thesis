@@ -60,22 +60,4 @@ In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All
 - _Next-Fit_: When item $w_i$ arrives, pack it into the bin that $w_(i-1)$ was assigned to, or open a new bin if this is not possible.
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
 
-#subpar.grid(
-  figure(
-    draw-packing.packing(10, ((4, 3), (7, 2), (4,))),
-    caption: [The packing produced by _Best-Fit_ for @bin-packing-example.],
-  ),
-  figure(
-    draw-packing.packing(10, ((4,), (7, 2), (3, 4))),
-    caption: [The packing produced by _Next-Fit_ for @bin-packing-example.],
-  ),
-
-  figure(
-    draw-packing.packing(10, ((4, 2, 3), (7,), (4,))),
-    caption: [The packing produced by _First-Fit_ for @bin-packing-example.],
-  ),
-
-  columns: (1fr, 1fr),
-)
-
 #bibliography("bibliography.bib")
