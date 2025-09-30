@@ -11,6 +11,7 @@ jobs:
       - run: |
           fontist install "Fira Sans"
           fontist install "Libertinus"
+          fontist install "Libertinus Math"
           fontist install "Fira Code"
       - uses: typst-community/setup-typst@v4
         with:
