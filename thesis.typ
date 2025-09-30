@@ -97,6 +97,13 @@ If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e.
         mark: lq.marks.at("."),
       ),
       lq.scatter(
+        (4 + 5 + 3 + 6,),
+        (9 + 1 + 8 + 14,),
+        color: blue,
+        mark: lq.marks.star,
+        z-index: 10,
+      ),
+      lq.scatter(
         powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(0)),
         powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(1)),
         color: red,
@@ -108,7 +115,7 @@ If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e.
       width: 50%,
     )
   },
-  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red.],
+  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum solution is shown as #Blue[#sym.star.filled].],
 )
 
 
