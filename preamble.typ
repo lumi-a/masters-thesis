@@ -44,16 +44,6 @@
 
   #set par(leading: 0.85em, spacing: 1.25em)
 
-  #show ref: it => {
-    // Fix equation references:
-    let eq = math.equation
-    let el = it.element
-    if el != none and el.func() == eq {
-      numbering(el.numbering, ..counter(eq).at(el.location()))
-    } else {
-      it
-    }
-  }
   #body
 ]
 
