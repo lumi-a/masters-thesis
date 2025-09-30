@@ -11,7 +11,7 @@
     } else {
       rgb(colors.at(calc.rem(int(item) + 5, colors.len()))).lighten(25%)
     }
-    return rect(width: bin-width - 2 * inner-margin, height: (bin-height - 2 * inner-margin) * item / capacity - inner-margin, fill: color, radius: 1.25pt)[#align(center + horizon)[#item]]
+    return rect(width: bin-width - 2 * inner-margin, height: (bin-height - 2 * inner-margin) * item / capacity - inner-margin, fill: color, radius: 1.25pt)[#align(center + horizon, text(font: ("Libertinus Math", "New Computer Modern Math"))[#item])]
   }
 }
 #let packing = (capacity, items) => {

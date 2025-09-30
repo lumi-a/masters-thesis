@@ -101,18 +101,22 @@ import random
 capacity = 10
 while True:
     items = [random.randint(2, 10) for _ in range(5)]
-    bf = best_fit(items, capacity)
-    nf = next_fit(items, capacity)
-    ff = first_fit(items, capacity)
-    if bf != nf and nf != ff and ff != bf:
-        opt = optimum_value(items, capacity)
-        if min(len(bf), len(nf), len(ff)) != opt:
-            print(
-                items,
-                tuple(tuple(b) for b in bf),
-                tuple(tuple(b) for b in nf),
-                tuple(tuple(b) for b in ff),
-                opt,
-                sep="\n",
-            )
-            input("\n")
+    best_fit_score = best_fit(items, capacity)
+    next_fit_score = next_fit(items, capacity)
+    first_fit_score = first_fit(items, capacity)
+    # Assert three distinct sizes
+    if len(set(best_fit_score, next_fit_score, first_fit_score)) < 3:
+        continue
+
+    opt = optimum_value(items, capacity)
+    if min(len(best_fit_score), len(next_fit_score), len(first_fit_score)) == opt:
+        continue
+    print(
+        items,
+        tuple(tuple(b) for b in best_fit_score),
+        tuple(tuple(b) for b in next_fit_score),
+        tuple(tuple(b) for b in first_fit_score),
+        opt,
+        sep="\n",
+    )
+    input("\n")
