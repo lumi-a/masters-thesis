@@ -82,18 +82,25 @@ If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e.
 #figure(
   {
     let items = ((4, 9), (5, 1), (13, 14), (3, 8), (11, 4), (6, 14))
-    let powerset = ((),)
+    let powerset = ((0, 0),)
     for item in items {
       for subset in powerset {
-        let new_subset = subset + (item,)
+        let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
         powerset.push(new_subset)
       }
     }
     lq.diagram(
       lq.scatter(
-        powerset.map(items => items.map(x => x.at(0)).sum(default: 0)),
-        powerset.map(items => items.map(x => x.at(1)).sum(default: 0)),
-        color: powerset.map(items => if items.map(x => x.at(0)).sum(default: 0) <= 20 { green } else { red }),
+        powerset.filter(wp => wp.at(0) <= 20).map(wp => wp.at(0)),
+        powerset.filter(wp => wp.at(0) <= 20).map(wp => wp.at(1)),
+        color: green,
+        mark: lq.marks.at("."),
+      ),
+      lq.scatter(
+        powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(0)),
+        powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(1)),
+        color: red,
+        mark: lq.marks.at("x"),
       ),
       xlabel: [#text(font: font-math)[Total Weight]],
       ylabel: [#text(font: font-math)[Total Profit]],
@@ -101,7 +108,7 @@ If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e.
       width: 50%,
     )
   },
-  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions not exceeding capacity $c=20$ are marked in green.],
+  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red.],
 )
 
 
