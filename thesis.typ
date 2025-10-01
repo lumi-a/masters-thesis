@@ -139,6 +139,8 @@ A *solution* is any sub-list of the list of items $I$, regardless of whether it 
   caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
 ) <fig-example-knapsack>
 
+=== Pareto-Sets
+
 In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_:
 
 // TODO: Add citation
@@ -150,9 +152,61 @@ In practice, one might not know the capacity beforehand, or might have unlimited
     Profit(A) ≥ Profit(B),
   $
   and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the set of all solutions that are not dominated by any other solution.
-]
-See @fig-example-knapsack. In this example, the Pareto-set has size $15$, much smaller than the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @RoeglinBookChapter @moitraSmoothed, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ maximizing the objective. If the Pareto-Set has already been computed, a simple linear search yields an optimal solution in time $O(|I|)$.
 
+  TODO: Not really a set. Maybe do use index-vectors.
+]
+See @fig-example-knapsack. In this example, the Pareto-set has size $15$, much smaller than the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @RoeglinBookChapter @moitraSmoothed, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. Let $n≔|I|$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
+
+The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullman algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
++ Set $P_0 = {∅}$.
++ For $i=1,…,|I|$:
+  + Let $x$ be the $i$-th item of $I$.
+  + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
+  + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
+
+This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
+
+// TODO: Maybe use an example where all pareto-sets are distinct, to actually use the implementation-runtime of nemhauser-ullmann
+
+#example[
+  Consider the items:
+  $
+    I ≔ [vec(4, 4),quad vec(4, 4),quad vec(2, 1),quad vec(1, 2),quad vec(2, 2)].
+  $
+  #{
+    let I = ((4, 4), (4, 4), (2, 1), (1, 2), (2, 2))
+    let ps = (((),),)
+    let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
+    let sumvecs = As => As.fold((0, 0), (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1)))
+    let indices-dominates = (As, Bs) => dominates(sumvecs(As.map(i => I.at(i))), sumvecs(Bs.map(i => I.at(i))))
+    for i in range(I.len()) {
+      let qi = ps.at(i) + ps.at(i).map(x => x + (i,))
+      let pi = qi.filter(x => not qi.any(y => indices-dominates(y, x)))
+      ps.push(pi)
+    }
+    // let display = paretoset => paretoset.map(solution => ${#solution.map(x => math.vec([#I.at(x).at(0)], [#I.at(x).at(1)])).intersperse($,$).sum(default: [])}$).intersperse($,$).sum()
+    [Here, $P_#{ I.len() - 1 }$ has size $#ps.at(I.len() - 1).len()$, while $P_#{ I.len() } = P(I)$ has size $#ps.at(I.len()).len()$.]
+    /*
+    grid(
+      stroke: none,
+      columns: (1.5em,) * I.len(),
+      rows: (1.5em,) * ps.map(x => x.len()).sum(),
+      ..I.map(x => [$vec(#[#x.at(0)], #[#x.at(1)])$]),
+      ..ps
+        .map(
+          paretoset => (
+            paretoset.map(
+              solution => range(I.len()).map(i => if solution.contains(i) { square(size: 1.25em, fill: black) } else { [] }),
+            )
+              + (grid.hline(),)
+          ),
+        )
+        .flatten()
+    )
+    */
+  }
+]
+It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
 
 
