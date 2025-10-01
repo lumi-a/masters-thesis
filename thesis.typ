@@ -1,40 +1,35 @@
 #import "preamble.typ": *; #show: preamble
 #import "draw-packing.typ";
 #import "@preview/subpar:0.2.2"
-#import "@preview/lemmify:0.1.8": *
+#import "@preview/frame-it:1.2.0": *
 #import "@preview/lilaq:0.5.0" as lq
 
-#let (
-  theorem,
-  lemma,
-  corollary,
-  remark,
-  proposition,
-  example,
-  proof,
-  rules: thm-rules,
-) = default-theorems("thm-group", lang: "en", thm-numbering: thm-numbering-linear)
-#show: thm-rules
+#import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
+#let theorem = thmbox("theorem", "Theorem")
+#let definition = thmbox("definition", "Definition", fill: red.lighten(87.5%))
+#let example = thmbox("example", "Example", fill: green.lighten(87.5%))
+#let proof = thmproof("proof", "Proof")
+
 
 #set heading(numbering: "1.1")
 
-#show figure.caption: body => box(width: 80%, body)
 
 = Problems and Definitions
 == Bin-Packing
 In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
 
-#example()[
-  We have to assign the following six items to bins with capacity $c=10$:
+#example[
+  We have to assign the following five items to bins with capacity $c=10$:
   $
-    w_1, …, w_6 quad=quad 4, 7, 2, 3, 4
+    w_1, …, w_5 quad=quad 4, 7, 2, 3, 4
   $
   An optimal packing is shown in @bin-packing-optimal.
-]<bin-packing-example>
+] <bin-packing-example>
+
 
 #subpar.grid(
   figure(
-    draw-packing.packing(10, ((7, 2), (3, 4, 3))),
+    draw-packing.packing(10, ((7, 3), (4, 2, 4))),
     caption: [An optimal packing.],
   ),
   <bin-packing-optimal>,
@@ -63,21 +58,20 @@ In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
 
 == Knapsack Problem
-In the traditional Knapsack-Problem, we are given a capacity $c$ and a list of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective is to _maximize_ the total profit of the items we put in the bin.
+In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective is to _maximize_ the total profit of the items we put in the bin.
 
 #let Weight = math.op("Weight")
 #let Profit = math.op("Profit")
 
-// TODO: This isn't numbered correctly, for some reason.
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
   $
-    vec(4, 9),quad vec(5, 1),quad vec(13, 14),quad vec(3, 8),quad vec(11, 4),quad vec(6, 14)
+    I = [vec(4, 9),quad vec(5, 1),quad vec(13, 14),quad vec(3, 8),quad vec(11, 4),quad vec(6, 14)]
   $
   The optimal list of items to put into our bin is $[vec(4, 9), vec(5, 1), vec(3, 8), vec(6, 14)]$, with a total weight of $18$ and a total profit of $32$.
 ] <knapsack-example>
 
-If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$ for all subsets $A$ of the items.
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
 
 #figure(
   {
@@ -89,36 +83,77 @@ If $A$ is a subset of the items, we denote by $Weight(A)$ its total weight (i.e.
         powerset.push(new_subset)
       }
     }
+    let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
+    let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
+    let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
+
+    let opt-xs = 4 + 5 + 3 + 6
+    let opt-ys = 9 + 1 + 8 + 14
+
+    let dominated-feasible = dominated.filter(wp => wp.at(0) <= 20)
+    let dominated-unfeasible = dominated.filter(wp => wp.at(0) > 20)
+    let undominated-feasible = undominated.filter(wp => wp.at(0) <= 20)
+    let undominated-unfeasible = undominated.filter(wp => wp.at(0) > 20)
+
+    let xs = arr => arr.map(wp => wp.at(0))
+    let ys = arr => arr.map(wp => wp.at(1))
+
     lq.diagram(
       lq.scatter(
-        powerset.filter(wp => wp.at(0) <= 20).map(wp => wp.at(0)),
-        powerset.filter(wp => wp.at(0) <= 20).map(wp => wp.at(1)),
+        xs(dominated-feasible),
+        ys(dominated-feasible),
         color: green,
         mark: lq.marks.at("."),
       ),
       lq.scatter(
-        (4 + 5 + 3 + 6,),
-        (9 + 1 + 8 + 14,),
-        color: blue,
-        mark: lq.marks.star,
-        z-index: 10,
+        xs(dominated-unfeasible),
+        ys(dominated-unfeasible),
+        color: red,
+        mark: lq.marks.at("."),
       ),
       lq.scatter(
-        powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(0)),
-        powerset.filter(wp => wp.at(0) > 20).map(wp => wp.at(1)),
+        xs(undominated-feasible),
+        ys(undominated-feasible),
+        color: green,
+        mark: lq.marks.star,
+      ),
+      lq.scatter(
+        xs(undominated-unfeasible),
+        ys(undominated-unfeasible),
         color: red,
-        mark: lq.marks.at("x"),
+        mark: lq.marks.star,
+      ),
+      lq.scatter(
+        (opt-xs,),
+        (opt-ys,),
+        color: blue,
+        mark: mark => place(center + horizon, circle(radius: 4pt, fill: none, stroke: blue + 1pt)),
+        z-index: 10,
       ),
       xlabel: [#text(font: font-math)[Total Weight]],
       ylabel: [#text(font: font-math)[Total Profit]],
-      height: 25%,
-      width: 50%,
+      height: 30%,
+      width: 60%,
     )
   },
-  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum solution is shown as #Blue[#sym.star.filled].],
-)
+  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
+) <fig-example-knapsack>
+
+In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_:
+
+// TODO: Add citation
+#definition[
+  For solutions $A$ and $B$, we say $A$ *dominates* $B$ if and only if:
+  $
+    Weight(A) ≤ Weight(B)
+    quad "and" quad
+    Profit(A) ≥ Profit(B),
+  $
+  and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the set of all solutions that are not dominated by any other solution.
+]
+See @fig-example-knapsack. In this example, the Pareto-set has size $15$, much smaller than the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @RoeglinBookChapter @moitraSmoothed, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ maximizing the objective. If the Pareto-Set has already been computed, a simple linear search yields an optimal solution in time $O(|I|)$.
 
 
 
 
-#bibliography("bibliography.bib")
+#bibliography("bibliography.bib", style: "springer-mathphys")

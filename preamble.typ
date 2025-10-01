@@ -39,8 +39,6 @@
   #set text(font: font-text, lang: "en")
   #show raw: set text(font: font-monospace)
   #show math.equation: set text(font: font-math)
-  #show link: set text(fill: blue)
-  #show link: underline
 
   #set par(leading: 0.85em, spacing: 1.25em)
 
