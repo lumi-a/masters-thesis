@@ -14,7 +14,7 @@
 #set heading(numbering: "1.1")
 
 
-= Problems and Definitions
+= Problems and Definitions <section-problems-definitions>
 == Bin-Packing
 In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
 
@@ -214,12 +214,20 @@ It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points are clustered closely together. Different objectives exist that quantify this intuition.
 - In $k$-means clustering, the cost of a cluster $C$ is: #h(1fr)
   $
-    Cost(C) ≔
+    Cost(C) =
     ∑_(x∈C) ‖x-μ(C)‖_2^2,
     quad
     "where" μ(C) ≔ 1/(|C|) ⋅ ∑_(x∈C) x.
   $
   The total cost of a clustering $C_1,…,C_k$ is the sum of its costs: $Cost(C_1) + … + Cost(C_k)$.
+- In $k$-median clustering, the $L_1$-norm is used instead, and the distance not measured from the centroid $mu$ but instead the best possible choice among the points in $C$:
+  $
+    Cost(C)
+    = min_(mu in C) sum_(x in C) norm(x - mu)_1
+  $
+  The total cost of a clustering is again the sum of the cost of its clusters.
+- TODO: Add more objectives, particularly ones with existing results on the PoH.
+
 
 
 
