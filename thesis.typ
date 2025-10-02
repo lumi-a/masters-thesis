@@ -208,6 +208,19 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
+#let Cost = math.op("Cost")
+
+== $k$-median Clustering
+In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points are clustered closely together. Different objectives exist that quantify this intuition.
+- In $k$-means clustering, the cost of a cluster $C$ is: #h(1fr)
+  $
+    Cost(C) ≔
+    ∑_(x∈C) ‖x-μ(C)‖_2^2,
+    quad
+    "where" μ(C) ≔ 1/(|C|) ⋅ ∑_(x∈C) x.
+  $
+  The total cost of a clustering $C_1,…,C_k$ is the sum of its costs: $Cost(C_1) + … + Cost(C_k)$.
+
 
 
 #bibliography("bibliography.bib", style: "springer-mathphys")
