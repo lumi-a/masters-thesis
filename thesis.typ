@@ -229,6 +229,15 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,â€¦,p_n â
 - TODO: Add more objectives, particularly ones with existing results on the PoH.
 
 
+= FunSearch
+Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
+- For bin-packing, we would like to find an instance where the randomised Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution.
+- For the Pareto-sets of knapsack-problems, we would like to find an instance $I$ where an intermittent Pareto-set $P(I_(1:i))$ is much larger than the Pareto-set $P(I)$ of the whole instance.
+- For the Price of Hierarchy for $k$-median clustering, we would like to find instances whose Price of Hierarchy is large.
+- For the generalised gasoline problem, we would like to find instances where the iterative-rounding algorithm // TODO: Insert reference once you write down the algorithm.
+  performs poorly compared to an optimum soution.
+
+
 
 
 #bibliography("bibliography.bib", style: "springer-mathphys")
