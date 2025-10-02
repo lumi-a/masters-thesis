@@ -229,7 +229,11 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
   The total cost of a clustering is again the sum of the cost of its clusters.
 - TODO: Add more objectives, particularly ones with existing results on the PoH.
 
-#figure(box(width: 50%, draw-cluster.draw(((0.5,0.1), (0.2, 0.2), (0.1, 0.5)), 50%, 0.1)))
+#figure(
+  box(width: 10em, height: 10em, place(draw-cluster.draw(((0.4, 0.1), (0.2, 0.2), (0.1, 0.4), (0.3, 0.35)), 10em, 0.1, red + 0.1em)) + place(draw-cluster.draw(((0.1, 0.8), (0.2, 0.9)), 10em, 0.1, blue + 0.1em)) + place(draw-cluster.draw(((0.7, 0.5), (0.5, 0.7), (0.8, 0.9)), 10em, 0.1, green + 0.1em))),
+  caption: [A possible $k"="3$-clustering on $9$ points in $ℝ^2$.],
+  // TODO: Do two examples side by side, one optimal and one sub-optimal
+)
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
