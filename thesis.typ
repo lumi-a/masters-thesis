@@ -1,5 +1,6 @@
 #import "preamble.typ": *; #show: preamble
 #import "draw-packing.typ";
+#import "draw-cluster.typ";
 #import "@preview/subpar:0.2.2"
 #import "@preview/frame-it:1.2.0": *
 #import "@preview/lilaq:0.5.0" as lq
@@ -228,6 +229,7 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,â€¦,p_n â
   The total cost of a clustering is again the sum of the cost of its clusters.
 - TODO: Add more objectives, particularly ones with existing results on the PoH.
 
+#figure(box(width: 50%, draw-cluster.draw(((0.5,0.1), (0.2, 0.2), (0.1, 0.5)), 50%, 0.1)))
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
@@ -264,6 +266,8 @@ is to employ some search-algorithm that searches for an instance of a high "scor
   + Otherwise:
     + Keep $I$ unchanged.
 // Todo: Use some package for typesetting algorithms
+
+// TODO: Add results of local search
 
 
 #bibliography("bibliography.bib", style: "springer-mathphys")
