@@ -4,6 +4,7 @@
 #import "@preview/subpar:0.2.2"
 #import "@preview/frame-it:1.2.0": *
 #import "@preview/lilaq:0.5.0" as lq
+#import "@preview/lovelace:0.3.0": *
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let theorem = thmbox("theorem", "Theorem")
@@ -159,11 +160,13 @@ In practice, one might not know the capacity beforehand, or might have unlimited
 See @fig-example-knapsack. In this example, the Pareto-set has size $15$, much smaller than the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @RoeglinBookChapter @moitraSmoothed, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. Let $n≔|I|$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
 The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullman algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
-+ Set $P_0 = {∅}$.
-+ For $i=1,…,|I|$:
-  + Let $x$ be the $i$-th item of $I$.
-  + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
-  + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
+#pseudocode-list[
+  + Set $P_0 = {∅}$.
+  + For $i=1,…,|I|$:
+    + Let $x$ be the $i$-th item of $I$.
+    + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
+    + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
+] <this>
 
 This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
@@ -499,25 +502,27 @@ Making progress on the different open problems in @section-problems-definitions 
 #let Avg = math.op("Avg")
 Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach // TODO: Add many, many citation
 is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
-+ Fix the size $n$ of an instance, e.g. $n=10$.
-+ Define the $Score(I)$ of a bin-packing instance $I$:
-  + Calculate the value $Opt$ of an optimum solution to $I$
-  + Calculate 10000 trials of:
-    + Let $I'$ be a random permutation of $I$
-    + Run Best-Fit on $I'$
-  + Let $Avg$ be the average number of bins used across these trials
-  + Return $Avg \/Opt$
-+ Define a $Mutation(I)$ of an instance $I$:
-  + Define a new list of items $I'$ that arises from $I$ by adding independently standard-normally distributed noise to each entry.
-  + Clamp the entries of $I'$ to be between $0$ and $1$.
-  + Return $I'$.
-+ Initialise $I$ as the list $[1/2, ..., 1/2]$ of length $n$.
-+ Repeat the following until some stopping-criterion is met:
-  + Calculate $I' = Mutation(I)$
-  + If $Score(I') > Score(I)$:
-    + Replace $I$ with $I'$
-  + Otherwise:
-    + Keep $I$ unchanged.
+#pseudocode-list[
+  + Fix the size $n$ of an instance, e.g. $n=10$.
+  + Define the $Score(I)$ of a bin-packing instance $I$:
+    + Calculate the value $Opt$ of an optimum solution to $I$
+    + Calculate 10000 trials of:
+      + Let $I'$ be a random permutation of $I$
+      + Run Best-Fit on $I'$
+    + Let $Avg$ be the average number of bins used across these trials
+    + Return $Avg \/Opt$
+  + Define a $Mutation(I)$ of an instance $I$:
+    + Define a new list of items $I'$ that arises from $I$ by adding independently standard-normally distributed noise to each entry.
+    + Clamp the entries of $I'$ to be between $0$ and $1$.
+    + Return $I'$.
+  + Initialise $I$ as the list $[1/2, ..., 1/2]$ of length $n$.
+  + Repeat the following until some stopping-criterion is met:
+    + Calculate $I' = Mutation(I)$
+    + If $Score(I') > Score(I)$:
+      + Replace $I$ with $I'$
+    + Otherwise:
+      + Keep $I$ unchanged.
+]
 // Todo: Use some package for typesetting algorithms
 
 // TODO: Add results of local search
