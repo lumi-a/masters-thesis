@@ -49,7 +49,7 @@ In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items 
     caption: [The packing found by _First-Fit_.],
   ),
 
-  caption: [Different Packings for @bin-packing-example.],
+  caption: [Different Packings for @bin-packing-example, with bins of capacity $10$.],
   columns: (1fr, 1fr),
 )
 
@@ -211,6 +211,7 @@ It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
 #let Cost = math.op("Cost")
 #let Opt = math.op("Opt")
+#let PoH = math.op("PoH")
 #let Apx = math.op("Apx")
 
 == $k$-median Clustering
@@ -350,17 +351,32 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ can have significantly higher cost than $k$-clusterings for large $k$, so this would not capture a lot of information about the quality of the clusterings $H_i$ for low $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering.
 
 #definition[
-  For a clustering-instance $I$ and a cost-function $Cost$, the *Approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ on $I$ is:
+  For a clustering-instance $I$ and a cost-function $Cost$, the *approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ on $I$ is:
   $
     Apx_Cost (H_1, …, H_n)
-    ≔ max_(i=1,…,n)
+    quad ≔quad
+    max_(i=1,…,n)
     Cost(H_i) / Cost(Opt_i),
   $
   where $Opt_i$ is an optimal $i$-clustering on $I$ with respect to $Cost$.
 ]
 
-This approximation-factor will always be at least $1$, and exceeds $1$ iff there is no nested collection of optimal clusterings.
+The approximation-factor of the hierarchical clustering in @example-hierarchical-clustering is $≈1.262$: The hierarchical clusterings and optimal clusterings shown there only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$.
 
+For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$. The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
+
+For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering.
+
+#definition[
+  For a cost-function $Cost$, let $cal(I)$ be the set of all clustering-instances for $Cost$. For a fixed clustering-instance $I$, let $cal(H)(I)$ be the (finite) set of all hierarchical clusterings on $I$.
+  The *Price of Hierarchy for $Cost$* is defined as:
+  $
+    PoH_Cost
+    quad ≔quad
+    sup_(I∈cal(I)) (min_(H ∈ cal(H)(I)) Apx_Cost (H)).
+  $
+]
+In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$.
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
