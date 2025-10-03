@@ -189,24 +189,46 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
     }
     // let display = paretoset => paretoset.map(solution => ${#solution.map(x => math.vec([#I.at(x).at(0)], [#I.at(x).at(1)])).intersperse($,$).sum(default: [])}$).intersperse($,$).sum()
     [Here, $P_#{ I.len() - 1 }$ has size $#ps.at(I.len() - 1).len()$, while $P_#{ I.len() } = P(I)$ has size $#ps.at(I.len()).len()$.]
-    /*
-    grid(
-      stroke: none,
-      columns: (1.5em,) * I.len(),
-      rows: (1.5em,) * ps.map(x => x.len()).sum(),
-      ..I.map(x => [$vec(#[#x.at(0)], #[#x.at(1)])$]),
-      ..ps
-        .map(
-          paretoset => (
-            paretoset.map(
-              solution => range(I.len()).map(i => if solution.contains(i) { square(size: 1.25em, fill: black) } else { [] }),
-            )
-              + (grid.hline(),)
+
+    let draw-pareto = (items, color) => {
+      let powerset = ((0, 0),)
+      for item in items {
+        for subset in powerset {
+          let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
+          powerset.push(new_subset)
+        }
+      }
+      let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
+      let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
+      let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
+
+      let xs = arr => arr.map(wp => wp.at(0))
+      let ys = arr => arr.map(wp => wp.at(1))
+
+      context (
+        lq.diagram(
+          lq.scatter(
+            xs(dominated),
+            ys(dominated),
+            color: color,
+            mark: lq.marks.at("."),
           ),
+          lq.scatter(
+            xs(undominated),
+            ys(undominated),
+            color: color,
+            mark: lq.marks.at("star"),
+          ),
+          xlabel: [#text(font: font-math)[Total Weight]],
+          ylabel: [#text(font: font-math)[Total Profit]],
+          xaxis: (lim: (-1, 14)),
+          yaxis: (lim: (-1, 14)),
+          height: page.width * 0.2,
+          width: page.width * 0.3,
         )
-        .flatten()
-    )
-    */
+      )
+    }
+    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), gap: 1em, caption: [Displaying the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
   }
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
@@ -346,7 +368,8 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These clusterings do not have a nested structure. Only the clustering for $k=2$ differs from the hierarchical clustering on the left.s
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These six clusterings do not have a nested structure.\
+      The two clusterings only differ at level $k=2$.
     ])<example-hierarchical-clustering>
   ]
 }
