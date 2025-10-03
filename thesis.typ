@@ -391,6 +391,101 @@ $
 $
 where the minimum across vectors is taken entry-wise. As an objective, we choose $‖α-β‖_1$, meaning we trade off the cost for space in the flour-warehouse linearly against the cost of space in the sugar-warehouse. We do not lose generality on the tradeoff-ratio between the two, since tradeoffs like "Sugar-warehouse space is twice as expensive as flour-warehouse space" can be captured by choosing different units for measuring amounts of flour and sugar. Non-linear tradeoffs are not captured, however. We write $X = (x_1,…,x_7)$ and $Y = (y_1,…,y_7)$.
 
+#example[
+  Consider:
+  $
+    X = & [vec(5, 3), vec(3, 10), vec(7, 8), vec(1, 2), vec(8, 9), vec(7, 4), vec(1, 1)],
+          quad
+          Y = & [vec(3, 4), vec(2, 8), vec(8, 1), vec(1, 5), vec(9, 4), vec(2, 10), vec(7, 5)],
+  $
+  #{
+    let deliveries = ((5, 3), (3, 10), (7, 8), (1, 2), (8, 9), (7, 4), (1, 1))
+    let production = ((3, 4), (2, 8), (8, 1), (1, 5), (9, 4), (2, 10), (7, 5))
+
+    let scale = (x, s) => (x.at(0) * s, x.at(1) * s)
+    let add = (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1))
+    let min = (x, y) => (calc.min(x.at(0), y.at(0)), calc.min(x.at(1), y.at(1)))
+    let max = (x, y) => (calc.max(x.at(0), y.at(0)), calc.max(x.at(1), y.at(1)))
+    let sub = (x, y) => (x.at(0) - y.at(0), x.at(1) - y.at(1))
+    let norm = v => calc.sqrt(calc.pow(v.at(0), 2) + calc.pow(v.at(1), 2))
+    let normed = v => scale(v, 1 / norm(v))
+    let draw-permutation = pi => {
+      let heightscale = 0.25em
+      let barwidth = 0.85em
+      let production-deliveries = production
+        .enumerate()
+        .map(ixp => {
+          let p-ix = ixp.at(0)
+          let p = ixp.at(1)
+          let d = deliveries.at(pi.at(p-ix))
+          (p, d)
+        })
+
+      let draw-state = (warehouse-history, production-delivery) => {
+        let old-warehouse = warehouse-history.last()
+        let p = production-delivery.at(0)
+        let d = production-delivery.at(1)
+        let morning = add(old-warehouse, d)
+        let evening = sub(morning, p)
+        warehouse-history + (morning, evening)
+      }
+
+      let timeline = production-deliveries.fold(((0, 0),), draw-state)
+      let minhouse = timeline.fold((1000000, 100000), min)
+      let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold((-1000000, -100000), max)
+      let maxmaxhouse = calc.max(maxhouse.at(0), maxhouse.at(1))
+
+      let flourbar = warehouse => rect(fill: green, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(0) * heightscale)
+      let sugarbar = warehouse => rect(fill: purple, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(1) * heightscale)
+      let squares = timeline.map(warehouse => (flourbar(warehouse), sugarbar(warehouse), h(barwidth))).flatten()
+
+      let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 6 * barwidth, stroke: (paint: color, thickness: 0.1em)))
+      align(left + bottom)[
+        #line(maxhouse.at(0) - 0.1, green)
+        #line(maxhouse.at(1) + 0.1, purple)
+        #line(0, gray)
+        #stack(dir: ltr, ..squares, [...])
+      ]
+      align(left + bottom, stack(dir: ltr, h(barwidth), ..production-deliveries.map(pd => {
+        let p = pd.at(0)
+        let d = pd.at(1)
+        [#box(width: 3 * barwidth, align(center)[$arrow.t$$vec(#[#d.at(0)], #[#d.at(1)])$])#box(width: 3 * barwidth, align(center)[$arrow.b$$vec(#[#p.at(0)], #[#p.at(1)])$])]
+      })))
+    }
+
+    let iterative-rounding-permutation = (0, 1, 2, 6, 5, 3, 4)
+    let opt-permutation = (6, 2, 0, 3, 4, 5, 1)
+    let typeset-permutation = pi => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
+    [together with the following permutation of deliveries:
+      $
+        π(X) = #typeset-permutation(iterative-rounding-permutation).
+      $
+      The timeline of our warehouse can be visualised as follows: Green bars represent flour, purple bars represent sugar. Vectors preceded by "$arrow.t$" indicate deliveries, vectors preceded by "$arrow.b$" indicate us using ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of that ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse minimally such that we will always have enough ingredients to never run out. This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day where the warehouse is fully depleted.
+      #figure(
+        draw-permutation(iterative-rounding-permutation),
+        kind: image,
+        gap: 1.5em,
+        caption: [The (cyclical) state of the warehouse across the week, for permutation $π$.],
+      )
+      For this permutation, the warehouse must store a peak of $11$ flour on the night between Tuesday and Wednesday, and a peak of $13$ sugar on several nights between Tuesday and Thursday. There is a better permutation, though:
+      $
+        π_Opt (X) = #typeset-permutation(opt-permutation),
+      $
+      Plotted in the same way:
+      #figure(
+        draw-permutation(opt-permutation),
+        kind: image,
+        gap: 1.5em,
+        caption: [The (cyclical) state of the warehouse across the week, for permutation $π_Opt$.],
+      )
+      Here, the peak necessary capacity for flour and sugar is both only $10$, meaning $π_Opt$ is a better choice than $π$, because both our flour-warehouse and our sugar-warehouse can be smaller.
+
+      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is the best possible permutation of $S_7$ in this case.
+    ]
+  }
+]
+
+
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
 - For bin-packing, we would like to find an instance where the randomised Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution.
