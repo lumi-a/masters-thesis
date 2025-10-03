@@ -210,6 +210,8 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
 #let Cost = math.op("Cost")
+#let Opt = math.op("Opt")
+#let Apx = math.op("Apx")
 
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points are clustered closely together. Different objectives exist that quantify this intuition.
@@ -266,6 +268,19 @@ Naturally, these different objectives can yield different optimal clusterings, a
     ) <clustering-example>
   ]
 }
+
+When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. #cite(<stopUsingElbow>, form: "prose")). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering.
+
+#definition[
+  A *hierarchical clustering* on $n$ points is a sequence $(H_1, …, H_n)$ of clusterings such that:
+  - $H_i$ is an $i$-clustering (i.e., it consists of $i$ clusters), for every $i=1,…,n$
+  - For every $i=1,…,n-1$, the clustering $H_i$ can be obtained by merging two clusters in $H_(i+1)$. In other words, there exist clusters $C,C′∈H_(i+1)$ such that:
+    $
+      H_i quad = quad (H_(i+1) ∖ {C, C′}) ∪ {C∪C′}.
+    $
+]
+
+The structure of hierarchical clusterings is, for example, useful for taxonomy, but does come at a cost: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
 
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
@@ -328,10 +343,23 @@ Naturally, these different objectives can yield different optimal clusterings, a
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These clusterings do not have a nested structure.])
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These clusterings do not have a nested structure.])<example-hierarchical-clustering>
   ]
 }
 
+To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ can have significantly higher cost than $k$-clusterings for large $k$, so this would not capture a lot of information about the quality of the clusterings $H_i$ for low $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering.
+
+#definition[
+  For a clustering-instance $I$ and a cost-function $Cost$, the *Approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ on $I$ is:
+  $
+    Apx_Cost (H_1, …, H_n)
+    ≔ max_(i=1,…,n)
+    Cost(H_i) / Cost(Opt_i),
+  $
+  where $Opt_i$ is an optimal $i$-clustering on $I$ with respect to $Cost$.
+]
+
+This approximation-factor will always be at least $1$, and exceeds $1$ iff there is no nested collection of optimal clusterings.
 
 
 = FunSearch
