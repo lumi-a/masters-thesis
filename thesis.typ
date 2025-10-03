@@ -460,30 +460,29 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       $
         π(X) = #typeset-permutation(iterative-rounding-permutation).
       $
-      The timeline of our warehouse can be visualised as follows: Green bars represent flour, purple bars represent sugar. Vectors preceded by "$arrow.t$" indicate deliveries, vectors preceded by "$arrow.b$" indicate us using ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of that ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse minimally such that we will always have enough ingredients to never run out. This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day where the warehouse is fully depleted.
+      The timeline of our warehouse can be visualised as follows: Green bars represent flour, purple bars represent sugar. Vectors preceded by "$arrow.t$" indicate deliveries, vectors preceded by "$arrow.b$" indicate us using ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of that ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse minimally such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise we would be wasting warehouse space).
       #figure(
         draw-permutation(iterative-rounding-permutation),
         kind: image,
         gap: 1.5em,
-        caption: [The (cyclical) state of the warehouse across the week, for permutation $π$.],
+        caption: [The (cyclical) state of the warehouse across the week for permutation $π$.],
       )
       For this permutation, the warehouse must store a peak of $11$ flour on the night between Tuesday and Wednesday, and a peak of $13$ sugar on several nights between Tuesday and Thursday. There is a better permutation, though:
       $
         π_Opt (X) = #typeset-permutation(opt-permutation),
       $
-      Plotted in the same way:
       #figure(
         draw-permutation(opt-permutation),
         kind: image,
         gap: 1.5em,
-        caption: [The (cyclical) state of the warehouse across the week, for permutation $π_Opt$.],
+        caption: [The (cyclical) state of the warehouse across the week for permutation $π_Opt$.],
       )
       Here, the peak necessary capacity for flour and sugar is both only $10$, meaning $π_Opt$ is a better choice than $π$, because both our flour-warehouse and our sugar-warehouse can be smaller.
 
       With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is the best possible permutation of $S_7$ in this case.
     ]
   }
-]
+] // TODO: This example is long, but it doesn't seem to want to neatly break across pages?
 
 
 = FunSearch
