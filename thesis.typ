@@ -2,7 +2,6 @@
 #import "draw-packing.typ";
 #import "draw-clustering.typ";
 #import "@preview/subpar:0.2.2"
-#import "@preview/frame-it:1.2.0": *
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *
 
