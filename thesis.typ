@@ -6,10 +6,10 @@
 #import "@preview/lovelace:0.3.0": *
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
-#let theorem = thmbox("theorem", "Theorem")
-#let definition = thmbox("definition", "Definition", fill: red.lighten(87.5%))
-#let example = thmbox("example", "Example", fill: green.lighten(87.5%))
-#let proof = thmproof("proof", "Proof")
+#let theorem = thmbox("theorem", "Theorem", breakable: true)
+#let definition = thmbox("definition", "Definition", fill: red.lighten(87.5%), breakable: true)
+#let example = thmbox("example", "Example", fill: green.lighten(87.5%), breakable: true)
+#let proof = thmproof("proof", "Proof", breakable: true)
 
 
 #set heading(numbering: "1.1")
@@ -483,8 +483,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is the best possible permutation of $S_7$ in this case.
     ]
   }
-] // TODO: This example is long, but it doesn't seem to want to neatly break across pages?
-
+]
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
@@ -522,7 +521,6 @@ is to employ some search-algorithm that searches for an instance of a high "scor
     + Otherwise:
       + Keep $I$ unchanged.
 ]
-// Todo: Use some package for typesetting algorithms
 
 // TODO: Add results of local search
 
