@@ -24,34 +24,32 @@ In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items 
   $
     w_1, …, w_5 quad=quad 4, 7, 2, 3, 4
   $
-  An optimal packing is shown in @bin-packing-optimal.
+  #subpar.grid(
+    figure(
+      draw-packing.packing(10, ((7, 3), (4, 2, 4))),
+      caption: [An optimal packing.],
+    ),
+    <bin-packing-optimal>,
+
+    figure(
+      draw-packing.packing(10, ((4, 3), (7, 2), (4,))),
+      caption: [The packing found by _Best-Fit_.],
+    ),
+    figure(
+      draw-packing.packing(10, ((4,), (7, 2), (3, 4))),
+      caption: [The packing found by _Next-Fit_.],
+    ),
+
+    figure(
+      draw-packing.packing(10, ((4, 2, 3), (7,), (4,))),
+      caption: [The packing found by _First-Fit_.],
+    ),
+
+    gap: 1em,
+    caption: [Different Packings for @bin-packing-example, with bins of capacity $10$.],
+    columns: (1fr, 1fr),
+  )
 ] <bin-packing-example>
-
-
-#subpar.grid(
-  figure(
-    draw-packing.packing(10, ((7, 3), (4, 2, 4))),
-    caption: [An optimal packing.],
-  ),
-  <bin-packing-optimal>,
-
-  figure(
-    draw-packing.packing(10, ((4, 3), (7, 2), (4,))),
-    caption: [The packing found by _Best-Fit_.],
-  ),
-  figure(
-    draw-packing.packing(10, ((4,), (7, 2), (3, 4))),
-    caption: [The packing found by _Next-Fit_.],
-  ),
-
-  figure(
-    draw-packing.packing(10, ((4, 2, 3), (7,), (4,))),
-    caption: [The packing found by _First-Fit_.],
-  ),
-
-  caption: [Different Packings for @bin-packing-example, with bins of capacity $10$.],
-  columns: (1fr, 1fr),
-)
 
 In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All of the following heuristics are _online_: The items $w_i$ arrive in sequence and the heuristic has to assign $w_i$ permanently to a bin. Once the item $w_i$ has been processed, its assignment can not be changed.
 - _Best-Fit_: When item $w_i$ arrives, pack it into a bin which has the least remaining space among the bins that can contain $w_i$. If no such bin exists, open a new one.
@@ -70,75 +68,75 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
     I = [vec(4, 9),quad vec(5, 1),quad vec(13, 14),quad vec(3, 8),quad vec(11, 4),quad vec(6, 14)]
   $
   The optimal list of items to put into our bin is $[vec(4, 9), vec(5, 1), vec(3, 8), vec(6, 14)]$, with a total weight of $18$ and a total profit of $32$.
+  #figure(
+    {
+      let items = ((4, 9), (5, 1), (13, 14), (3, 8), (11, 4), (6, 14))
+      let powerset = ((0, 0),)
+      for item in items {
+        for subset in powerset {
+          let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
+          powerset.push(new_subset)
+        }
+      }
+      let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
+      let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
+      let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
+
+      let opt-xs = 4 + 5 + 3 + 6
+      let opt-ys = 9 + 1 + 8 + 14
+
+      let dominated-feasible = dominated.filter(wp => wp.at(0) <= 20)
+      let dominated-unfeasible = dominated.filter(wp => wp.at(0) > 20)
+      let undominated-feasible = undominated.filter(wp => wp.at(0) <= 20)
+      let undominated-unfeasible = undominated.filter(wp => wp.at(0) > 20)
+
+      let xs = arr => arr.map(wp => wp.at(0))
+      let ys = arr => arr.map(wp => wp.at(1))
+
+      lq.diagram(
+        lq.scatter(
+          xs(dominated-feasible),
+          ys(dominated-feasible),
+          color: green,
+          mark: lq.marks.at("."),
+        ),
+        lq.scatter(
+          xs(dominated-unfeasible),
+          ys(dominated-unfeasible),
+          color: red,
+          mark: lq.marks.at("."),
+        ),
+        lq.scatter(
+          xs(undominated-feasible),
+          ys(undominated-feasible),
+          color: green,
+          mark: lq.marks.star,
+        ),
+        lq.scatter(
+          xs(undominated-unfeasible),
+          ys(undominated-unfeasible),
+          color: red,
+          mark: lq.marks.star,
+        ),
+        lq.scatter(
+          (opt-xs,),
+          (opt-ys,),
+          color: blue,
+          mark: mark => place(center + horizon, circle(radius: 4pt, fill: none, stroke: blue + 1pt)),
+          z-index: 10,
+        ),
+        xlabel: [#text(font: font-math)[Total Weight]],
+        ylabel: [#text(font: font-math)[Total Profit]],
+        height: 30%,
+        width: 60%,
+      )
+    },
+    gap: 1em,
+    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
+  ) <fig-example-knapsack>
 ] <knapsack-example>
 
 A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
-
-#figure(
-  {
-    let items = ((4, 9), (5, 1), (13, 14), (3, 8), (11, 4), (6, 14))
-    let powerset = ((0, 0),)
-    for item in items {
-      for subset in powerset {
-        let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
-        powerset.push(new_subset)
-      }
-    }
-    let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
-    let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
-    let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
-
-    let opt-xs = 4 + 5 + 3 + 6
-    let opt-ys = 9 + 1 + 8 + 14
-
-    let dominated-feasible = dominated.filter(wp => wp.at(0) <= 20)
-    let dominated-unfeasible = dominated.filter(wp => wp.at(0) > 20)
-    let undominated-feasible = undominated.filter(wp => wp.at(0) <= 20)
-    let undominated-unfeasible = undominated.filter(wp => wp.at(0) > 20)
-
-    let xs = arr => arr.map(wp => wp.at(0))
-    let ys = arr => arr.map(wp => wp.at(1))
-
-    lq.diagram(
-      lq.scatter(
-        xs(dominated-feasible),
-        ys(dominated-feasible),
-        color: green,
-        mark: lq.marks.at("."),
-      ),
-      lq.scatter(
-        xs(dominated-unfeasible),
-        ys(dominated-unfeasible),
-        color: red,
-        mark: lq.marks.at("."),
-      ),
-      lq.scatter(
-        xs(undominated-feasible),
-        ys(undominated-feasible),
-        color: green,
-        mark: lq.marks.star,
-      ),
-      lq.scatter(
-        xs(undominated-unfeasible),
-        ys(undominated-unfeasible),
-        color: red,
-        mark: lq.marks.star,
-      ),
-      lq.scatter(
-        (opt-xs,),
-        (opt-ys,),
-        color: blue,
-        mark: mark => place(center + horizon, circle(radius: 4pt, fill: none, stroke: blue + 1pt)),
-        z-index: 10,
-      ),
-      xlabel: [#text(font: font-math)[Total Weight]],
-      ylabel: [#text(font: font-math)[Total Profit]],
-      height: 30%,
-      width: 60%,
-    )
-  },
-  caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
-) <fig-example-knapsack>
 
 === Pareto-Sets
 
@@ -485,7 +483,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       $
         π(X) ≔ #typeset-permutation(iterative-rounding-permutation).
       $
-      The timeline of our warehouse can be visualised as follows: Green bars represent flour, purple bars represent sugar. Vectors preceded by "$arrow.t$" indicate deliveries, vectors preceded by "$arrow.b$" indicate us using ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of that ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse minimally such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise we would be wasting warehouse space).
+      The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (green) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
       #figure(
         draw-permutation(iterative-rounding-permutation),
         kind: image,
@@ -502,9 +500,9 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
         gap: 1.5em,
         caption: [The (cyclical) state of the warehouse across the week for permutation $π_Opt$.],
       )
-      Here, the peak necessary capacity for flour and sugar is both only $10$, meaning $π_Opt$ is a better choice than $π$, because both our flour-warehouse and our sugar-warehouse can be smaller.
+      Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
 
-      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is the best possible permutation of $S_7$ in this case.
+      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is indeed the best possible permutation of $S_7$ for this instance.
     ]
   }
 ]
