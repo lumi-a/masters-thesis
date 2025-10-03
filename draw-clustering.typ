@@ -1,4 +1,4 @@
-#let point-radius = 0.25em
+#let point-radius = 0.15em
 #let draw-points = (points, size) => {
   points
     .map(p => place(dx: p.at(0) * size - point-radius, dy: p.at(1) * size - point-radius, circle(
@@ -84,7 +84,7 @@
           let ix = indexed-clustering.at(0)
           let clustering = indexed-clustering.at(1)
           let color = colors.at(calc.rem(ix, colors.len()))
-          let buff = 0.01 * (clusterings.len() - ix)
+          let buff = 0.015 * (clusterings.len() - ix)
           place(clustering.map(cluster => place(draw-cluster(points, cluster, size, buff, color))).sum())
         })
         .sum(),

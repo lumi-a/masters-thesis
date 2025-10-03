@@ -264,7 +264,7 @@ Naturally, these different objectives can yield different optimal clusterings, a
 ...#...#.....##..#.#............
 ")
   context [#figure(
-      draw-clustering.draw-clustering(points, kmedian, page.width * 0.4, 0.04, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.4, 0.04, blue),
+      draw-clustering.draw-clustering(points, kmedian, page.width * 0.4, 0.02, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.4, 0.02, blue),
       caption: [Two different $k"="3$-clusterings for the same  $20$ points in $ℝ^2$.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering.
       ],
       // TODO: Do two examples side by side, one optimal and one sub-optimal
@@ -346,7 +346,8 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These clusterings do not have a nested structure.])<example-hierarchical-clustering>
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These clusterings do not have a nested structure. Only the clustering for $k=2$ differs from the hierarchical clustering on the left.s
+    ])<example-hierarchical-clustering>
   ]
 }
 
@@ -459,7 +460,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
     let typeset-permutation = pi => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
     [together with the following permutation of deliveries:
       $
-        π(X) = #typeset-permutation(iterative-rounding-permutation).
+        π(X) ≔ #typeset-permutation(iterative-rounding-permutation).
       $
       The timeline of our warehouse can be visualised as follows: Green bars represent flour, purple bars represent sugar. Vectors preceded by "$arrow.t$" indicate deliveries, vectors preceded by "$arrow.b$" indicate us using ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of that ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse minimally such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise we would be wasting warehouse space).
       #figure(
@@ -470,7 +471,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       )
       For this permutation, the warehouse must store a peak of $11$ flour on the night between Tuesday and Wednesday, and a peak of $13$ sugar on several nights between Tuesday and Thursday. There is a better permutation, though:
       $
-        π_Opt (X) = #typeset-permutation(opt-permutation),
+        π_Opt (X) ≔ #typeset-permutation(opt-permutation),
       $
       #figure(
         draw-permutation(opt-permutation),
