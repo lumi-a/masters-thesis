@@ -229,11 +229,42 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
   The total cost of a clustering is again the sum of the cost of its clusters.
 - TODO: Add more objectives, particularly ones with existing results on the PoH.
 
-#figure(
-  draw-clustering.draw((((0.4, 0.1), (0.2, 0.2), (0.1, 0.4), (0.3, 0.35)), ((0.1, 0.8), (0.2, 0.9)), ((0.7, 0.5), (0.5, 0.7), (0.8, 0.9))), 10em, 0.1),
-  caption: [A possible $k"="3$-clustering on $9$ points in $ℝ^2$.],
-  // TODO: Do two examples side by side, one optimal and one sub-optimal
-)
+
+#{
+  let parse = str => str.trim().split().map(line => line.trim().split("").enumerate().filter(ixchar => ixchar.at(1) == "#").map(ixchar => ixchar.at(0) - 1)) // https://typst.app/docs/reference/foundations/str/#definitions-split
+  /*
+      let points = ((0.497, 0.533), (0.536, 0.480), (0.560, 0.598), (0.380, 0.884), (0.592, 0.736), (0.317, 0.743), (0.427, 0.919), (0.239, 0.163), (0.179, 0.280), (0.168, 0.086), (0.506, 0.385), (0.239, 0.860), (0.895, 0.066), (0.391, 0.264), (0.322, 0.828), (0.580, 0.043), (0.451, 0.263), (0.879, 0.332), (0.115, 0.232), (0.340, 0.023))
+    let kmedian = parse("
+  ###.......#.##.###..............
+  .......###........##............
+  ...####....#..#.................
+  ")
+    let kmeans = parse("
+  ............#..#.#..............
+  .......####..#..#.##............
+  #######....#..#.................
+  ")
+    */
+  let points = ((0.472, 0.011), (0.119, 0.697), (0.283, 0.445), (0.557, 0.516), (0.362, 0.565), (0.076, 0.375), (0.625, 0.464), (0.675, 0.229), (0.169, 0.926), (0.221, 0.786), (0.247, 0.298), (0.499, 0.294), (0.597, 0.815), (0.971, 0.311), (0.921, 0.184), (0.608, 0.757), (0.183, 0.766), (0.913, 0.413), (0.131, 0.954), (0.668, 0.647)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
+  let kmedian = parse("
+#.#.#.#...#.#..#...#............
+.#...#..##........#.............
+.......#.....##..#..............
+")
+  let kmeans = parse("
+#.#..#.....#....................
+.#..#.......#..#..#.............
+...#...#.....##..#.#............
+")
+  context (
+    figure(
+      draw-clustering.draw-clustering(points, kmedian, page.width * 0.4, 0.04) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.4, 0.04),
+      caption: [$20$ points in $ℝ^2$ divided into $k=3$ clusters.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering.],
+      // TODO: Do two examples side by side, one optimal and one sub-optimal
+    )
+  )
+}
+
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
