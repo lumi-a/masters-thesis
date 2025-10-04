@@ -14,6 +14,13 @@
 
 #set heading(numbering: "1.1")
 
+#let Cost = math.op("Cost")
+#let Opt = math.op("Opt")
+#let PoH = math.op("PoH")
+#let BestFit = math.op("BestFit")
+#let FirstFit = math.op("FirstFit")
+#let NextFit = math.op("NextFit")
+#let Apx = math.op("Apx")
 
 = Problems, Definitions and Previous Results <section-problems-definitions>
 == Bin-Packing
@@ -55,6 +62,53 @@ In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All
 - _Best-Fit_: When item $w_i$ arrives, pack it into a bin which has the least remaining space among the bins that can contain $w_i$. If no such bin exists, open a new one.
 - _Next-Fit_: When item $w_i$ arrives, pack it into the bin that $w_(i-1)$ was assigned to, or open a new bin if this is not possible.
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
+
+For the above algorithms, usually $𝒜(I) < Opt(I)$, see @bin-packing-example. The following definitions allow us to compare the performance of different heuristics:
+
+#definition[
+  Let $cal(I)$ be the set of all (nonempty) bin-packing instances. For some instance $I∈cal(I)$, let $Opt(I)$ be the number of bins in an optimal packing, and $cal(A)(I)$ be the number of bins in the packing found by a bin-packing algorithm $cal(A)$. The *(absolute) approximation-ratio of $𝒜$* is $R_𝒜 ≔ sup_(I∈ℐ) 𝒜(I)/Opt(I)$.
+]
+The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, the $R_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
+- For every instance, the packing found by Best-Fit will never use more than $1.7$ times more bins than an optimal packing, and
+- There is a sequence of instances $I_1, I_2, …$ such that $BestFit(I_j)/Opt(I_j)$ converges to $1.7$.
+
+@firstFitAnalysis[p:] proved that $R_FirstFit = 1.7$ as well, and @nextFitAnalysis[p:] showed $R_NextFit = 2$.
+
+Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that _the entire input_ $I$ -- including the order of its items -- can be chosen by an adversary. In fact, we might assume that most of our inputs are not decided by an adversary at all. Thus, we define a less pessimistic measure for the performance of an algorithm:
+
+#definition[
+  Let $S_n$ be the set of permutations on $n$ elements, i.e. the symmetric group.
+  - The *absolute random-order-ratio of $𝒜$* is $"RR"_𝒜 ≔ sup_(I∈ℐ) 𝔼_(π∈S_(|I|))[𝒜(π(I))/Opt(I)]$.
+]
+
+That is to say: We still assume an adversary can choose the _items_ of the instance, but the order of the items is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items.
+@bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, with the lower bound improved to $1.3$ by @binPackingRevisited[p:].
+
+#example[
+  This is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
+  Consider bins of capacity $c=3000$ and the instance:
+  $
+    I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
+  $
+  #figure(
+    draw-packing.packing(3000, ((1004, 1004, 992), (1016, 1016))),
+    caption: [An optimal packing of $I$.],
+  )
+  #let lesser-packing = xs => scale(60%, draw-packing.packing(3000, xs))
+  #figure(
+    grid(
+      align: left,
+      columns: (33%, 33%, 33%),
+      lesser-packing(((1016, 1004), (992, 1004), (1016,))), lesser-packing(((1004, 992, 1004), (1016, 1016))), lesser-packing(((1016, 992), (1004, 1004), (1016,))),
+      lesser-packing(((1004, 1004, 992), (1016, 1016))), lesser-packing(((1016, 1004), (1004, 1016), (992,))), lesser-packing(((992, 1016), (1004, 1004), (1016,))),
+      lesser-packing(((1016, 1004), (1004, 1016), (992,))), lesser-packing(((1004, 1004, 992), (1016, 1016))), lesser-packing(((992, 1016), (1004, 1016), (1004,))),
+      //lesser-packing(((1016, 1016), (992, 1004, 1004))),
+    ),
+    caption: [Nine different packings produced by Best-Fit on $I$ with randomised order.],
+  )
+]
+
+
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective is to _maximize_ the total profit of the items we put in the bin.
@@ -231,11 +285,6 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
-#let Cost = math.op("Cost")
-#let Opt = math.op("Opt")
-#let PoH = math.op("PoH")
-#let Apx = math.op("Apx")
-
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points are clustered closely together. Different objectives exist that quantify this intuition.
 - In $k$-means clustering, the cost of a cluster $C$ is: #h(1fr)
@@ -296,7 +345,7 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
 
 #definition[
   A *hierarchical clustering* on $n$ points is a sequence $(H_1, …, H_n)$ of clusterings such that:
-  - $H_i$ is an $i$-clustering (i.e., it consists of $i$ clusters), for every $i=1,…,n$
+  - $H_i$ is an $i$-clustering (i.e., it consists of $i$ clusters), for every $i=1,…,n$, and
   - For every $i=1,…,n-1$, the clustering $H_i$ can be obtained by merging two clusters in $H_(i+1)$. In other words, there exist clusters $C,C′∈H_(i+1)$ such that:
     $
       H_i quad = quad (H_(i+1) ∖ {C, C′}) ∪ {C∪C′}.
@@ -522,27 +571,36 @@ Making progress on the different open problems in @section-problems-definitions 
 #let Avg = math.op("Avg")
 Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach // TODO: Add many, many citation
 is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
-#pseudocode-list[
-  + Fix the size $n$ of an instance, e.g. $n=10$.
-  + Define the $Score(I)$ of a bin-packing instance $I$:
-    + Calculate the value $Opt$ of an optimum solution to $I$
-    + Calculate 10000 trials of:
-      + Let $I'$ be a random permutation of $I$
-      + Run Best-Fit on $I'$
-    + Let $Avg$ be the average number of bins used across these trials
-    + Return $Avg \/Opt$
-  + Define a $Mutation(I)$ of an instance $I$:
-    + Define a new list of items $I'$ that arises from $I$ by adding independently standard-normally distributed noise to each entry.
-    + Clamp the entries of $I'$ to be between $0$ and $1$.
-    + Return $I'$.
-  + Initialise $I$ as the list $[1/2, ..., 1/2]$ of length $n$.
-  + Repeat the following until some stopping-criterion is met:
-    + Calculate $I' = Mutation(I)$
-    + If $Score(I') > Score(I)$:
-      + Replace $I$ with $I'$
-    + Otherwise:
-      + Keep $I$ unchanged.
-]
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  pseudocode-list(booktabs: true, numbered-title: [Local Search for bad instances of Randomised Bin Packing])[
+    + Fix the size $n$ of an instance, e.g. $n=10$.
+    + Define the $Score(I)$ of a bin-packing instance $I$:
+      + Calculate the value $Opt$ of an optimum solution to $I$
+      + Calculate 10000 trials of:
+        + Let $I'$ be a random permutation of $I$
+        + Run Best-Fit on $I'$
+      + Let $Avg$ be the average number of bins used across these trials
+      + Return $Avg \/Opt$
+    + Define a $Mutation(I)$ of an instance $I$:
+      + Define a new list of items $I'$ that arises from $I$ by adding independently\ standard-normally distributed noise to each entry.
+      + Clamp the entries of $I'$ to be between $0$ and $1$.
+      + Return $I'$.
+    + Initialise $I$ as the list $[1/2, ..., 1/2]$ of length $n$.
+    + #line-label(<codeline-iteration-count>) Repeat the following until some stopping-criterion is met:
+      + Calculate $I' = Mutation(I)$
+      + If $Score(I') > Score(I)$:
+        + Replace $I$ with $I'$
+      + Otherwise:
+        + Keep $I$ unchanged.
+  ],
+) <algorithm-local-search-bin-packing>
+
+#figure(
+  text(size: 2em, fill: red)[todo: add result plot for local search],
+  caption: [$30$ example trajectories of @algorithm-local-search-bin-packing, with the loop in @codeline-iteration-count terminating after 10000 iterations. For each of the $30$ trials, we plot the score of the best solution $I$ over time.],
+) <local-search-plot>
 
 // TODO: Add results of local search
 
