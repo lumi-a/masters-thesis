@@ -42,6 +42,56 @@
 
   #set par(leading: 0.85em, spacing: 1.25em)
 
+  // Extended citation with `@`-syntax
+  // https://gist.github.com/Ntgllr/a194eb327e4db6c480c84de9be106125
+  // `#cite(<label>, form: "prose", supplement: "string")` -> `@label[p:string]`
+  #show ref: it => {
+    // Check if `it` is citation
+    let is-citation = it.element == none
+
+    if is-citation {
+      // Check if supplement not empty
+      if it.supplement not in (none, auto, []) {
+        // Check if supplement is array (has children) and second element is ":"
+        if (
+          it.supplement.has("children") and it.supplement.at("children").at(1) == [:]
+        ) {
+          // Extract form abbreviation
+          let abbr = it.supplement.at("children").at(0)
+
+          // Construct Supplement argument
+          let suppl = if it.supplement.at("children").len() == 3 {
+            (supplement: it.supplement.at("children").at(2))
+          } else if it.supplement.at("children").len() > 3 {
+            (supplement: it.supplement.at("children").slice(2).join())
+          } else {
+            (supplement: none)
+          }
+
+          // Construct Form argument
+          let form = if abbr == [p] {
+            (form: "prose")
+            // TODO: Implement other forms
+          } else {
+            (form: "normal")
+          }
+          cite(it.target, ..form, ..suppl)
+          // repr(suppl.supplement) //DEBUG
+        } else {
+          // Return normal citation with supplement
+          it
+        }
+      } else {
+        // => Supplement is empty -> cite normally
+        // Return normal citation without supplement
+        it
+      }
+      // Return reference
+    } else {
+      it
+    }
+  }
+
   #body
 ]
 
