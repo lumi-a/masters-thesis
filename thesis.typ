@@ -7,8 +7,8 @@
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let theorem = thmbox("theorem", "Theorem", breakable: true)
-#let definition = thmbox("definition", "Definition", fill: red.lighten(87.5%), breakable: true)
-#let example = thmbox("example", "Example", fill: green.lighten(87.5%), breakable: true)
+#let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true)
+#let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
 #let proof = thmproof("proof", "Proof", breakable: true)
 
 
@@ -366,8 +366,8 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points. These six clusterings do not have a nested structure.\
-      The two clusterings only differ at level $k=2$.
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points, which do not form a nested structure.\
+      The two sets of clusterings only differ at level $k=2$.
     ])<example-hierarchical-clustering>
   ]
 }
@@ -502,7 +502,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       )
       Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
 
-      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$, and is indeed the best possible permutation of $S_7$ for this instance.
+      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
     ]
   }
 ]
