@@ -23,7 +23,7 @@
 #let Apx = math.op("Apx")
 
 = Problems, Definitions and Previous Results <section-problems-definitions>
-== Bin-Packing
+== Bin-Packing <section-problems-bin-packing>
 In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
 
 #example[
@@ -280,7 +280,7 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
         )
       )
     }
-    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), gap: 1em, caption: [Displaying the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
+    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), gap: 1em, caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
   }
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
@@ -597,10 +597,44 @@ is to employ some search-algorithm that searches for an instance of a high "scor
   ],
 ) <algorithm-local-search-bin-packing>
 
+See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing. Unsurprisingly, the algorithm quickly improves early on, but struggles to make more progress later.
+
 #figure(
-  text(size: 2em, fill: red)[todo: add result plot for local search],
-  caption: [$30$ example trajectories of @algorithm-local-search-bin-packing, with the loop in @codeline-iteration-count terminating after 10000 iterations. For each of the $30$ trials, we plot the score of the best solution $I$ over time.],
+  {
+    let trajectories = range(10).map(i => read("assets/data/randomised-best-fit-local-search/" + str(i) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (split.at(0), split.at(1)))).map(history => history + ((10000, history.last().at(1)),))
+    context (
+      lq.diagram(
+        yaxis: (lim: (1.0, 1.5)),
+        xaxis: (exponent: none),
+        height: page.width * 0.3,
+        width: page.width * 0.6,
+        ..trajectories.map(iteration-score => lq.plot(step: start, iteration-score.map(x => int(x.at(0))), iteration-score.map(x => float(x.at(1))))),
+      )
+    )
+  },
+  caption: [Ten example trajectories of @algorithm-local-search-bin-packing, with the termination-condition for the loop in @codeline-iteration-count set after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
 ) <local-search-plot>
+
+Enterprising readers will remember from @section-problems-bin-packing that the best-known instance thus far had a score of $1.3$, which the results from @local-search-plot seems to beat (the score-measurement we employ in @algorithm-local-search-bin-packing only uses an estimation of the expected value), the best trial achieving a score of $1.3725$, higher than the existing lower bound#footnote[To rigorously prove this, we could calculate the true score by running best-fit for all $10!$ possible permutations, which for $10! ≈ 3.6⋅10^6$ could still be tractable, and the instance even has easily-exploitable symmetries (see @local-search-instance). We will instead prove an even better lower bound later on.]. We can also hope to learn from the instance, trying to see structure in it and use it to form a construction with an even higher score. Alas, @local-search-instance gives us little hope: The instance found by random search does not seem to have a discernible pattern.
+
+#figure(
+  lq.diagram(
+    yaxis: (lim: (0.0, 1.0)),
+    xaxis: (ticks: none, subticks: none),
+    lq.bar(
+      fill: green,
+      range(10),
+      (0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663),
+    ),
+  )
+    + v(0.5em)
+    + `[0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663]`,
+  gap: 1em,
+  kind: image,
+  caption: [The (sorted) best instance found in the trials of @local-search-plot. Recall that mutations' items below $0.0$ were clamped upwards, hence the four leading zero-elements.],
+) <local-search-instance>
+
+
 
 // TODO: Add results of local search
 
