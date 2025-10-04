@@ -103,7 +103,7 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
         lq.scatter(
           xs(dominated-unfeasible),
           ys(dominated-unfeasible),
-          color: red,
+          color: purple,
           mark: lq.marks.at("."),
         ),
         lq.scatter(
@@ -115,7 +115,7 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
         lq.scatter(
           xs(undominated-unfeasible),
           ys(undominated-unfeasible),
-          color: red,
+          color: purple,
           mark: lq.marks.star,
         ),
         lq.scatter(
@@ -128,11 +128,11 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
         xlabel: [#text(font: font-math)[Total Weight]],
         ylabel: [#text(font: font-math)[Total Profit]],
         height: 30%,
-        width: 60%,
+        width: 90%,
       )
     },
     gap: 1em,
-    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in red. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
+    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in purple. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
   ) <fig-example-knapsack>
 ] <knapsack-example>
 
