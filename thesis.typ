@@ -641,19 +641,38 @@ Instead, to motivate our next steps, we will try learning from the instance, per
 
 To mitigate these issues we could, instead of searching for lists of numbers, search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers: Plain lists of numbers encode symmetric and structured instances just the same way as any other instances. But it is easier to write python-code that produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
-For example, this is the instance of @example-bin-packing-sota as hardcoded python-code:
-#align(center)[
+For example, an instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed as hardcoded numbers as follows:
+#figure(
   ```py
-  items = [1004, 1004, 1016, 1016, 992]
-  ```
-]
-But we can also write this in a way that exposes structure and symmetries:
-#align(center)[
+  items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
+  ```,
+  caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
+)
+However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
+#figure(
   ```py
-  x = 4
-  items = [1000+x]*2 + [1000+4*x]*2 + [1000-2*x]
-  ```
-]
-(In Python, lists are concatenated via "`+`", for instance `[1,2]+[4,5] == [1,2,4,5]`).
+  k = 1
+  OPT = 10*k
+  δ = 1/50
+  d = lambda j: δ/(4**j)
+  ε = d(10*k + 5)
+
+  b_plus = [1/6 + d(j) for j in range(1,1+OPT//2)]
+  c_minus = [1/3 - d(j) - ε for j in range(1,1+OPT//2)]
+  b_minus = [1/6 - d(j) for j in range(0,OPT//2)]
+  c_plus = [1/3 + d(j) - ε for j in range(0,OPT//2)]
+  trailing = [1/2 + ε] * OPT
+
+  items = b_plus + c_minus + b_minus + c_plus + trailing
+  ```,
+  caption: [The ],
+)
+For larger $k$, the code for the hardcoded instance grows even larger (though does run into floating-point rounding issues), while the structured definition remains short and interpretable.
+
+If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. If we just throw noise on the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
+
+Instead of Genetic Programming, @romera2024mathematical[p:] mutated python-code by querying a large language model (LLM).
+
+
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
