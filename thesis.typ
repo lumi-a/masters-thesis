@@ -671,7 +671,77 @@ For larger $k$, the code for the hardcoded instance grows even larger (though do
 
 If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. If we just throw noise on the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
-Instead of Genetic Programming, @romera2024mathematical[p:] mutated python-code by querying a large language model (LLM).
+Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could have a parameter `n: int` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
+
+#figure(
+  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(2%), inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
+
+    To generate instances that best-fit performs poorly on, I have tried the following functions so far. Please write another one that returns an instance and is similar, but has some lines altered.
+
+    \`\`\`python
+    ```python
+
+    import math
+
+
+    def get_items_v0() -> list[float]:
+        """Return a new bin-packing-instance, specified by the list of items.
+
+        The items must be floats between 0 and 1.
+        """
+        """Generate a bin-packing-instance similar to v0 but with some modifications to induce worse performance after shuffling."""
+        items = []
+        for i in range(1, 11):
+            if i % 3 == 0:
+                items.append(0.7)  # add larger items that challenge best-fit
+            else:
+                items.append(1.0 / i)
+        # add some small items to increase total items and create fragmentation
+        items.extend([0.05, 0.05, 0.05])
+        return items
+
+
+    def get_items_v1() -> list[float]:
+        """Improved version of `get_items_v0`."""
+        """Return a new bin-packing-instance, similar to get_items_v0,
+        but with some lines altered to create input that challenges best-fit heuristics.
+        """
+        items = []
+        for i in range(2, 11):
+            items.append(1.0 / i + 0.05)
+        # Add some larger items to cause early packed bins
+        items.extend([0.6, 0.55])
+        # Add smaller items to increase mix complexity
+        for i in range(15, 20):
+            items.append(1.0 / i)
+        return items
+    ```
+    \`\`\`
+  ])),
+  caption: [An example prompt given to the LLM, along with the system-prompt "`You are a helpful coding assistant who only responds with python-code and no markdown-formatting.`"],
+)<example-prompt>
+#figure(
+  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(2%), inset: 1em, text(font: font-monospace, size: 0.75em)[
+    ```py
+    def get_items_v2() -> list[float]:
+        """Return a bin-packing-instance similar to previous ones but with some lines altered to cause worse performance after shuffling."""
+        items = []
+        # Replace small fractional items with slightly larger ones to increase fragmentation
+        for i in range(1, 9):
+            if i % 2 == 0:
+                items.append(0.4 + 0.02 * i)  # slightly larger items that challenge best-fit
+            else:
+                items.append(1.0 / (i + 3))
+        # Include some large items to force inefficient packing
+        items.extend([0.65, 0.63])
+        # Add very small items close to 0.02 to fill gaps after shuffling
+        items.extend([0.02, 0.02, 0.02])
+        return items
+    ```
+  ])),
+  caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
+) <example-response>
+
 
 
 
