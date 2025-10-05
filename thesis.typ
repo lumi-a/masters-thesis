@@ -3,7 +3,8 @@
 #import "draw-clustering.typ";
 #import "@preview/subpar:0.2.2"
 #import "@preview/lilaq:0.5.0" as lq
-#import "@preview/lovelace:0.3.0": *
+#import "@preview/lovelace:0.3.0": *;
+#let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let theorem = thmbox("theorem", "Theorem", breakable: true)
@@ -86,7 +87,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
 @bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, with the lower bound improved to $1.3$ by @binPackingRevisited[p:].
 
 #example[
-  This is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
+  This example (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
   Consider bins of capacity $c=3000$ and the instance:
   $
     I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
@@ -107,7 +108,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
     ),
     caption: [Nine different packings produced by Best-Fit on $I$ with randomised order.],
   )
-]
+] <example-bin-packing-sota>
 
 
 
@@ -575,10 +576,10 @@ is to employ some search-algorithm that searches for an instance of a high "scor
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
-  pseudocode-list(booktabs: true, numbered-title: [Local Search for Instances Randomised Best-Fit Performs Poorly On])[
+  pseudocode-list(numbered-title: [Local Search for Instances Randomised Best-Fit Performs Poorly On])[
     + Fix the size $n$ of an instance, e.g. $n=10$.
     + Define the $Score(I)$ of a bin-packing instance $I$:
-      + Calculate the value $Opt$ of an optimum solution to $I$
+      + Calculate the value $Opt$ of an optimum solution to $I$, for instance\ using the implementation by @fontan[p:].
       + Calculate 10000 trials of:
         + Let $I'$ be a random permutation of $I$
         + Run Best-Fit on $I'$
@@ -598,7 +599,7 @@ is to employ some search-algorithm that searches for an instance of a high "scor
   ],
 ) <algorithm-local-search-bin-packing>
 
-See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing. Unsurprisingly, the algorithm quickly improves early on, but struggles to make more progress later.
+Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the variance of the noise on $Mutation$, or stochastically allowing replacing $I$ with $I′$, even if $I′$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
 #figure(
   {
@@ -618,7 +619,9 @@ See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-p
   caption: [Ten example trajectories of @algorithm-local-search-bin-packing, with the termination-condition for the loop in @codeline-iteration-count set after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
 ) <local-search-plot>
 
-Enterprising readers will remember from @section-problems-bin-packing that the best-known instance thus far had a score of $1.3$, which the results from @local-search-plot seems to beat (the score-measurement we employ in @algorithm-local-search-bin-packing only uses an estimation of the expected value), the best trial achieving a score of $1.3725$, higher than the existing lower bound#footnote[To rigorously prove this, we could calculate the true score by running best-fit for all $10!$ possible permutations, which for $10! ≈ 3.6⋅10^6$ could still be tractable, and the instance even has easily-exploitable symmetries (see @local-search-instance). We will instead prove an even better lower bound later on.]. We can also hope to learn from the instance, trying to see structure in it and use it to form a construction with an even higher score. Alas, @local-search-instance gives us little hope: The instance found by random search does not seem to have a discernible pattern.
+Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat (though the score-measurement we employ in @algorithm-local-search-bin-packing only uses an _estimation_ of the expected value), the best trial achieving a score of $1.3725$, higher than the existing lower bound. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ possible permutations (the found instance (see @local-search-instance) has many exploitable symmetries, decreasing the required computations even further). We will not do so, however, in favour of proving a better result later on.
+
+Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have a discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I′$ being rounded up to $0$, and contribute nothing to the instance.
 
 #figure(
   lq.diagram(
@@ -633,12 +636,24 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
     + v(0.5em)
     + `[0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663]`,
   kind: image,
-  caption: [The sorted best instance found in the trials of @local-search-plot. Recall that mutations' items below $0.0$ were clamped upwards, hence the four leading zero-elements.],
+  caption: [The sorted best instance found in the trials of @local-search-plot, achieving a score of $1.3725$.],
 ) <local-search-instance>
 
+To mitigate these issues we could, instead of searching for lists of numbers, search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers: Plain lists of numbers encode symmetric and structured instances just the same way as any other instances. But it is easier to write python-code that produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
+For example, this is the instance of @example-bin-packing-sota as hardcoded python-code:
+#align(center)[
+  ```py
+  items = [1004, 1004, 1016, 1016, 992]
+  ```
+]
+But we can also write this in a way that exposes structure and symmetries:
+#align(center)[
+  ```py
+  x = 4
+  items = [1000+x]*2 + [1000+4*x]*2 + [1000-2*x]
+  ```
+]
+(In Python, lists are concatenated via "`+`", for instance `[1,2]+[4,5] == [1,2,4,5]`).
 
-// TODO: Add results of local search
-
-
-#bibliography("bibliography.bib", style: "springer-mathphys")
+#bibliography("bibliography.bib", style: "chicago-author-date")
