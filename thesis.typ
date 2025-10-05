@@ -7,7 +7,8 @@
 #let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
-#let theorem = thmbox("theorem", "Theorem", breakable: true)
+#let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true)
+#let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true)
 #let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true)
 #let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
 #let proof = thmproof("proof", "Proof", breakable: true)
@@ -348,9 +349,9 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
 #definition[
   A *hierarchical clustering* on $n$ points is a sequence $(H_1, …, H_n)$ of clusterings such that:
   - $H_i$ is an $i$-clustering (i.e., it consists of $i$ clusters), for every $i=1,…,n$, and
-  - For every $i=1,…,n-1$, the clustering $H_i$ can be obtained by merging two clusters in $H_(i+1)$. In other words, there exist clusters $C,C′∈H_(i+1)$ such that:
+  - For every $i=1,…,n-1$, the clustering $H_i$ can be obtained by merging two clusters in $H_(i+1)$. In other words, there exist clusters $C,C'∈H_(i+1)$ such that:
     $
-      H_i quad = quad (H_(i+1) ∖ {C, C′}) ∪ {C∪C′}.
+      H_i quad = quad (H_(i+1) ∖ {C, C'}) ∪ {C∪C'}.
     $
 ]
 
@@ -599,7 +600,7 @@ is to employ some search-algorithm that searches for an instance of a high "scor
   ],
 ) <algorithm-local-search-bin-packing>
 
-Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the variance of the noise on $Mutation$, or stochastically allowing replacing $I$ with $I′$, even if $I′$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
+Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the variance of the noise on $Mutation$, or stochastically allowing replacing $I$ with $I'$, even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
 #figure(
   {
@@ -621,7 +622,7 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
 
 Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat (though the score-measurement we employ in @algorithm-local-search-bin-packing only uses an _estimation_ of the expected value), the best trial achieving a score of $1.3725$, higher than the existing lower bound. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ possible permutations (the found instance (see @local-search-instance) has many exploitable symmetries, decreasing the required computations even further). We will not do so, however, in favour of proving a better result later on.
 
-Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have a discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I′$ being rounded up to $0$, and contribute nothing to the instance.
+Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have a discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance.
 
 #figure(
   lq.diagram(
@@ -671,7 +672,9 @@ For larger $k$, the code for the hardcoded instance grows even larger (though do
 
 If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. If we just throw noise on the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
-Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could have a parameter `n: int` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
+Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
+
+// TODO: Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt
 
 #figure(
   align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(2%), inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
@@ -742,7 +745,90 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
 ) <example-response>
 
+// TODO: Describe more the tuning of the instances
 
+= Results
+== Bin-Packing
+For fixed $m in ℕ$, consider the instance:
+
+$
+  I ≔ [underbrace(m + 1\,#h(0.5em) dots.h\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) dots.h \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m dot.op (m + 1).
+$
+
+An optimal packing puts the first $m$ items into one bin, and the
+remaining $m + 1$ items into a second bin. This fills both bins exactly
+to their maximum capacity.
+
+#let m = 6
+#figure(
+  draw-packing.packing(m * (m + 1), ((m + 1,) * m, (m,) * (m + 1))),
+  caption: [An optimal packing for $m=6$. The bins have capacity $c = m⋅(m+1) =42$.],
+)
+
+#let lesser-packing = xs => scale(70%, draw-packing.packing(m * (m + 1), xs))
+#figure(
+  grid(
+    align: left,
+    columns: (33%, 33%, 33%),
+    lesser-packing(((6, 7, 6, 6, 7, 7), (6, 7, 6, 6, 7, 6), (7,))), lesser-packing(((6, 7, 6, 6, 7, 6), (7, 6, 7, 6, 7, 6), (7,))), lesser-packing(((6, 6, 7, 7, 7, 6), (6, 6, 6, 6, 7, 7), (7,))),
+    lesser-packing(((7, 6, 7, 7, 7, 6), (6, 7, 7, 6, 6, 6), (6,))), lesser-packing(((7, 6, 6, 7, 6, 6), (7, 6, 7, 7, 6, 6), (7,))), lesser-packing(((7, 6, 7, 7, 6, 7), (7, 6, 6, 7, 6, 6), (6,))),
+    lesser-packing(((6, 6, 6, 7, 6, 6), (7, 7, 6, 7, 6, 7), (7,))), lesser-packing(((6, 7, 6, 6, 7, 6), (7, 7, 7, 7, 6, 6), (6,))), lesser-packing(((7, 6, 7, 6, 7, 6), (7, 7, 6, 6, 6, 6), (7,))),
+  ),
+  caption: [Nine different packings produced by randomised Best-Fit.],
+)
+
+#lemma[
+  An optimal packing can not have a bin containing both an item of weight $m$ and an item of weight $m+1$
+]
+#proof[
+  Every optimal packing must fill both bins exactly to their full capacity $c$. Assume, for contradiction, a bin contains $0<i<m$ items of weight $m$ and $0<j<m$ items of weight $m+1$:
+  $
+    (m+1) ⋅ m quad=quad
+    c quad=quad
+    i m + j(m+1)
+  $
+  Rearranged:
+  $
+    (m+1-i)⋅m = j⋅(m+1)
+  $
+  Because $m$ and $m+1$ are coprime, their least common multiple is $m(m+1)$, so $j$ must be either $0$ or $m$, a contradiction.
+]
+
+Hence, if any bin contains both an item $m$ and an item $m + 1$,
+the packing must use at least $3$ bins. Because the instance is
+shuffled, Best-Fit will put both an item of size $m$ and an item of size
+$m + 1$ into the same bin with high probability:
+
+#lemma[
+  Randomised Best-Fit returns an optimal packing with probability $≤2/(m+2)$.
+]
+#proof[
+  - If the first item has weight $m$, then for Best-Fit to find the optimal solution, the next $m-1$ items must have weight $m$, as well. The probability of this happening is:
+    $
+      m/(2m) ⋅ (m-1)/(2m-1) ⋅ … ⋅ 2/(m+2)
+      quad ≤ quad
+      2 / (m+2).
+    $
+  - If the first item has weight $m+1$, then the next $m-1$ items must have weight $m$, as well. The probability of this happening is:
+    $
+      (m-1)/(2m) ⋅ (m-2)/(2m-1) ⋅ … ⋅ ⋅ 1/(m+1)
+      quad ≤ quad
+      2/(m+2).
+    $
+]
+
+With more effort, one could find better bounds on the probability, but that simply is not necessary. We can use this for a lower-bound on the absolute random-order-ratio of Best-Fit:
+$
+  "RR"_BestFit
+  quad=quad sup_(I' ∈ ℐ) 𝔼_(π∈S_(|I'|))[BestFit(π(I'))/Opt(I')]
+  quad≥quad 1/2 ⋅ [2 ⋅ 2/(m+2) + 3⋅m/(m+2)]
+  quad=quad 3/2 - 1/(m+2).
+$
+For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper bound of $"RR"_BestFit ≤ 1.5$ by @bestFitKenyon[p:], proves:
+
+#theorem[
+  The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is exactly $1.5$.
+]
 
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
