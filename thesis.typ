@@ -11,6 +11,8 @@
 #let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
 #let proof = thmproof("proof", "Proof", breakable: true)
 
+#set figure(gap: 1em)
+
 
 #set heading(numbering: "1.1")
 
@@ -52,7 +54,6 @@ In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items 
       caption: [The packing found by _First-Fit_.],
     ),
 
-    gap: 1em,
     caption: [Different Packings for @bin-packing-example, with bins of capacity $10$.],
     columns: (1fr, 1fr),
   )
@@ -185,7 +186,7 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
         width: 90%,
       )
     },
-    gap: 1em,
+
     caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in purple. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
   ) <fig-example-knapsack>
 ] <knapsack-example>
@@ -280,7 +281,7 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
         )
       )
     }
-    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), gap: 1em, caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
+    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
   }
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
@@ -608,6 +609,8 @@ See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-p
         xaxis: (exponent: none),
         height: page.width * 0.3,
         width: page.width * 0.6,
+        xlabel: [#text(font: font-math)[Iteration]],
+        ylabel: [#text(font: font-math)[Best Score]],
         ..trajectories.map(iteration-score => lq.plot(step: start, iteration-score.map(x => int(x.at(0))), iteration-score.map(x => float(x.at(1))))),
       )
     )
@@ -629,9 +632,8 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
   )
     + v(0.5em)
     + `[0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663]`,
-  gap: 1em,
   kind: image,
-  caption: [The (sorted) best instance found in the trials of @local-search-plot. Recall that mutations' items below $0.0$ were clamped upwards, hence the four leading zero-elements.],
+  caption: [The sorted best instance found in the trials of @local-search-plot. Recall that mutations' items below $0.0$ were clamped upwards, hence the four leading zero-elements.],
 ) <local-search-instance>
 
 
