@@ -575,7 +575,7 @@ is to employ some search-algorithm that searches for an instance of a high "scor
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
-  pseudocode-list(booktabs: true, numbered-title: [Local Search for bad instances of Randomised Bin Packing])[
+  pseudocode-list(booktabs: true, numbered-title: [Local Search for Instances Randomised Best-Fit Performs Poorly On])[
     + Fix the size $n$ of an instance, e.g. $n=10$.
     + Define the $Score(I)$ of a bin-packing instance $I$:
       + Calculate the value $Opt$ of an optimum solution to $I$
