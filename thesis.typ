@@ -762,7 +762,7 @@ to their maximum capacity.
 #let m = 6
 #figure(
   draw-packing.packing(m * (m + 1), ((m + 1,) * m, (m,) * (m + 1))),
-  caption: [An optimal packing for $m=6$. The bins have capacity $c = m⋅(m+1) =42$.],
+  caption: [An optimal packing for $m=6$, using two bins. The bins have capacity $c = m⋅(m+1) =42$.],
 )
 
 #let lesser-packing = xs => scale(70%, draw-packing.packing(m * (m + 1), xs))
@@ -817,7 +817,7 @@ $m + 1$ into the same bin with high probability:
     $
 ]
 
-With more effort, one could find better bounds on the probability, but that simply is not necessary. We can use this for a lower-bound on the absolute random-order-ratio of Best-Fit:
+With more effort, one could find better bounds on the probability, but that simply will not be necessary, as we already obtain a sufficient lower-bound on the absolute random-order-ratio:
 $
   "RR"_BestFit
   quad=quad sup_(I' ∈ ℐ) 𝔼_(π∈S_(|I'|))[BestFit(π(I'))/Opt(I')]
