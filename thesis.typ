@@ -531,7 +531,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
     let iterative-rounding-permutation = (0, 1, 2, 6, 5, 3, 4)
     let opt-permutation = (6, 2, 0, 3, 4, 5, 1)
     let typeset-permutation = pi => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
-    [together with the following permutation of deliveries:
+    [(corporate warranted $x_1"+"…"+"x_7=y_1"+"…"+"y_7$), together with the following permutation of deliveries:
       $
         π(X) ≔ #typeset-permutation(iterative-rounding-permutation).
       $
@@ -558,6 +558,31 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
     ]
   }
 ]
+Generally, an instance of the Gasoline-Problem // TODO: Explain why it's called that?
+consists of two sequences of $d$-dimensional vectors containing strictly positive integral entries:
+$
+  X = (x_1,…,x_n) ∈ ℕ_(≥1)^(n×d), quad
+  Y = (y_1,…,y_n) ∈ ℕ_(≥1)^(n×d),
+$
+who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
+$
+  min_(π in S_n) & quad ‖α-β‖_1 \
+   "where"quad α & = min_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i) ∈ ℤ^d \
+               β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
+$
+Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries only consist of $1$s. The problem can be written as an integer linear program (ILP) with a permutation-matrix $Z ∈ {0,1}^(d×d)$:
+$
+  min_(Z, α, β)quad & ‖α-β‖_1 \
+          "s.t"quad
+          α         & ≤ ∑_(i=1)^k Z x_i - ∑_(i=1)^k y_i, quad k=1,…,n \
+                  β & ≥ ∑_(i=1)^k Z x_i - ∑_(i=1)^(k-1) y_i, quad k=1,…,n \
+              𝟙^T Z & ≤ 𝟙^T, quad Z^T 𝟙 ≤ 𝟙 quad quad (\"Z "is a permutation-matrix"\") \
+                  Z & ∈ {0,1}^(d×d) \
+                α,β & ∈ ℝ^d.
+$
+The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear.
+
+
 
 = FunSearch
 Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
@@ -883,7 +908,7 @@ points have weight $1$.
     massdict.insert(str(points.at(0).at(0)) + "," + str(points.at(0).at(1)), 2.0)
     figure(
       draw-clustering.draw-hierarchical-clustering(points, hierarchy, page.width * 0.35, true, ..massdict) + h(1em) + draw-clustering.draw-hierarchical-clustering(points, optimal, page.width * 0.35, false, ..massdict),
-      caption: [We only instances for $d≥4$, but this is a depiction of the same instance for $d=2$ and $c=2.57$. The large point in the upper right has weight $∞$, the others have weight $1$.\
+      caption: [We only defined instances for $d≥4$, but this is a depiction of the same instance for\ $d=2$ and $c=2.57$. The large point in the upper right has weight $∞$, the others have weight $1$.\
         Left: An optimal hierarchical clustering, having approximation-factor $≈1.278$.\
         Right: Optimal clusterings for each $k$.
       ],
