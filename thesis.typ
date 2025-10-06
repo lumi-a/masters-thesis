@@ -88,7 +88,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
 @bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, with the lower bound improved to $1.3$ by @binPackingRevisited[p:].
 
 #example[
-  This example (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
+  This example is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
   Consider bins of capacity $c=3000$ and the instance:
   $
     I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
@@ -189,7 +189,7 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
       )
     },
 
-    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in purple. The optimum is circled in blue. Pareto-optimal solutions are marked by $#sym.star.filled$.],
+    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in purple. The optimum is circled in blue.\ Pareto-optimal solutions are marked by $#sym.star.filled$.],
   ) <fig-example-knapsack>
 ] <knapsack-example>
 
@@ -580,7 +580,18 @@ $
                   Z & ∈ {0,1}^(d×d) \
                 α,β & ∈ ℝ^d.
 $
-The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear.
+The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear. With this ILP, we can formulate the Iterative-Rounding algorithm:
+#let UnfixedRows = math.op("UnfixedRows")
+#let ColumnIndex = math.op("ColumnIndex")
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  pseudocode-list(numbered-title: [Iterative-Rounding Algorithm for the Gasoline-Problem])[
+    + Initialise $UnfixedRows = {1,…,n}$. This keeps track of which rows of $Z$ we did not fix to integral values yet.
+    + For $ColumnIndex = 1,…,n$:
+      +
+  ],
+)
 
 
 
