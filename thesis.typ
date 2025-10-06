@@ -830,5 +830,91 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
   The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is exactly $1.5$.
 ]
 
+== Knapsack Problem
+
+== $k$-median Clustering
+Fix the dimension $d gt.eq 4$. Put
+$c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
+the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d gt.eq 4$, we
+know that $5 d^2 - 6 d gt.eq 4 d^2$, hence:
+$ c = frac(sqrt(4 d^2 + (d - 3)^2) + d - 3, 2) > frac(2 d + d - 3, 2) > d . $
+Let $e_i$ be the $i$th $d$-dimensional standard basis vector. Consider
+the following weighted instance of $d + 2$ points:
+$ (1, …, 1), quad (0, …, 0), quad - c e_1, med …, med - c e_d, $
+where the point $(1, …, 1)$ has weight $oo$ and all other
+points have weight $1$.
+
+#lemma[
+  For $k$-median clustering, this instance's
+  price of hierarchy is at least $c / d$.
+]
+#proof[
+  For contradiction, assume there exists a hierarchical
+  clustering $H = (H_1, …, H_(d + 2))$ such that, on every level,
+  the cost of $H_k$ is strictly less than $c / d$ times the cost of the
+  best clustering using $k$ clusters. This enables us to narrow down the
+  structure of $H$:
+
+  - For $k = d + 1$, there is one cluster $C$ containing two points, while
+    all other clusters contain only a single point. Depending on which two
+    points constitute $C$, we can calculate the total cost of the
+    clustering:
+
+    - If $C = { (0, …, 0), (1, …, 1) }$, the total
+      cost is:
+      $ norm((0, …, 0) - (1, …, 1))_1 = d . $
+
+    - If $C = { (0, …, 0), - c e_i }$ for some $i$, the total
+      cost is $c$.
+
+    - If $C = { (1, …, 1), - c e_i }$ for some $i$, the total
+      cost is $d + c$.
+
+    - If $C = { - c e_i, - c e_j }$ for some $i ≠ j$, the total
+      cost is $2 c$.
+
+    Because $d < c$, this constrains $H_k$ to
+    $C = { (0, …, 0), (1, …, 1) }$, otherwise the
+    total cost of $H_k$ would be at least $c / d$ times the cost of an
+    optimal $(d + 1)$-clustering.
+
+  - For $k = 2$: The clustering now contains exactly two clusters. Because
+    $H$ is a hierarchical clustering, we now know that $H_2$ has a cluster
+    that contains $(0, …, 0)$, $(1, …, 1)$ and some
+    number $0 ≤ n ≤ d - 1$ of the $- c e_i$, while its other
+    cluster contains the remaining $d - 1 - n$ of the $- c e_i$. Due to
+    symmetry, this number $n$ is sufficient for calculating the total cost
+    of $H_2$. Because $(1, …, 1)$ has infinite weight, this point
+    must be the center of the first cluster, so this cluster has cost:
+    $ norm((1, …, 1) - (0, …, 0)) + n ⋅ norm((1, …, 1) - (- c e_1))_1 = d + n ⋅ (c + d) $
+    The cluster containing the remaining $d - 1 - n$ of the $- c e_i$ can
+    choose any point as its center. It has cost:
+    $ (d - 2 - n) ⋅ norm(c e_1 - c e_2)_1 = (d - 2 - n) ⋅ 2 c $
+    Given $n$, the total cost of $H_2$ is $d + c (2 d - 4) + n (d - c)$.
+    Because $d - c < 0$, the best choice for $n$ would be $n = d - 1$,
+    resulting in a cost of $c (d - 3) + d^2$. This is only a lower bound
+    on the cost of $H_2$, because other levels in the hierarchy might put
+    additional constraints on $H_2$.
+
+    For an _upper_ bound on the _optimal_ cost of a
+    $2$-clustering, consider the clustering that has $(1, …, 1)$
+    in its first cluster, and all other points in its second cluster. By
+    assuming the center of the second cluster is $(0, …, 0)$, we
+    get an upper bound on the total cost of this clustering of:
+    $ d ⋅ norm((0, …, 0) - (- c e_1))_1 = d ⋅ c . $
+    Hence, the ratio between the cost of $H_2$ and the cost of an optimal
+    $2$-clustering is at least:
+    $ (c (d - 3) + d^2)/(d ⋅ c) = (d - 3)/d + d / c $ We
+    defined $c$ as one of the roots of $0 = c^2 - c (d - 3) - d^2$.
+    Dividing out $c d$, we get $(d - 3)/d + d / c = c / d$. However,
+    this contradicts the assumption that the ratio between $H_2$ and an
+    optimal $2$-clustering is strictly less than $c / d$.
+
+  Thus, the instance's price of hierarchy is at least $c / d$.
+]
+For large $d$, this fraction
+$c / d = (sqrt(4 d^2 + (3 - d)^2) + d - 3)/(2 d)$ converges to
+$(1+ sqrt(5))/2$, the golden ratio.
+
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
