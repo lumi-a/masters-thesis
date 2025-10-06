@@ -309,6 +309,7 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
 Naturally, these different objectives can yield different optimal clusterings, as seen in @clustering-example.
 
 #let parse = str => str.trim().split().map(line => line.trim().split("").enumerate().filter(ixchar => ixchar.at(1) == "#").map(ixchar => ixchar.at(0) - 1)) // https://typst.app/docs/reference/foundations/str/#definitions-split
+#let parse-hierarchical = text => text.split("---").map(section => parse(section))
 
 #{
   /*
@@ -359,7 +360,6 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
-  let parse-hierarchical = text => text.split("---").map(section => parse(section))
   let opt-hierarchical = parse-hierarchical("
 ######..........................
 ---
@@ -843,6 +843,53 @@ the following weighted instance of $d + 2$ points:
 $ (1, …, 1), quad (0, …, 0), quad - c e_1, med …, med - c e_d, $
 where the point $(1, …, 1)$ has weight $oo$ and all other
 points have weight $1$.
+
+#{
+  let c = 2.57
+  let points = ((1, -1), (0, 0), (-c, 0), (0, c)).map(x => ((x.at(0) + c + 0.1) / (3.66 * 1.1), (x.at(1) + 1.3) / (3.66 * 1.1)))
+
+  let hierarchy = parse-hierarchical("
+  #.##............................
+---
+###.............................
+...#............................
+---
+...#............................
+##..............................
+..#.............................
+---
+#...............................
+...#............................
+..#.............................
+.#..............................
+")
+  let optimal = parse-hierarchical("
+#.##............................
+---
+.###............................
+#...............................
+---
+...#............................
+##..............................
+..#.............................
+---
+#...............................
+...#............................
+..#.............................
+.#..............................
+")
+  context {
+    let massdict = (v: 0.22 * page.width, h: 0em)
+    massdict.insert(str(points.at(0).at(0)) + "," + str(points.at(0).at(1)), 2.0)
+    figure(
+      draw-clustering.draw-hierarchical-clustering(points, hierarchy, page.width * 0.35, true, ..massdict) + h(1em) + draw-clustering.draw-hierarchical-clustering(points, optimal, page.width * 0.35, false, ..massdict),
+      caption: [We only instances for $d≥4$, but this is a depiction of the same instance for $d=2$ and $c=2.57$. The large point in the upper right has weight $∞$, the others have weight $1$.\
+        Left: An optimal hierarchical clustering, having approximation-factor $≈1.278$.\
+        Right: Optimal clusterings for each $k$.
+      ],
+    )
+  }
+}
 
 #lemma[
   For $k$-median clustering, this instance's

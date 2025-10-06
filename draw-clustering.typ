@@ -1,11 +1,14 @@
 #let point-radius = 0.15em
-#let draw-points = (points, size) => {
+#let draw-points = (points, size, ..args) => {
   points
-    .map(p => place(dx: p.at(0) * size - point-radius, dy: p.at(1) * size - point-radius, circle(
-      radius: point-radius,
-      stroke: none,
-      fill: black,
-    )))
+    .map(p => {
+      let r = point-radius * args.at(str(p.at(0)) + "," + str(p.at(1)), default: 1.0)
+      place(dx: p.at(0) * size - r, dy: p.at(1) * size - r, circle(
+        radius: r,
+        stroke: none,
+        fill: black,
+      ))
+    })
     .sum()
 }
 
@@ -71,13 +74,13 @@
   box(width: size, height: size, draw-points(points, size) + clustering.map(cluster => place(draw-cluster(points, cluster, size, buff, color))).sum())
 }
 
-#let draw-hierarchical-clustering = (points, clusterings, size, draw-labels) => {
+#let draw-hierarchical-clustering = (points, clusterings, size, draw-labels, ..args) => {
   let colors = (rgb("#47A"), rgb("#283"), rgb("#E67"), rgb("#CB4"), rgb("#A37"), rgb("#6CE"))
   box(
     width: size,
     height: size,
-    (if draw-labels { place(range(1, clusterings.len() + 1).map(i => [#h(3em)#box(square(height: .5em, fill: colors.at(calc.rem(i - 1, colors.len())))) $k=#i$\ ]).sum()) } else { [] })
-      + draw-points(points, size)
+    (if draw-labels { place(dy: args.at("v", default: 1em), range(1, clusterings.len() + 1).map(i => [#h(args.at("h", default: 3em))#box(square(height: .5em, fill: colors.at(calc.rem(i - 1, colors.len())))) $k=#i$\ ]).sum()) } else { [] })
+      + draw-points(points, size, ..args)
       + clusterings
         .enumerate()
         .map(indexed-clustering => {
