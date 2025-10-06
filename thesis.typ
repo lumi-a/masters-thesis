@@ -11,7 +11,7 @@
 #let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true)
 #let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true)
 #let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
-#let proof = thmproof("proof", "Proof", breakable: true)
+#let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
 
 #set figure(gap: 1em)
 
@@ -749,7 +749,7 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
 // TODO: Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt
 
 #figure(
-  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(2%), inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
+  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(1%), inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
 
     To generate instances that best-fit performs poorly on, I have tried the following functions so far. Please write another one that returns an instance and is similar, but has some lines altered.
 
@@ -796,7 +796,7 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   caption: [An example prompt given to the LLM, along with the system-prompt "`You are a helpful coding assistant who only responds with python-code and no markdown-formatting.`"],
 )<example-prompt>
 #figure(
-  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(2%), inset: 1em, text(font: font-monospace, size: 0.75em)[
+  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(1%), inset: 1em, text(font: font-monospace, size: 0.75em)[
     ```py
     def get_items_v2() -> list[float]:
         """Return a bin-packing-instance similar to previous ones but with some lines altered to cause worse performance after shuffling."""
@@ -849,8 +849,9 @@ to their maximum capacity.
   caption: [Nine different packings produced by randomised Best-Fit.],
 )
 
+It turns out that this is the _only_ optimal packing (up to re-labeling the two bins):
 #lemma[
-  An optimal packing can not have a bin containing both an item of weight $m$ and an item of weight $m+1$
+  An optimal packing can not have a bin containing both an item of weight $m$ and an item of weight $m+1$.
 ]
 #proof[
   Every optimal packing must fill both bins exactly to their full capacity $c$. Assume, for contradiction, a bin contains $0<i<m$ items of weight $m$ and $0<j<m$ items of weight $m+1$:
