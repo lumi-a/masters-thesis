@@ -557,7 +557,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
       With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
     ]
   }
-]
+]<example-gasoline-cookies>
 Generally, an instance of the Gasoline-Problem // TODO: Explain why it's called that?
 consists of two sequences of $d$-dimensional vectors containing strictly positive integral entries:
 $
@@ -571,27 +571,63 @@ $
                β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
 $
 Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries only consist of $1$s. The problem can be written as an integer linear program (ILP) with a permutation-matrix $Z ∈ {0,1}^(d×d)$:
-$
-  min_(Z, α, β)quad & ‖α-β‖_1 \
-          "s.t"quad
-          α         & ≤ ∑_(i=1)^k Z x_i - ∑_(i=1)^k y_i, quad k=1,…,n \
-                  β & ≥ ∑_(i=1)^k Z x_i - ∑_(i=1)^(k-1) y_i, quad k=1,…,n \
-              𝟙^T Z & ≤ 𝟙^T, quad Z^T 𝟙 ≤ 𝟙 quad quad (\"Z "is a permutation-matrix"\") \
-                  Z & ∈ {0,1}^(d×d) \
-                α,β & ∈ ℝ^d.
-$
+#figure(
+  kind: "Program",
+  supplement: "Program",
+  $
+    min_(Z, α, β)quad & ‖α-β‖_1 \
+            "s.t"quad
+            α         & ≤ ∑_(i=1)^k Z x_i - ∑_(i=1)^k y_i, quad k=1,…,n \
+                    β & ≥ ∑_(i=1)^k Z x_i - ∑_(i=1)^(k-1) y_i, quad k=1,…,n \
+                𝟙^T Z & ≤ 𝟙^T, quad Z^T 𝟙 ≤ 𝟙 quad quad (\"Z "is a permutation-matrix"\") \
+                    Z & ∈ {0,1}^(d×d) \
+                  α,β & ∈ ℝ^d.
+  $,
+  caption: [The integer linear program for the generalised gasoline-problem.],
+)<ilp-gasoline>
 The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear. With this ILP, we can formulate the Iterative-Rounding algorithm:
 #let UnfixedRows = math.op("UnfixedRows")
 #let ColumnIndex = math.op("ColumnIndex")
+#let BestRowIndex = math.op("BestRowIndex")
+#let RowIndex = math.op("RowIndex")
+#let BestRowValue = math.op("BestRowValue")
+#let RowValue = math.op("RowValue")
+#let LP = math.op("LP")
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
-  pseudocode-list(numbered-title: [Iterative-Rounding Algorithm for the Gasoline-Problem])[
-    + Initialise $UnfixedRows = {1,…,n}$. This keeps track of which rows of $Z$ we did not fix to integral values yet.
+  pseudocode-list(numbered-title: [Iterative-Rounding for the Gasoline-Problem])[
+    + Initialise $UnfixedRows ≔ {1,…,n}$. This keeps track of which rows of $Z$ we did not fix to integral values yet.
+    + Initialise $LP$ as the LP-relaxation of @ilp-gasoline, i.e. replace the constraint $Z ∈ {0,1}^(d×d)$ with the constraint $Z ∈ [0,1]^(d×d)$.
     + For $ColumnIndex = 1,…,n$:
-      +
+      + Initialise $BestRowIndex ≔ -1$ and $BestRowValue ≔ ∞$
+      + For $RowIndex ∈ UnfixedRows$:
+        + Let $LP'$ be the program $LP$ with the added constraint "$Z_(RowIndex,ColumnIndex) = 1$".
+        + Let $RowValue$ be the optimum value of the LP.
+        + If $RowValue < BestRowValue$:
+          + $BestRowIndex ≔ RowIndex$ and $BestRowValue ≔ RowValue$.
+      + Add the constraint "$Z_(BestRowIndex,ColumnIndex) = 1$" to $LP$.
+      + Remove $BestRowIndex$ from $UnfixedRows$.
+    + $UnfixedRows$ is empty and $Z$ is fixed entirely.
   ],
-)
+) <alg-iterative-rounding>
+
+#let IterRound = math.op("IterRound")
+
+Let $ℐ_d$ be the set of all instances of the generalised gasoline-problem in $d$ dimensions. For some instance $I$, let $IterRound(I)$ be the value of the solution found by @alg-iterative-rounding, and let $Opt(I)$ be the value of an optimum solution. The *Approximation-Ratio* in $d$ dimensions of @alg-iterative-rounding is:
+$
+  ρ^((d))_IterRound
+  ≔ sup_(I∈ℐ_d) IterRound(I)/Opt(I).
+$
+It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the obvious way yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values.
+
+Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$.
+
+
+@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. We will write out this construction in // TODO: Insert reference
+to show how we modified it.
+
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
 
 
 
