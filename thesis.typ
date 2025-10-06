@@ -648,7 +648,7 @@ For example, an instance in the lower-bound construction by @bestFitAbsoluteRati
   items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
   ```,
   caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
-)
+)<hardcoded-best-fit>
 However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
 #figure(
   ```py
@@ -666,11 +666,11 @@ However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
 
   items = b_plus + c_minus + b_minus + c_plus + trailing
   ```,
-  caption: [The ],
+  caption: [The same instance as in @hardcoded-best-fit.],
 )
-For larger $k$, the code for the hardcoded instance grows even larger (though does run into floating-point rounding issues), while the structured definition remains short and interpretable.
+For larger $k$, the code for the hardcoded instance grows even larger (though would run into floating-point rounding issues), while the structured definition remains short and interpretable.
 
-If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. If we just throw noise on the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
+If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
 Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
 
@@ -791,7 +791,7 @@ to their maximum capacity.
   $
     (m+1-i)⋅m = j⋅(m+1)
   $
-  Because $m$ and $m+1$ are coprime, their least common multiple is $m(m+1)$, so $j$ must be either $0$ or $m$, a contradiction.
+  Because $m$ and $m+1$ are coprime, their least common multiple is $m(m+1)$, so $j$ must be either $0$ or $m$, contradicting $0<j<m$.
 ]
 
 Hence, if any bin contains both an item $m$ and an item $m + 1$,
@@ -962,6 +962,9 @@ points have weight $1$.
 For large $d$, this fraction
 $c / d = (sqrt(4 d^2 + (3 - d)^2) + d - 3)/(2 d)$ converges to
 $(1+ sqrt(5))/2$, the golden ratio.
+
+
+== Gasoline
 
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
