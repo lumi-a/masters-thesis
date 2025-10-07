@@ -221,7 +221,7 @@ The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullman algorithm_ 
     + Let $x$ be the $i$-th item of $I$.
     + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
     + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
-] <this>
+]
 
 This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
@@ -482,7 +482,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   $
     π(X) ≔ #draw-gasoline.typeset-permutation(iterative-rounding-permutation, deliveries).
   $
-  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (green) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
+  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (blue) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
   #figure(
     draw-gasoline.draw-permutation(iterative-rounding-permutation, deliveries, production),
     kind: image,
@@ -504,10 +504,10 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
 ]<example-gasoline-cookies>
 Generally, an instance of the Gasoline-Problem // TODO: Explain why it's called that?
-consists of two sequences of $d$-dimensional vectors containing strictly positive integral entries:
+consists of two sequences of $d$-dimensional vectors containing non-negative integral entries:
 $
-  X = (x_1,…,x_n) ∈ ℕ_(≥1)^(n×d), quad
-  Y = (y_1,…,y_n) ∈ ℕ_(≥1)^(n×d),
+  X = (x_1,…,x_n) ∈ ℕ_(≥0)^(n×d), quad
+  Y = (y_1,…,y_n) ∈ ℕ_(≥0)^(n×d),
 $
 who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
 $
@@ -986,17 +986,40 @@ $(1+ sqrt(5))/2$, the golden ratio.
 == Gasoline
 
 #example[
-  Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^i)$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
+  Fix some $k∈ℕ$ and $d=1$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
   $
     X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0] \
     Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
   $
-  #let deliveries = ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
-  #let production = ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
-  For $k=3$, this amounts to:
+  #let deliveries = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (0, 0)) // ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
+  #let production = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0)) // ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
+  For $k=2$, this amounts to:
+  #let list = arr => $[#arr.map(x => str(x.at(0))).join(", ")]$
   $
-    X = #draw-gasoline.typeset-permutation(range(deliveries.len()), deliveries)
+    X = #list(deliveries), quad quad
+    Y = #list(production)
   $
+  #let opt-permut = (9, 13, 12, 1, 10, 0, 7, 5, 8, 3, 11, 4, 6, 2)
+  #let iterround-permut = range(deliveries.len())
+
+  #let list = arr => $[#arr.map(x => str(deliveries.at(x).at(0))).join(", ")]$
+  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
+  $
+    π_IterRound (X) = X & = #list(iterround-permut), quad quad \
+              π_Opt (X) & = #list(opt-permut), quad quad
+  $
+  #let draw-vec = d => $#d.at(0)$
+  We use the same visualisation as in @example-gasoline-cookies, but using only one bar due to $d=1$.
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
+    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $14$.],
+  )
+  #h(1em)
+  #figure(
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
+    caption: [Visualising $π_Opt$ over time. The maximum capacity is $8$.],
+  )
+  Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
 ]
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
