@@ -1,6 +1,7 @@
 #import "preamble.typ": *; #show: preamble
-#import "draw-packing.typ";
-#import "draw-clustering.typ";
+#import "draw-packing.typ"
+#import "draw-clustering.typ"
+#import "draw-gasoline.typ"
 #import "@preview/subpar:0.2.2"
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *;
@@ -467,96 +468,40 @@ $
 where the minimum across vectors is taken entry-wise. As an objective, we choose $‖α-β‖_1$, meaning we trade off the cost for space in the flour-warehouse linearly against the cost of space in the sugar-warehouse. We do not lose generality on the tradeoff-ratio between the two, since tradeoffs like "Sugar-warehouse space is twice as expensive as flour-warehouse space" can be captured by choosing different units for measuring amounts of flour and sugar. Non-linear tradeoffs are not captured, however. We write $X = (x_1,…,x_7)$ and $Y = (y_1,…,y_7)$.
 
 #example[
+  #let deliveries = ((5, 3), (3, 10), (7, 8), (1, 2), (8, 9), (7, 4), (1, 1))
+  #let production = ((3, 4), (2, 8), (8, 1), (1, 5), (9, 4), (2, 10), (7, 5))
+  #let iterative-rounding-permutation = (0, 1, 2, 6, 5, 3, 4)
+  #let opt-permutation = (6, 2, 0, 3, 4, 5, 1)
   Consider:
   $
     X = & [vec(5, 3), vec(3, 10), vec(7, 8), vec(1, 2), vec(8, 9), vec(7, 4), vec(1, 1)],
           quad
           Y = & [vec(3, 4), vec(2, 8), vec(8, 1), vec(1, 5), vec(9, 4), vec(2, 10), vec(7, 5)],
   $
-  #{
-    let deliveries = ((5, 3), (3, 10), (7, 8), (1, 2), (8, 9), (7, 4), (1, 1))
-    let production = ((3, 4), (2, 8), (8, 1), (1, 5), (9, 4), (2, 10), (7, 5))
+  (corporate warranted $x_1"+"…"+"x_7=y_1"+"…"+"y_7$), together with the following permutation of deliveries:
+  $
+    π(X) ≔ #draw-gasoline.typeset-permutation(iterative-rounding-permutation, deliveries).
+  $
+  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (green) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
+  #figure(
+    draw-gasoline.draw-permutation(iterative-rounding-permutation, deliveries, production),
+    kind: image,
+    gap: 1.5em,
+    caption: [The (cyclical) state of the warehouse across the week for permutation $π$.],
+  )
+  For this permutation, the warehouse must store a peak of $11$ flour on the night between Tuesday and Wednesday, and a peak of $13$ sugar on several nights between Tuesday and Thursday. There is a better permutation, though:
+  $
+    π_Opt (X) ≔ #draw-gasoline.typeset-permutation(opt-permutation, deliveries),
+  $
+  #figure(
+    draw-gasoline.draw-permutation(opt-permutation, deliveries, production),
+    kind: image,
+    gap: 1.5em,
+    caption: [The (cyclical) state of the warehouse across the week for permutation $π_Opt$.],
+  )
+  Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
 
-    let scale = (x, s) => (x.at(0) * s, x.at(1) * s)
-    let add = (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1))
-    let min = (x, y) => (calc.min(x.at(0), y.at(0)), calc.min(x.at(1), y.at(1)))
-    let max = (x, y) => (calc.max(x.at(0), y.at(0)), calc.max(x.at(1), y.at(1)))
-    let sub = (x, y) => (x.at(0) - y.at(0), x.at(1) - y.at(1))
-    let norm = v => calc.sqrt(calc.pow(v.at(0), 2) + calc.pow(v.at(1), 2))
-    let normed = v => scale(v, 1 / norm(v))
-    let draw-permutation = pi => {
-      let heightscale = 0.25em
-      let barwidth = 0.85em
-      let production-deliveries = production
-        .enumerate()
-        .map(ixp => {
-          let p-ix = ixp.at(0)
-          let p = ixp.at(1)
-          let d = deliveries.at(pi.at(p-ix))
-          (p, d)
-        })
-
-      let draw-state = (warehouse-history, production-delivery) => {
-        let old-warehouse = warehouse-history.last()
-        let p = production-delivery.at(0)
-        let d = production-delivery.at(1)
-        let morning = add(old-warehouse, d)
-        let evening = sub(morning, p)
-        warehouse-history + (morning, evening)
-      }
-
-      let timeline = production-deliveries.fold(((0, 0),), draw-state)
-      let minhouse = timeline.fold((1000000, 100000), min)
-      let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold((-1000000, -100000), max)
-      let maxmaxhouse = calc.max(maxhouse.at(0), maxhouse.at(1))
-
-      let flourbar = warehouse => rect(fill: green, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(0) * heightscale)
-      let sugarbar = warehouse => rect(fill: purple, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(1) * heightscale)
-      let squares = timeline.map(warehouse => (flourbar(warehouse), sugarbar(warehouse), h(barwidth))).flatten()
-
-      let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 6 * barwidth, stroke: (paint: color, thickness: 0.1em)))
-      align(left + bottom)[
-        #line(maxhouse.at(0) - 0.15, green)
-        #line(maxhouse.at(1) + 0.15, purple)
-        #line(0, gray)
-        #stack(dir: ltr, ..squares, [...])
-      ]
-      align(left + bottom, stack(dir: ltr, h(barwidth), ..production-deliveries.map(pd => {
-        let p = pd.at(0)
-        let d = pd.at(1)
-        [#box(width: 3 * barwidth, align(center)[$arrow.t$$vec(#[#d.at(0)], #[#d.at(1)])$])#box(width: 3 * barwidth, align(center)[$arrow.b$$vec(#[#p.at(0)], #[#p.at(1)])$])]
-      })))
-    }
-
-    let iterative-rounding-permutation = (0, 1, 2, 6, 5, 3, 4)
-    let opt-permutation = (6, 2, 0, 3, 4, 5, 1)
-    let typeset-permutation = pi => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
-    [(corporate warranted $x_1"+"…"+"x_7=y_1"+"…"+"y_7$), together with the following permutation of deliveries:
-      $
-        π(X) ≔ #typeset-permutation(iterative-rounding-permutation).
-      $
-      The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (green) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
-      #figure(
-        draw-permutation(iterative-rounding-permutation),
-        kind: image,
-        gap: 1.5em,
-        caption: [The (cyclical) state of the warehouse across the week for permutation $π$.],
-      )
-      For this permutation, the warehouse must store a peak of $11$ flour on the night between Tuesday and Wednesday, and a peak of $13$ sugar on several nights between Tuesday and Thursday. There is a better permutation, though:
-      $
-        π_Opt (X) ≔ #typeset-permutation(opt-permutation),
-      $
-      #figure(
-        draw-permutation(opt-permutation),
-        kind: image,
-        gap: 1.5em,
-        caption: [The (cyclical) state of the warehouse across the week for permutation $π_Opt$.],
-      )
-      Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
-
-      With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
-    ]
-  }
+  With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
 ]<example-gasoline-cookies>
 Generally, an instance of the Gasoline-Problem // TODO: Explain why it's called that?
 consists of two sequences of $d$-dimensional vectors containing strictly positive integral entries:
@@ -905,6 +850,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 
 == Knapsack Problem
 
+
 == $k$-median Clustering
 Fix the dimension $d gt.eq 4$. Put
 $c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
@@ -955,7 +901,7 @@ points have weight $1$.
     let massdict = (v: 0.22 * page.width, h: 0em)
     massdict.insert(str(points.at(0).at(0)) + "," + str(points.at(0).at(1)), 2.0)
     figure(
-      draw-clustering.draw-hierarchical-clustering(points, hierarchy, page.width * 0.35, true, ..massdict) + h(1em) + draw-clustering.draw-hierarchical-clustering(points, optimal, page.width * 0.35, false, ..massdict),
+      v(0.5em) + draw-clustering.draw-hierarchical-clustering(points, hierarchy, page.width * 0.35, true, ..massdict) + h(1em) + draw-clustering.draw-hierarchical-clustering(points, optimal, page.width * 0.35, false, ..massdict) + v(0.5em),
       caption: [We only defined instances for $d≥4$, but this is a depiction of the same instance for\ $d=2$ and $c=2.57$. The large point in the upper right has weight $∞$, the others have weight $1$.\
         Left: An optimal hierarchical clustering, having approximation-factor $≈1.278$.\
         Right: Optimal clusterings for each $k$.
@@ -1039,5 +985,18 @@ $(1+ sqrt(5))/2$, the golden ratio.
 
 == Gasoline
 
+#example[
+  Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^i)$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
+  $
+    X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0] \
+    Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
+  $
+  #let deliveries = ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
+  #let production = ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
+  For $k=3$, this amounts to:
+  $
+    X = #draw-gasoline.typeset-permutation(range(deliveries.len()), deliveries)
+  $
+]
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
