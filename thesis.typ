@@ -1,7 +1,5 @@
 #import "preamble.typ": *; #show: preamble
-#import "draw-packing.typ"
-#import "draw-clustering.typ"
-#import "draw-gasoline.typ"
+#import "draw-packing.typ"; #import "draw-knapsack.typ"; #import "draw-clustering.typ"; #import "draw-gasoline.typ"
 #import "@preview/subpar:0.2.2"
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *;
@@ -129,16 +127,9 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
   #figure(
     {
       let items = ((4, 9), (5, 1), (13, 14), (3, 8), (11, 4), (6, 14))
-      let powerset = ((0, 0),)
-      for item in items {
-        for subset in powerset {
-          let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
-          powerset.push(new_subset)
-        }
-      }
-      let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
-      let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
-      let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
+      let powerset = draw-knapsack.powerset(items)
+      let dominated = powerset.filter(wp => powerset.any(x => draw-knapsack.dominates(x, wp)))
+      let undominated = powerset.filter(wp => powerset.all(x => not draw-knapsack.dominates(x, wp)))
 
       let opt-xs = 4 + 5 + 3 + 6
       let opt-ys = 9 + 1 + 8 + 14
@@ -148,31 +139,24 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
       let undominated-feasible = undominated.filter(wp => wp.at(0) <= 20)
       let undominated-unfeasible = undominated.filter(wp => wp.at(0) > 20)
 
-      let xs = arr => arr.map(wp => wp.at(0))
-      let ys = arr => arr.map(wp => wp.at(1))
-
       lq.diagram(
         lq.scatter(
-          xs(dominated-feasible),
-          ys(dominated-feasible),
+          ..draw-knapsack.xsys(dominated-feasible),
           color: green,
           mark: lq.marks.at("."),
         ),
         lq.scatter(
-          xs(dominated-unfeasible),
-          ys(dominated-unfeasible),
+          ..draw-knapsack.xsys(dominated-unfeasible),
           color: purple,
           mark: lq.marks.at("."),
         ),
         lq.scatter(
-          xs(undominated-feasible),
-          ys(undominated-feasible),
+          ..draw-knapsack.xsys(undominated-feasible),
           color: green,
           mark: lq.marks.star,
         ),
         lq.scatter(
-          xs(undominated-unfeasible),
-          ys(undominated-unfeasible),
+          ..draw-knapsack.xsys(undominated-unfeasible),
           color: purple,
           mark: lq.marks.star,
         ),
@@ -232,60 +216,26 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
   $
     I ≔ [vec(4, 4),quad vec(4, 4),quad vec(2, 1),quad vec(1, 2),quad vec(2, 2)].
   $
-  #{
-    let I = ((4, 4), (4, 4), (2, 1), (1, 2), (2, 2))
-    let ps = (((),),)
-    let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
-    let sumvecs = As => As.fold((0, 0), (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1)))
-    let indices-dominates = (As, Bs) => dominates(sumvecs(As.map(i => I.at(i))), sumvecs(Bs.map(i => I.at(i))))
-    for i in range(I.len()) {
-      let qi = ps.at(i) + ps.at(i).map(x => x + (i,))
-      let pi = qi.filter(x => not qi.any(y => indices-dominates(y, x)))
-      ps.push(pi)
-    }
-    // let display = paretoset => paretoset.map(solution => ${#solution.map(x => math.vec([#I.at(x).at(0)], [#I.at(x).at(1)])).intersperse($,$).sum(default: [])}$).intersperse($,$).sum()
-    [Here, $P_#{ I.len() - 1 }$ has size $#ps.at(I.len() - 1).len()$, while $P_#{ I.len() } = P(I)$ has size $#ps.at(I.len()).len()$.]
-
-    let draw-pareto = (items, color) => {
-      let powerset = ((0, 0),)
-      for item in items {
-        for subset in powerset {
-          let new_subset = (subset.at(0) + item.at(0), subset.at(1) + item.at(1))
-          powerset.push(new_subset)
-        }
-      }
-      let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
-      let dominated = powerset.filter(wp => powerset.any(x => dominates(x, wp)))
-      let undominated = powerset.filter(wp => powerset.all(x => not dominates(x, wp)))
-
-      let xs = arr => arr.map(wp => wp.at(0))
-      let ys = arr => arr.map(wp => wp.at(1))
-
-      context (
-        lq.diagram(
-          lq.scatter(
-            xs(dominated),
-            ys(dominated),
-            color: color,
-            mark: lq.marks.at("."),
-          ),
-          lq.scatter(
-            xs(undominated),
-            ys(undominated),
-            color: color,
-            mark: lq.marks.at("star"),
-          ),
-          xlabel: [#text(font: font-math)[Total Weight]],
-          ylabel: [#text(font: font-math)[Total Profit]],
-          xaxis: (lim: (-1, 14)),
-          yaxis: (lim: (-1, 14)),
-          height: page.width * 0.2,
-          width: page.width * 0.3,
+  Here, $P_4$ has size $12$, while $P_5 = P(I)$ has size $10$.
+  #let items = ((4, 4), (4, 4), (2, 1), (1, 2), (2, 2))
+  #let diagrams = draw-knapsack.draw(items, items.len() - 1, blue, green)
+  #let diagram-args = (xaxis: (lim: (auto, 14)), yaxis: (lim: (auto, 14)), width: 180pt)
+  #figure(
+    (
+      h(1fr)
+        + lq.diagram(
+          ..diagrams.at(0),
+          ..diagram-args,
         )
-      )
-    }
-    figure(draw-pareto(I.slice(0, -1), blue) + h(1fr) + draw-pareto(I, green), caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.])
-  }
+        + h(3fr)
+        + lq.diagram(
+          ..diagrams.at(1),
+          ..diagram-args,
+        )
+        + h(1fr)
+    ),
+    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+  )
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
 
