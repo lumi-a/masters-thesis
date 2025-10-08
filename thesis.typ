@@ -799,6 +799,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem
+// Sadly, any non-trivial instantiation of our instance is too large to draw.
 
 
 == $k$-median Clustering

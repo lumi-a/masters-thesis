@@ -21,17 +21,22 @@
   let p-partial = powerset(items.slice(0, subset-ix))
   let dominated-partial = p-partial.filter(wp => p-partial.any(x => dominates(x, wp)))
   let undominated-partial = p-partial.filter(wp => p-partial.all(x => not dominates(x, wp)))
+  let marker-size = 32
 
   return (
     (
       lq.scatter(
         ..xsys(undominated-partial),
         color: color-partial,
+        stroke: none,
+        size: range(undominated-partial.len()).map(x => marker-size),
         mark: lq.marks.at("star"),
       ),
       lq.scatter(
         ..xsys(dominated-partial),
+        stroke: none,
         color: color-partial,
+        size: range(dominated-partial.len()).map(x => marker-size),
         mark: lq.marks.at("."),
       ),
     ),
@@ -39,11 +44,15 @@
       lq.scatter(
         ..xsys(undominated-full),
         color: color-full,
+        stroke: none,
+        size: range(undominated-full.len()).map(x => marker-size),
         mark: lq.marks.at("star"),
       ),
       lq.scatter(
         ..xsys(dominated-full),
         color: color-full,
+        stroke: none,
+        size: range(dominated-full.len()).map(x => marker-size),
         mark: lq.marks.at("."),
       ),
     ),
