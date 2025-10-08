@@ -42,7 +42,7 @@
   let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 2 * boxbuffer * barwidth, stroke: (paint: color, thickness: 0.1em)))
   align(left + bottom)[
     #line(maxhouse.at(0) + 0.15, blue)
-    #line(maxhouse.at(1) - 0.15, purple)
+    #if one-d [] else { line(maxhouse.at(1) - 0.15, purple) }
     #line(0, gray)
     #stack(dir: ltr, ..squares, [...])
   ]
