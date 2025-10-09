@@ -12,7 +12,8 @@
 #let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
 #let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
 
-#set figure(gap: 1em)
+// #set figure(gap: 1em)
+#show figure.caption: emph
 
 
 #set heading(numbering: "1.1")
@@ -196,18 +197,22 @@ In practice, one might not know the capacity beforehand, or might have unlimited
 
   TODO: Not really a set. Maybe do use index-vectors.
 ]
-See @fig-example-knapsack. In this example, the Pareto-set has size $15$, much smaller than the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @RoeglinBookChapter @moitraSmoothed, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. Let $n≔|I|$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
+See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, much smaller than $2^6$, the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
-The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullman algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
-#pseudocode-list[
-  + Set $P_0 = {∅}$.
-  + For $i=1,…,|I|$:
-    + Let $x$ be the $i$-th item of $I$.
-    + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
-    + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
-]
+Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullmann algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  pseudocode-list(numbered-title: "Nemhauser-Ullmann Algorithm for Pareto-Sets")[
+    + Set $P_0 = {∅}$.
+    + For $i=1,…,|I|$:
+      + Let $x$ be the $i$-th item of $I$.
+      + Set $Q_i ≔ P_(i-1) ∪ {A∪{x} mid(|) A ∈ P_(i-1)}$
+      + Compute $P_i ≔ {A ∈ Q_i mid(|) A "is not dominated by any" B∈Q_i}$
+  ],
+)<alg-nemhauser-ullmann>
 
-This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
+@alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
 // TODO: Maybe use an example where all pareto-sets are distinct, to actually use the implementation-runtime of nemhauser-ullmann
 
@@ -234,7 +239,7 @@ This algorithm can be implemented to run in time $O(|P_1| + … + |P_n|)$ @Roegl
         )
         + h(1fr)
     ),
-    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. Fewer than $2^4$ (respectively $2^5$) points, and fewer than $12$ (respectively $10$) are actually visible, because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$) points, and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
   )
 ]
 It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
@@ -276,7 +281,7 @@ Naturally, these different objectives can yield different optimal clusterings, a
   #######....#..#.................
   ")
     */
-  let points = ((0.472, 0.011), (0.119, 0.697), (0.283, 0.445), (0.557, 0.516), (0.362, 0.565), (0.076, 0.375), (0.625, 0.464), (0.675, 0.229), (0.169, 0.926), (0.221, 0.786), (0.247, 0.298), (0.499, 0.294), (0.597, 0.815), (0.971, 0.311), (0.921, 0.184), (0.608, 0.757), (0.183, 0.766), (0.913, 0.413), (0.131, 0.954), (0.668, 0.647)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
+  let points = ((0.48, 0.0), (0.112, 0.715), (0.283, 0.452), (0.569, 0.526), (0.366, 0.577), (0.068, 0.379), (0.64, 0.472), (0.692, 0.227), (0.165, 0.953), (0.219, 0.807), (0.246, 0.299), (0.508, 0.295), (0.61, 0.837), (1.0, 0.312), (0.948, 0.18), (0.622, 0.777), (0.179, 0.786), (0.94, 0.419), (0.125, 0.982), (0.684, 0.662))
   let kmedian = parse("
 #.#.#.#...#.#......#............
 .#...#..##........#.............
@@ -288,7 +293,7 @@ Naturally, these different objectives can yield different optimal clusterings, a
 ...#...#.....##..#.#............
 ")
   context [#figure(
-      draw-clustering.draw-clustering(points, kmedian, page.width * 0.4, 0.02, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.4, 0.02, blue),
+      h(1fr) + draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, blue) + h(1fr),
       caption: [Two different $k"="3$-clusterings for the same  $20$ points in $ℝ^2$.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering.
       ],
       // TODO: Do two examples side by side, one optimal and one sub-optimal
@@ -369,8 +374,8 @@ The structure of hierarchical clusterings is, for example, useful for taxonomy, 
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points, which do not form a nested structure.\
-      The two sets of clusterings only differ at level $k=2$.
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points.\ There is no set of optimal clusterings with a nested structure.\
+      The shown hierarchical and optimal clusterings only differ at level $k=2$.
     ])<example-hierarchical-clustering>
   ]
 }
@@ -539,6 +544,8 @@ Making progress on the different open problems in @section-problems-definitions 
 #let Mutation = math.op("Mutation")
 #let Opt = math.op("Opt")
 #let Avg = math.op("Avg")
+
+== Local Search
 Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach // TODO: Add many, many citation
 is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
@@ -567,11 +574,12 @@ is to employ some search-algorithm that searches for an instance of a high "scor
   ],
 ) <algorithm-local-search-bin-packing>
 
-Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the variance of the noise on $Mutation$, or stochastically allowing replacing $I$ with $I'$, even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
+Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the noise's variance in $Mutation$, or stochastically allowing to replace $I$ with $I'$, even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
 #figure(
   {
     let trajectories = range(10).map(i => read("assets/data/randomised-best-fit-local-search/" + str(i) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (split.at(0), split.at(1)))).map(history => history + ((10000, history.last().at(1)),))
+    trajectories.push(trajectories.remove(0)) // For cycling colors, the default ones put an illegible one at the top.
     context (
       lq.diagram(
         yaxis: (lim: (1.0, 1.5)),
@@ -580,7 +588,7 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
         width: page.width * 0.6,
         xlabel: [#text(font: font-math)[Iteration]],
         ylabel: [#text(font: font-math)[Best Score]],
-        ..trajectories.map(iteration-score => lq.plot(step: start, iteration-score.map(x => int(x.at(0))), iteration-score.map(x => float(x.at(1))))),
+        ..trajectories.map(iteration-score => lq.plot(step: start, mark: none, stroke: 0.1em, iteration-score.map(x => int(x.at(0))), iteration-score.map(x => float(x.at(1))))),
       )
     )
   },
@@ -592,33 +600,42 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
 Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have a discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance.
 
 #figure(
-  lq.diagram(
-    yaxis: (lim: (0.0, 1.0)),
-    xaxis: (ticks: none, subticks: none),
-    lq.bar(
-      fill: green,
-      range(10),
-      (0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663),
+  table(
+    columns: (1fr, 2fr, 4fr, 1fr),
+    gutter: 0em,
+    stroke: none,
+    align: center + horizon,
+    [],
+    `[0, 0, 0, 0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663]`,
+    lq.diagram(
+      yaxis: (lim: (0.0, 1.0)),
+      xaxis: (ticks: none, subticks: none),
+      lq.bar(
+        fill: green,
+        range(10),
+        (0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663),
+      ),
     ),
-  )
-    + v(0.5em)
-    + `[0.0, 0.0, 0.0, 0.0, 0.13941968656458636, 0.1415175313246237, 0.18488603733618258, 0.20818251654978343, 0.6014145332633378, 0.7129758245684663]`,
+    [],
+  ),
   kind: image,
   caption: [The sorted best instance found in the trials of @local-search-plot, achieving a score of $1.3725$.],
 ) <local-search-instance>
+
+== Local Search on Code Instead of Vectors
 
 To mitigate these issues we could, instead of searching for lists of numbers, search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers: Plain lists of numbers encode symmetric and structured instances just the same way as any other instances. But it is easier to write python-code that produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
 For example, an instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed as hardcoded numbers as follows:
 #figure(
-  ```py
+  box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
   items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
-  ```,
+  ```],
   caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
 )<hardcoded-best-fit>
 However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
 #figure(
-  ```py
+  box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
   k = 1
   OPT = 10*k
   δ = 1/50
@@ -632,19 +649,19 @@ However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
   trailing = [1/2 + ε] * OPT
 
   items = b_plus + c_minus + b_minus + c_plus + trailing
-  ```,
-  caption: [The same instance as in @hardcoded-best-fit.],
-)
-For larger $k$, the code for the hardcoded instance grows even larger (though would run into floating-point rounding issues), while the structured definition remains short and interpretable.
+  ```],
+  caption: [The same instance as in @hardcoded-best-fit, using a more structured definition.],
+)<structured-best-fit>
+For larger $k$, @hardcoded-best-fit grows even longer (though would run into floating-point rounding issues), while @structured-best-fit remains short and interpretable.
 
-If we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$, most mutated programs would fail to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
+However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
 Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
 
 // TODO: Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt
 
 #figure(
-  align(left, box(stroke: 0.1em + gray, radius: 0.5em, fill: white.darken(1%), inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
+  align(left, box(stroke: 0.1em + gray, radius: 0.5em, inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
 
     To generate instances that best-fit performs poorly on, I have tried the following functions so far. Please write another one that returns an instance and is similar, but has some lines altered.
 
@@ -741,6 +758,7 @@ to their maximum capacity.
     lesser-packing(((7, 6, 7, 7, 7, 6), (6, 7, 7, 6, 6, 6), (6,))), lesser-packing(((7, 6, 6, 7, 6, 6), (7, 6, 7, 7, 6, 6), (7,))), lesser-packing(((7, 6, 7, 7, 6, 7), (7, 6, 6, 7, 6, 6), (6,))),
     lesser-packing(((6, 6, 6, 7, 6, 6), (7, 7, 6, 7, 6, 7), (7,))), lesser-packing(((6, 7, 6, 6, 7, 6), (7, 7, 7, 7, 6, 6), (6,))), lesser-packing(((7, 6, 7, 6, 7, 6), (7, 7, 6, 6, 6, 6), (7,))),
   ),
+  gap: 0em,
   caption: [Nine different packings produced by randomised Best-Fit.],
 )
 
@@ -963,11 +981,13 @@ $(1+ sqrt(5))/2$, the golden ratio.
   We use the same visualisation as in @example-gasoline-cookies, but using only one bar due to $d=1$.
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
+    gap: 1em,
     caption: [Visualising $π_IterRound$ over time. The maximum capacity is $14$.],
   )
   #h(1em)
   #figure(
     draw-gasoline.draw-permutation(opt-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
+    gap: 1em,
     caption: [Visualising $π_Opt$ over time. The maximum capacity is $8$.],
   )
   Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
