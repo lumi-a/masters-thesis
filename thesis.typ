@@ -25,6 +25,10 @@
 #let FirstFit = math.op("FirstFit")
 #let NextFit = math.op("NextFit")
 #let Apx = math.op("Apx")
+#let Score = math.op("Score")
+#let Mutation = math.op("Mutation")
+#let Opt = math.op("Opt")
+#let Avg = math.op("Avg")
 
 = Problems, Definitions and Previous Results <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
@@ -242,7 +246,18 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
     caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$) points, and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
   )
 ]
-It has been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$.
+Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether:
+$
+  Score(I)
+  quad ≔ quad
+  (|P_n|) / (max_(1≤i≤n) |P(I_(1:i))|)
+$
+can always be bounded by some constant not depending on $I$. If it could be bounded, @alg-nemhauser-ullmann would have a runtime bounded by $O(n⋅|P(I)|)$. Note that $Score(I) ≤ 2^n$, because $|P_i| ≤ 2^n$ and $|P_n| ≥ 1$.
+
+So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances with $Score(I) ≥ n^(O(√n))$, or more precisely: $Score(I) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time.
+
+// TODO: Insert link to proof-section
+
 
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points are clustered closely together. Different objectives exist that quantify this intuition.
@@ -539,11 +554,6 @@ Making progress on the different open problems in @section-problems-definitions 
 - For the generalised gasoline problem, we would like to find instances where the iterative-rounding algorithm // TODO: Insert reference once you write down the algorithm.
   performs poorly compared to an optimum soution.
 
-
-#let Score = math.op("Score")
-#let Mutation = math.op("Mutation")
-#let Opt = math.op("Opt")
-#let Avg = math.op("Avg")
 
 == Local Search
 Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach // TODO: Add many, many citation
