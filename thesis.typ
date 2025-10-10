@@ -1006,28 +1006,67 @@ $(1+ sqrt(5))/2$, the golden ratio.
 ]
 
 #example[
-  #let deliveries = ((8, 4, 0), (8, 0, 4), (8, 4, 0), (8, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 4, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 4))
-  #let production = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2))
+  #let deliveries = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 1, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 1))
+  #let production = ((8, 1, 0), (8, 0, 1), (8, 1, 0), (8, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1))
+  #let opt-permut = (40, 43, 53, 59, 29, 0, 41, 1, 55, 2, 45, 3, 42, 10, 57, 9, 54, 8, 48, 5, 51, 4, 33, 11, 50, 6, 56, 7, 38, 14, 39, 23, 36, 18, 47, 21, 44, 26, 46, 17, 30, 22, 32, 27, 49, 12, 28, 15, 37, 24, 34, 19, 52, 16, 31, 13, 35, 20, 58, 25)
+  #let iterround-permut = (28, 43, 29, 59, 4, 5, 30, 0, 7, 31, 1, 6, 32, 8, 13, 33, 9, 12, 34, 10, 15, 35, 11, 14, 36, 16, 17, 18, 19, 20, 37, 21, 38, 22, 39, 23, 40, 24, 41, 25, 42, 26, 44, 27, 45, 46, 47, 48, 49, 50, 2, 51, 52, 53, 54, 55, 56, 3, 57, 58)
+  /*
   #let breakjoin = arr => {
-    let chunks = arr.chunks(calc.floor(arr.len() / 3))
+    let chunks = arr.chunks(calc.floor(arr.len() / 2))
     $#chunks.map(els => els.join(", ")).join($\ &$)$
   }
   #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..x.map(str))$))]$
   For $d=2$ and $k=4$, the instance #TODO[insert reference to instance] is:
   #TODO[Does _anyone_ profit from seeing the specific instance and permutations??]
-  #text(size: 0.75em)[$
+  #text(size: 0.5em)[$
     X = #list(deliveries) \
     Y = #list(production)
   $]
+  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
+  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
+  #text(size: 0.45em)[$
+    π_IterRound (X) = #list(iterround-permut), quad quad \
+    π_Opt (X) = #list(opt-permut), quad quad
+  $]
+  */
+  We plot #TODO[insert reference to instance] for $d=3$ and $k=4$. #TODO[If you want, there's commented-out code above for showing the explicit instance and permutations, but it's output is _large_ and I don't think it contributes much.] Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" will lead to too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 25),
+    gap: 1em,
+    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $23+7+7 = 37$.],
+  )
+  #figure(
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 25),
+    gap: 1em,
+    caption: [Visualising $π_Opt$ over time. The maximum capacity is $16+2+2=20$.],
+  )
+  Here, $IterRound(I)\/Opt(I) = 37\/20 = 1.85$.
+]
+#example[
+  #let deliveries = ((8, 4, 0), (8, 0, 4), (8, 4, 0), (8, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 4, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 4))
+  #let production = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2))
   #let opt-permut = (41, 59, 34, 43, 38, 3, 46, 2, 57, 1, 49, 0, 36, 5, 37, 10, 42, 9, 31, 6, 51, 7, 28, 8, 40, 11, 58, 4, 29, 13, 32, 12, 35, 27, 47, 24, 30, 19, 53, 18, 44, 15, 56, 26, 39, 23, 55, 14, 54, 17, 50, 22, 33, 21, 45, 16, 48, 25, 52, 20)
   #let iterround-permut = (28, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59)
-  #let list = arr => $[#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
-  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
-  #text(size: 0.7em)[$
-    π_IterRound (X) & = #list(iterround-permut), quad quad \
-          π_Opt (X) & = #list(opt-permut), quad quad
+  /*
+  #let breakjoin = arr => {
+    let chunks = arr.chunks(calc.floor(arr.len() / 2))
+    $#chunks.map(els => els.join(", ")).join($\ &$)$
+  }
+  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..x.map(str))$))]$
+  For $d=2$ and $k=4$, the instance #TODO[insert reference to instance] is:
+  #TODO[Does _anyone_ profit from seeing the specific instance and permutations??]
+  #text(size: 0.5em)[$
+    X = #list(deliveries) \
+    Y = #list(production)
   $]
-  Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" will lead to too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
+  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
+  #text(size: 0.45em)[$
+    π_IterRound (X) = #list(iterround-permut), quad quad \
+    π_Opt (X) = #list(opt-permut), quad quad
+  $]
+  */
+  We plot #TODO[insert reference to *other* instance] for $d=3$ and $k=4$.
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 32),
     gap: 1em,
