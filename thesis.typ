@@ -965,12 +965,13 @@ $(1+ sqrt(5))/2$, the golden ratio.
 
 
 == Gasoline
+The following example is the instance found by @Lorieau[p:]:
 
 #example[
   This is a $d"="1$-dimensional instance. Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
   $
-    X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0] \
-    Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
+    X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0], quad quad
+        Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
   $
   #let deliveries = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (0, 0)) // ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
   #let production = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0)) // ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
@@ -1003,7 +1004,22 @@ $(1+ sqrt(5))/2$, the golden ratio.
     caption: [Visualising $π_Opt$ over time. The maximum capacity is $8$.],
   )
   Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
-]
+]<example-plot-gasoline-lucas>
+
+In contrast, the FunSearch found the following two very similar instances. Fix the dimension $d ≥ 2$ and parameter $k$.
+#math.equation(block: true, numbering: "(G1)")[$
+  X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[2 e_j]),quad
+      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]
+          #h(2em)
+$]<gasoline-weak>
+#math.equation(block: true, numbering: "(G1)")[$
+  X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 4 e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[4 e_j]),quad
+      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]
+          #h(2em)
+$]<gasoline-strong>
+The two instances only differ in three places: In the constant scalars preceding the $e_j$.
+
+For both instances, the first entry of every vector is always the same as in @example-plot-gasoline-lucas, whereas the remaining entries only have values from ${0, 1, 2}$ (for @gasoline-weak #TODO[These references are weird, why don't they use the equation labels?]) or ${0,2,4}$ (for @gasoline-strong), regardless of the dimension $d$ and choice of $k$.
 
 #example[
   #let deliveries = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 1, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 1))
@@ -1029,7 +1045,7 @@ $(1+ sqrt(5))/2$, the golden ratio.
     π_Opt (X) = #list(opt-permut), quad quad
   $]
   */
-  We plot #TODO[insert reference to instance] for $d=3$ and $k=4$. #TODO[If you want, there's commented-out code above for showing the explicit instance and permutations, but it's output is _large_ and I don't think it contributes much.] Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" will lead to too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  We plot @gasoline-weak for $d=3$ and $k=4$. #TODO[If you want, there's commented-out code above for showing the explicit instance and permutations, but it's output is _large_ and I don't think it contributes much.] Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 25),
     gap: 1em,
@@ -1066,7 +1082,7 @@ $(1+ sqrt(5))/2$, the golden ratio.
     π_Opt (X) = #list(opt-permut), quad quad
   $]
   */
-  We plot #TODO[insert reference to *other* instance] for $d=3$ and $k=4$ in the same way as @example-plot-gasoline-funsearch-weak.
+  We plot @gasoline-strong for $d=3$ and $k=4$ in the same way as @example-plot-gasoline-funsearch-weak.
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 32),
     gap: 1em,
