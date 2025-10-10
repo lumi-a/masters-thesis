@@ -1,9 +1,11 @@
-#let scale = (x, s) => (x.at(0) * s, x.at(1) * s)
-#let add = (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1))
-#let min = (x, y) => (calc.min(x.at(0), y.at(0)), calc.min(x.at(1), y.at(1)))
-#let max = (x, y) => (calc.max(x.at(0), y.at(0)), calc.max(x.at(1), y.at(1)))
-#let sub = (x, y) => (x.at(0) - y.at(0), x.at(1) - y.at(1))
-#let norm = v => calc.sqrt(calc.pow(v.at(0), 2) + calc.pow(v.at(1), 2))
+#import "@preview/lilaq:0.5.0" as lq
+
+#let scale = (x, s) => x.map(r => r * s)
+#let add = (x, y) => x.zip(y).map(v => v.at(0) + v.at(1))
+#let min = (x, y) => x.zip(y).map(v => calc.min(v.at(0), v.at(1)))
+#let max = (x, y) => x.zip(y).map(v => calc.max(v.at(0), v.at(1)))
+#let sub = (x, y) => x.zip(y).map(v => v.at(0) - v.at(1))
+#let norm = v => calc.sqrt(v.map(r => r * r).sum())
 #let normed = v => scale(v, 1 / norm(v))
 #let draw-permutation = (pi, deliveries, production, ..args) => {
   let heightscale = 0.25em
@@ -30,28 +32,43 @@
     warehouse-history + (morning, evening)
   }
 
-  let timeline = production-deliveries.fold(((0, 0),), draw-state)
-  let minhouse = timeline.fold((1000000, 100000), min)
-  let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold((-1000000, -100000), max)
+  let dimension = deliveries.at(0).len()
+  let timeline = production-deliveries.fold((range(dimension).map(_ => 0),), draw-state)
+  let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
+  let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold(range(dimension).map(_ => -10000), max)
   let maxmaxhouse = calc.max(maxhouse.at(0), maxhouse.at(1))
 
-  let flourbar = warehouse => rect(fill: blue, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(0) * heightscale)
-  let sugarbar = warehouse => if one-d { [] } else { rect(fill: purple, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(1) * heightscale) }
-  let squares = timeline.map(warehouse => (flourbar(warehouse), sugarbar(warehouse), h(if one-d { (barwidth / 2) } else { barwidth }))).flatten()
+  if args.at("lq", default: false) {
+    timeline = timeline.map(warehouse => sub(warehouse, minhouse))
+    lq.diagram(
+      width: 100%,
+      height: 150pt,
+      yaxis: (lim: (auto, args.at("y-axis-lim", default: auto))),
+      ..range(timeline.at(0).len()).map(d => lq.plot(
+        range(timeline.len()),
+        timeline.map(warehouse => warehouse.at(d)),
+        color: (blue, purple, red).at(d),
+      )),
+    )
+  } else {
+    let flourbar = warehouse => rect(fill: blue, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(0) * heightscale)
+    let sugarbar = warehouse => if one-d { [] } else { rect(fill: purple, stroke: barwidth * 0.1 + black, width: barwidth, height: sub(warehouse, minhouse).at(1) * heightscale) }
+    let squares = timeline.map(warehouse => (flourbar(warehouse), sugarbar(warehouse), h(if one-d { (barwidth / 2) } else { barwidth }))).flatten()
 
-  let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 2 * boxbuffer * barwidth, stroke: (paint: color, thickness: 0.1em)))
-  align(left + bottom)[
-    #line(maxhouse.at(0) + 0.15, blue)
-    #if one-d [] else { line(maxhouse.at(1) - 0.15, purple) }
-    #line(0, gray)
-    #stack(dir: ltr, ..squares, [...])
-  ]
+    let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 2 * boxbuffer * barwidth, stroke: (paint: color, thickness: 0.1em)))
+    align(left + bottom)[
+      #line(maxhouse.at(0) + 0.15, blue)
+      #if one-d [] else { line(maxhouse.at(1) - 0.15, purple) }
+      #line(0, gray)
+      #stack(dir: ltr, ..squares, [...])
+    ]
 
-  align(left + bottom, stack(dir: ltr, h(if one-d { barwidth / 2 } else { barwidth }), ..production-deliveries.map(pd => {
-    let p = pd.at(0)
-    let d = pd.at(1)
-    [#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.t$#draw-vec(d)])#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.b$#draw-vec(p)])]
-  })))
+    align(left + bottom, stack(dir: ltr, h(if one-d { barwidth / 2 } else { barwidth }), ..production-deliveries.map(pd => {
+      let p = pd.at(0)
+      let d = pd.at(1)
+      [#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.t$#draw-vec(d)])#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.b$#draw-vec(p)])]
+    })))
+  }
 }
 
 

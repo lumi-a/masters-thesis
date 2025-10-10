@@ -1005,4 +1005,42 @@ $(1+ sqrt(5))/2$, the golden ratio.
   Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
 ]
 
+#example[
+  #let deliveries = ((8, 4, 0), (8, 0, 4), (8, 4, 0), (8, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 4, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 4))
+  #let production = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2))
+  #let breakjoin = arr => {
+    let chunks = arr.chunks(calc.floor(arr.len() / 3))
+    $#chunks.map(els => els.join(", ")).join($\ &$)$
+  }
+  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..x.map(str))$))]$
+  For $d=2$ and $k=4$, the instance #TODO[insert reference to instance] is:
+  #TODO[Does _anyone_ profit from seeing the specific instance and permutations??]
+  #text(size: 0.75em)[$
+    X = #list(deliveries) \
+    Y = #list(production)
+  $]
+  #let opt-permut = (41, 59, 34, 43, 38, 3, 46, 2, 57, 1, 49, 0, 36, 5, 37, 10, 42, 9, 31, 6, 51, 7, 28, 8, 40, 11, 58, 4, 29, 13, 32, 12, 35, 27, 47, 24, 30, 19, 53, 18, 44, 15, 56, 26, 39, 23, 55, 14, 54, 17, 50, 22, 33, 21, 45, 16, 48, 25, 52, 20)
+  #let iterround-permut = (28, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59)
+  #let list = arr => $[#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
+  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
+  #text(size: 0.7em)[$
+    π_IterRound (X) & = #list(iterround-permut), quad quad \
+          π_Opt (X) & = #list(opt-permut), quad quad
+  $]
+  Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" will lead to too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 32),
+    gap: 1em,
+    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $30+30+30=90$.],
+  )
+  #figure(
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 32),
+    gap: 1em,
+    caption: [Visualising $π_Opt$ over time. The maximum capacity is $16+4+4=24$.],
+  )
+  Here, $IterRound(I)\/Opt(I) = 90\/24 = 3.75$.
+]
+#TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
+#TODO[Grammar-/ Spell Checker]
+
 #bibliography("bibliography.bib", style: "chicago-author-date")
