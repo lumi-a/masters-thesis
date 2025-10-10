@@ -44,10 +44,12 @@
       width: 100%,
       height: 150pt,
       yaxis: (lim: (auto, args.at("y-axis-lim", default: auto))),
+      xaxis: (ticks: none, lim: (-3, timeline.len() + 2)),
       ..range(timeline.at(0).len()).map(d => lq.plot(
         range(timeline.len()),
         timeline.map(warehouse => warehouse.at(d)),
         color: (blue, purple, red).at(d),
+        // stroke: stroke((blue, purple, red).at(d).transparentize(25%)),
       )),
     )
   } else {
