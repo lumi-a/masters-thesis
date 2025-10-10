@@ -314,7 +314,7 @@ Naturally, these different objectives can yield different optimal clusterings, a
   ]
 }
 
-When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering.
+When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering:
 
 #definition[
   A *hierarchical clustering* on $n$ points is a sequence $(H_1, …, H_n)$ of clusterings such that:
@@ -325,7 +325,7 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
     $
 ]
 
-The structure of hierarchical clusterings is, for example, useful for taxonomy, but does come at a cost: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
+The structure of hierarchical clusterings is useful for, for example, taxonomy. It does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
 
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
@@ -405,10 +405,9 @@ To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could 
   $
   where $Opt_i$ is an optimal $i$-clustering on $I$ with respect to $Cost$.
 ]
+For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$. The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
 
 The approximation-factor of the hierarchical clustering in @example-hierarchical-clustering is $≈1.262$: The hierarchical clusterings and optimal clusterings shown there only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$.
-
-For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$. The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
 
 For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering.
 
@@ -603,9 +602,9 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
   caption: [Ten example trajectories of @algorithm-local-search-bin-packing, with the termination-condition for the loop in @codeline-iteration-count set after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
 ) <local-search-plot>
 
-Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat (though the score-measurement we employ in @algorithm-local-search-bin-packing only uses an _estimation_ of the expected value), the best trial achieving a score of $1.3725$, higher than the existing lower bound. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ possible permutations (the found instance (see @local-search-instance) has many exploitable symmetries, decreasing the required computations even further). We will not do so, however, in favour of proving a better result later on.
+Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem#footnote[The score-measurement we employ in @algorithm-local-search-bin-packing only uses a stochastic _estimation_ of the expected value, so this is not certain but highly probable.] to beat, the best trial achieving a score of $1.3725$, higher than the existing lower bound. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ possible permutations (the found instance (see @local-search-instance) has many exploitable symmetries, decreasing the required computations even further). We will not do so, however, in favour of proving a better result later on.
 
-Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have a discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance.
+Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have any discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance.
 
 #figure(
   table(
@@ -632,35 +631,37 @@ Instead, to motivate our next steps, we will try learning from the instance, per
 
 == Local Search on Code Instead of Vectors
 
-To mitigate these issues we could, instead of searching for lists of numbers, search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers: Plain lists of numbers encode symmetric and structured instances just the same way as any other instances. But it is easier to write python-code that produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
+To mitigate these issues we could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
-For example, an instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed as hardcoded numbers as follows:
-#figure(
-  box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
-  items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
-  ```],
-  caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
-)<hardcoded-best-fit>
-However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
-#figure(
-  box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
-  k = 1
-  OPT = 10*k
-  δ = 1/50
-  d = lambda j: δ/(4**j)
-  ε = d(10*k + 5)
+#example[
+  An instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed via hardcoded numbers:
+  #figure(
+    box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
+    items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
+    ```],
+    caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
+  )<hardcoded-best-fit>
+  However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
+  #figure(
+    box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
+    k = 1
+    OPT = 10*k
+    δ = 1/50
+    d = lambda j: δ/(4**j)
+    ε = d(10*k + 5)
 
-  b_plus = [1/6 + d(j) for j in range(1,1+OPT//2)]
-  c_minus = [1/3 - d(j) - ε for j in range(1,1+OPT//2)]
-  b_minus = [1/6 - d(j) for j in range(0,OPT//2)]
-  c_plus = [1/3 + d(j) - ε for j in range(0,OPT//2)]
-  trailing = [1/2 + ε] * OPT
+    b_plus = [1/6 + d(j) for j in range(1,1+OPT//2)]
+    c_minus = [1/3 - d(j) - ε for j in range(1,1+OPT//2)]
+    b_minus = [1/6 - d(j) for j in range(0,OPT//2)]
+    c_plus = [1/3 + d(j) - ε for j in range(0,OPT//2)]
+    trailing = [1/2 + ε] * OPT
 
-  items = b_plus + c_minus + b_minus + c_plus + trailing
-  ```],
-  caption: [The same instance as in @hardcoded-best-fit, using a more structured definition.],
-)<structured-best-fit>
-For larger $k$, @hardcoded-best-fit grows even longer (though would run into floating-point rounding issues), while @structured-best-fit remains short and interpretable.
+    items = b_plus + c_minus + b_minus + c_plus + trailing
+    ```],
+    caption: [The same instance as in @hardcoded-best-fit, using a more structured definition.],
+  )<structured-best-fit>
+  For larger $k$, @hardcoded-best-fit grows even longer (though would run into floating-point rounding issues), while @structured-best-fit remains short and interpretable.
+]
 
 However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
@@ -944,8 +945,8 @@ points have weight $1$.
 
     For an _upper_ bound on the _optimal_ cost of a
     $2$-clustering, consider the clustering that has $(1, …, 1)$
-    in its first cluster, and all other points in its second cluster. By
-    assuming the center of the second cluster is $(0, …, 0)$, we
+    in its first cluster, and all other points in its second cluster. Assuming
+    the center of the second cluster is $(0, …, 0)$, we
     get an upper bound on the total cost of this clustering of:
     $ d ⋅ norm((0, …, 0) - (- c e_1))_1 = d ⋅ c . $
     Hence, the ratio between the cost of $H_2$ and the cost of an optimal
@@ -966,14 +967,14 @@ $(1+ sqrt(5))/2$, the golden ratio.
 == Gasoline
 
 #example[
-  Fix some $k∈ℕ$ and $d=1$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
+  This is a $d"="1$-dimensional instance. Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
   $
     X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0] \
     Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
   $
   #let deliveries = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (0, 0)) // ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
   #let production = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0)) // ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
-  For $k=2$, this amounts to:
+  For $k=3$, this amounts to:
   #let list = arr => $[#arr.map(x => str(x.at(0))).join(", ")]$
   $
     X = #list(deliveries), quad quad
@@ -989,7 +990,7 @@ $(1+ sqrt(5))/2$, the golden ratio.
               π_Opt (X) & = #list(opt-permut), quad quad
   $
   #let draw-vec = d => $#d.at(0)$
-  We use the same visualisation as in @example-gasoline-cookies, but using only one bar due to $d=1$.
+  We use the same visualisation as in @example-gasoline-cookies. Because $d=1$, we only draw one bar per time-point.
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
     gap: 1em,
