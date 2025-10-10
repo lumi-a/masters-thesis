@@ -4,6 +4,7 @@
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *;
 #let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
+#let TODO = body => text(size: 0.5em, fill: green)[\[TODO: #body\]]
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true)
@@ -187,9 +188,7 @@ A *solution* is any sub-list of the list of items $I$, regardless of whether it 
 
 === Pareto-Sets
 
-In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_:
-
-// TODO: Add citation
+In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_: #TODO[Add citation]
 #definition[
   For solutions $A$ and $B$, we say $A$ *dominates* $B$ if and only if:
   $
@@ -199,7 +198,7 @@ In practice, one might not know the capacity beforehand, or might have unlimited
   $
   and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the set of all solutions that are not dominated by any other solution.
 
-  TODO: Not really a set. Maybe do use index-vectors.
+  #TODO[Not really a set. Maybe do use index-vectors.]
 ]
 See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, much smaller than $2^6$, the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
@@ -218,7 +217,7 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
 
 @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
-// TODO: Maybe use an example where all pareto-sets are distinct, to actually use the implementation-runtime of nemhauser-ullmann
+#TODO[Maybe use an example where all pareto-sets are distinct, to actually use the implementation-runtime of nemhauser-ullmann]
 
 #example[
   Consider the items:
@@ -256,7 +255,7 @@ can always be bounded by some constant not depending on $I$. If it could be boun
 
 So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances with $Score(I) ≥ n^(O(√n))$, or more precisely: $Score(I) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time.
 
-// TODO: Insert link to proof-section
+#TODO[Insert link to proof-section]
 
 
 == $k$-median Clustering
@@ -275,7 +274,7 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
     = min_(mu in C) sum_(x in C) norm(x - mu)_1
   $
   The total cost of a clustering is again the sum of the cost of its clusters.
-- TODO: Add more objectives, particularly ones with existing results on the PoH.
+- #TODO[Add more objectives, particularly ones with existing results on the PoH.]
 
 Naturally, these different objectives can yield different optimal clusterings, as seen in @clustering-example.
 
@@ -309,9 +308,8 @@ Naturally, these different objectives can yield different optimal clusterings, a
 ")
   context [#figure(
       h(1fr) + draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, blue) + h(1fr),
-      caption: [Two different $k"="3$-clusterings for the same  $20$ points in $ℝ^2$.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering.
+      caption: [Two different $k"="3$-clusterings for the same  $20$ points in $ℝ^2$.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering. #TODO[Do two examples side by side, one optimal and one sub-optimal?]
       ],
-      // TODO: Do two examples side by side, one optimal and one sub-optimal
     ) <clustering-example>
   ]
 }
@@ -473,7 +471,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
 
   With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
 ]<example-gasoline-cookies>
-Generally, an instance of the Gasoline-Problem // TODO: Explain why it's called that?
+Generally, an instance of the Gasoline-Problem #TODO[Explain why it's called that?]
 consists of two sequences of $d$-dimensional vectors containing non-negative integral entries:
 $
   X = (x_1,…,x_n) ∈ ℕ_(≥0)^(n×d), quad
@@ -539,7 +537,7 @@ It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embed
 Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$.
 
 
-@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. We will write out this construction in // TODO: Insert reference
+@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. We will write out this construction in #TODO[Insert reference]
 to show how we modified it.
 
 @rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
@@ -551,12 +549,12 @@ Making progress on the different open problems in @section-problems-definitions 
 - For bin-packing, we would like to find an instance where the randomised Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution.
 - For the Pareto-sets of knapsack-problems, we would like to find an instance $I$ where an intermittent Pareto-set $P(I_(1:i))$ is much larger than the Pareto-set $P(I)$ of the whole instance.
 - For the Price of Hierarchy for $k$-median clustering, we would like to find instances whose Price of Hierarchy is large.
-- For the generalised gasoline problem, we would like to find instances where the iterative-rounding algorithm // TODO: Insert reference once you write down the algorithm.
+- For the generalised gasoline problem, we would like to find instances where the iterative-rounding algorithm #TODO[Insert reference once you write down the algorithm.]
   performs poorly compared to an optimum soution.
 
 
 == Local Search
-Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach // TODO: Add many, many citation
+Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach #TODO[Add many, many citations]
 is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
   kind: "algorithm",
@@ -666,9 +664,9 @@ For larger $k$, @hardcoded-best-fit grows even longer (though would run into flo
 
 However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
-Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we could mathematically analyse the asymptotic behaviour of the function after the fact.
+Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we may mathematically analyse the asymptotic behaviour of the function for large list-lengths after the fact.
 
-// TODO: Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt
+#TODO[Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt]
 
 #figure(
   align(left, box(stroke: 0.1em + gray, radius: 0.5em, inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
@@ -739,7 +737,10 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
 ) <example-response>
 
-// TODO: Describe more the tuning of the instances
+We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code, manually tuned that code (e.g. by removing redundant items or making the instance more symmetrical, see #TODO[insert references to later tuning-figures])
+
+
+#TODO[Describe the tuning of the instances more]
 
 = Results
 == Bin-Packing
