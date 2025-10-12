@@ -748,7 +748,7 @@ We used FunSearch to find "bad" instances for the four problems listed above. Af
 For fixed $m in ℕ$, consider the instance:
 
 $
-  I ≔ [underbrace(m + 1\,#h(0.5em) dots.h\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) dots.h \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m dot.op (m + 1).
+  I ≔ [underbrace(m + 1\,#h(0.5em) …\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) … \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m ⋅ (m + 1).
 $
 
 An optimal packing puts the first $m$ items into one bin, and the
@@ -830,13 +830,161 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 
 == Knapsack Problem
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
+To analyze the sizes of the instance's and subinstances' Pareto-sets, we define the two segments
+of the instance: For $a, b, d, n in bb(Z)_(≥ 1)$ with
+$d < a ≤ b$, define $x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$, and
+two lists:
+$
+  I_(a, b) ≔ [vec(2^a, 2^a), vec(2^(a + 1), 2^(a + 1)), …, vec(2^b, 2^b)], #h(2em)
+  J_(d, n) ≔ [ vec(x_1 ⋅ 2^d, x_1 ⋅ (2^d - 1)), …, vec(x_n ⋅ 2^d, x_n ⋅ (2^d - 1)) ].
+$
+
+#lemma[
+  If a Pareto-optimal packing
+  $A in P ([I_(a, b), J_(d, n)])$ does not contain all items from
+  $I_(a, b)$, it contains fewer than $2^(a - d)$ items from
+  $J_(d, n)$.
+] <small-Jdn>
+#proof[
+  Subsets of $I_(a, b)$ can be represented by binary
+  numbers of $(b - a + 1)$ bits. If $A$ does not contain all items from
+  $I_(a, b)$ and contains at least $2^(a - d)$ items from $J_(d, n)$,
+  we define a new packing $A'$ as follows: Increment the binary number
+  representing $A ∩ I_(a, b)$ by $1$, and remove $2^(a - d)$ items
+  from $A ∩ J_(d, n)$. This changes the weights and profits by:
+  $
+    Weight(A') - Weight(A)
+    quad & ≤quad 2^a - 2^(a-d)⋅ underbrace((1+(2^(-n))/(2^d-1)), >1)⋅2^d
+           quad<quad 0 \
+    Profit(A') - Profit(A)
+    quad & ≥quad 2^a - 2^(a-d)⋅ (1+(2^(-1))/(2^d-1)) (2^d-1) \
+    quad & = quad 2^a - 2^(a-d)⋅ (2^d-2^(-1))
+           quad=quad 2^(a-d-1)
+           quad>quad 0
+  $
+  Thus, $A'$ dominates $A$, and
+  $A in.not P ([I_(a, c), J_(d, n)])$.
+]
+On the other hand, all other packings are Pareto-optimal:
+
+#lemma[If a packing $A$ of
+  $[I_(a, b), J_(d, n)]$ contains all items from $I_(a, b)$ or
+  contains fewer than $2^(a - d)$ items from $J_(d, n)$, then $A$ is
+  Pareto-optimal.
+]
+#proof[All items from $I_(a, b)$ have a profit-per-weight ratio
+  of $1$, while all items from $J_(d, n)$ have a profit-per-weight ratio
+  of $frac(2^d - 1, 2^d) < 1$. Hence, a packing $B$ that dominates $A$
+  must satisfy
+  $ Weight(A ∩ I_(a, b)) quad<quad Weight(B ∩ I_(a, b)), $
+  otherwise $B$ can not have enough profit to dominate $A$. If $A$ already
+  contains all items from $I_(a, b)$, this is not possible, so only the
+  case that $A$ contains fewer than $2^(a - d)$ items from $J_(d, n)$
+  remains. Due to the definition of $I_(a, b)$, the above inequality
+  implies:
+  $ Weight(A ∩ I_(a, b)) + 2^a quad≤quad Weight(B ∩ I_(a, b)) . $
+  If $B$ dominates $A$, it must hold that:
+  $
+    Weight(A ∩ I_(a, b)) + Weight(A ∩ J_(d, n)) & quad≥quad Weight(B ∩ I_(a, b)) + Weight(B ∩ J_(d, n)) \
+                   ⟹ Weight(A ∩ J_(d, n)) - 2^a & quad≥quad Weight(B ∩ J_(d, n)).f
+  $
+  But $A$ contains fewer than $2^(a - d)$ items from $J_(d, n)$, so:
+  $
+    Weight(A ∩ J_(d,n)) & quad ≤quad 2^(a-d) ⋅ (1+(2^(-1))/(2^d-1)) ⋅(2^(d)-1)
+                          quad =quad 2^(a-d) ⋅ (2^d-2^(-1)) \
+                        & quad=quad 2^(a) - 2^(a-d-1)
+                          quad<quad 2^a.
+  $
+  This implies $0 > Weight(B ∩ J_(d, n))$, a
+  contradiction.
+]
+
+Hence, we can describe the Pareto-set exactly:
+$
+  P ([I_(a, b), J_(d, n)]) quad=quad
+  { A ∪ B mid(|) A subset.neq I_(a, b),med med B subset.eq J_(d, n),med med lr(|B|) < 2^(a - d) } quad dot(union)quad { I_(a, b) union B mid(|) B subset.eq J_(d, n) }.
+$
+Its size is exactly (using notation for binomial coefficients, not vectors):
+$ lr(|P ([I_(a, b), J_(d, n)])|) = (2^(b - a + 1) - 1) ⋅ [ sum_(i = 0)^(min (n,med 2^(a - d) - 1)) binom(n, i) ] + 2^n . $
+For $k, n in bb(N)$ with $2^k ≤ n \/ 2$, consider two instances:
+$
+  𝕀_1 & colon.eq [I_(2 k, med 2 k + n), med J_(k, n)], \
+  𝕀_2 & colon.eq [𝕀_1, med vec(2^(k + 1), 2^(k + 1)), vec(2^(k + 2), 2^(k + 2)), …, vec(2^(2 k - 1), 2^(2 k - 1))] .
+$
+$𝕀_1$ is a sub-instance of $𝕀_2$. $𝕀_2$ (which is exactly
+the instance #TODO[Insert reference.]) contains the same items as
+$[I_(k + 1, thin 2 k + n), med J_(k, n)]$. The sizes of their
+Pareto-sets can be bounded by:
+$
+  abs(P( 𝕀_1)) quad & ≥quad
+                      ( 2^(n + 1) - 1 ) ⋅ binom(n, 2^k - 1) + 2^n quad && ≥quad
+                                                                          ( 2^(n + 1) - 1 ) ⋅ (n/(2^k - 1))^(( 2^k - 1 )) \
+  abs(P( 𝕀_2)) quad & ≤quad
+                      ( 2^(k + n) - 1 ) ⋅ ( n + 1 ) + 2^n quad         && ≤quad
+                                                                          ( 2^(k + n) - 1 ) ⋅ ( n + 2 ).
+$
+
+The ratio between the two sizes is:
+$
+  abs(P ( 𝕀_1 ))/abs(P ( 𝕀_2 )) quad≥quad frac(2^(n + 1) - 1, 2^(k + n) - 1) ⋅ ( frac(n, 2^k - 1) )^(( 2^k - 1 )) ⋅ 1/(n+2)
+$
+For $k = log_2 ( sqrt(n) ) + 1$, we obtain:
+$
+  frac(abs(P ( 𝕀_1 )), abs(P ( 𝕀_2 ))) quad≥quad frac(2^(n + 1) - 1, ( sqrt(n) + 1 ) ⋅ 2^n - 1) ⋅ ( n / sqrt(n) )^(sqrt(n)) ⋅ 1/(n+2) quad=quad θ( n^(( sqrt(n) - 3 )\/ 2) ).
+$
+
+The length of the instance
+$𝕀_2$ is not $n$ but $m colon.eq lr(|𝕀_2|) = 2 n + k$, resulting
+in an actual lower bound of $O ( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
+
+In implementations of the Nemhauser-Ullmann algorithm, two
+Pareto-optimal packings can be treated as equivalent if they have the
+same total weight and total profit. Hence, the runtime can be
+upper-bounded not only by the sum of the sizes of the Pareto-sets
+$lr(|P (I_(1 : 1))|) + . . . + lr(|P (I_(1 : n))|)$, but even the sizes
+of the Pareto-sets when two packings with the same total weight and
+total profit are treated as identical. The only purpose of the leading
+factors
+$x_i = ( 1 + frac(2^(-i), 2^d - 1) )$
+in $J_(d, n)$ is to prevent two Pareto-optimal packings from having
+the same total profit. As a consequence, we also obtain the same bound
+for the runtime of the Nemhauser-Ullmann algorithm.
+
+#lemma[If
+  $A, B subset.eq [I_(a, b), J_(d, n)]$ are two distinct Pareto
+  optimal packings, then $Profit(A) ≠ Profit(B)$.
+]
+#proof[
+  Because both $A$ and $B$ are Pareto-optimal, we know by @small-Jdn that $abs(A ∩ J_(d, n)) < 2^(a - d)$ (same for $B$), hence:
+  $
+    Profit(A ∩ J_(d,n)) & < 2^(a-d) ⋅ (1+(2^(-1))(2^d-1)) ⋅ (2^d-1) \
+                        & = 2^(a-d) ⋅ (2^d-1/2) \
+                        & = 2^a - 2^(a-d-1) quad<quad 2^a.
+  $
+  (same for $Profit(B ∩ J_(d, n))$).
+
+  - If $A ∩ I_(a, b) ≠ B ∩ I_(a, b)$, the difference
+    between $Profit(A ∩ I_(a, b))$ and
+    $Profit(B ∩ I_(a, b))$ would be at least $2^a$, due to the
+    definition of $I_(a, b)$. In this case, the above inequality already
+    shows $Profit(A) ≠ Profit(B)$.
+
+  - If $A ∩ I_(a, b) = B ∩ I_(a, b)$, then
+    $A ∩ J_(d, n) ≠ B ∩ J_(d, n)$, and we need to show that
+    $Profit(A ∩ J_(d, n)) ≠ Profit(B ∩ J_(d, n))$.
+    This is equivalent to showing that any two distinct subsets of:
+    $ { (2^d - 1) + 2^(- 1), med med (2^d - 1) + 2^(- 2), med med . . ., med med (2^d - 1) + 2^(- n) }, $
+    have a distinct sum. This is true, because the total sum of the summands
+    $2^(- 1), . . ., 2^(- n)$ is always smaller than $1$, whereas
+    $2^d - 1 ≥ 1$.
+]
 
 
 == $k$-median Clustering
-Fix the dimension $d gt.eq 4$. Put
+Fix the dimension $d ≥ 4$. Put
 $c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
-the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d gt.eq 4$, we
-know that $5 d^2 - 6 d gt.eq 4 d^2$, hence:
+the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d ≥ 4$, we
+know that $5 d^2 - 6 d ≥ 4 d^2$, hence:
 $ c = frac(sqrt(4 d^2 + (d - 3)^2) + d - 3, 2) > frac(2 d + d - 3, 2) > d . $
 Let $e_i$ be the $i$th $d$-dimensional standard basis vector. Consider
 the following weighted instance of $d + 2$ points:
