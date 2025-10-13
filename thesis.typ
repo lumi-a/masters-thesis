@@ -1121,37 +1121,33 @@ The following example is the instance found by @Lorieau[p:]:
     X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0], quad quad
         Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
   $
-  #let deliveries = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (0, 0)) // ((2, 0), (2, 0), (4, 0), (4, 0), (4, 0), (0, 0))
-  #let production = ((4, 0), (4, 0), (6, 0), (6, 0), (6, 0), (6, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0), (7, 0)) // ((2, 0), (2, 0), (3, 0), (3, 0), (3, 0), (3, 0))
-  For $k=3$, this amounts to:
-  #let list = arr => $[#arr.map(x => str(x.at(0))).join(", ")]$
-  $
-    X = #list(deliveries), quad quad
-    Y = #list(production)
-  $
-  #let opt-permut = (9, 13, 12, 1, 10, 0, 7, 5, 8, 3, 11, 4, 6, 2)
-  #let iterround-permut = range(deliveries.len())
-
-  #let list = arr => $[#arr.map(x => str(deliveries.at(x).at(0))).join(", ")]$
-  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
-  $
-    π_IterRound (X) = X & = #list(iterround-permut), quad quad \
-              π_Opt (X) & = #list(opt-permut), quad quad
-  $
-  #let draw-vec = d => $#d.at(0)$
-  We use the same visualisation as in @example-gasoline-cookies. Because $d=1$, we only draw one bar per time-point.
+  #let deliveries = ((16,), (16,), (24,), (24,), (24,), (24,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (0,))
+  #let production = ((16,), (16,), (24,), (24,), (24,), (24,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,))
+  We consider the case $k=5$. This instance has $62$ items, which is too large to write out in full. We plot the permutation-matrices for some optimal solution $π_Opt$ and the solution $π_IterRound$ found by @alg-iterative-rounding. Filled squares represent a $1$, empty squares a $0$.
+  #let opt-permut = (30, 61, 31, 0, 32, 1, 33, 2, 34, 3, 35, 4, 36, 5, 37, 6, 38, 7, 39, 8, 40, 9, 41, 10, 42, 11, 43, 12, 44, 13, 45, 14, 46, 15, 47, 16, 48, 17, 49, 18, 50, 19, 51, 20, 52, 21, 53, 22, 54, 23, 55, 24, 56, 25, 57, 26, 58, 27, 59, 28, 60, 29)
+  #let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61)
   #figure(
-    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
-    gap: 1em,
-    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $14$.],
-  )
-  #h(1em)
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
+  )<permutation-matrices-lucas>
+  Indeed, $π_IterRound$ is the identityWe also plot the progression of $BestRowValue$ over the course of @alg-iterative-rounding for this instance. These values are the result of minimisation-LPs and at every step of the algorithm, an additional constraint is imposed on that minimisation-LP, so this plot must be non-decreasing over time.
+  #let best-row-values = (31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 62)
   #figure(
-    draw-gasoline.draw-permutation(opt-permut, deliveries, production, draw-vec: draw-vec, box-height: 0pt, one-d: true),
+    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, 67)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
+    caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
+  ) <best-row-value-progression-lucas>
+  Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" (like in @example-gasoline-cookies) makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. This instance here is $1$-dimensional, so only the stock of one "ingredient" needs to be tracked over time.
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_Opt$ over time. The maximum capacity is $8$.],
+    caption: [Visualising the "warehouse" for $π_IterRound$ over time. The maximum capacity is $62$.],
   )
-  Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
+  #figure(
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
+    gap: 1em,
+    caption: [Visualising the "warehouse" for $π_Opt$ over time. The maximum capacity is $32$.],
+  )
+  Thus, for this instance, $IterRound(I)/Opt(I) = 62/32 = 1.9375$. More generally, if $I_k$  is the above instance for some $k$, @Lorieau[p:] showed that $IterRound(I_k)/Opt(I_k)$ is at least $2-2^(1-k)$.
 ]<example-plot-gasoline-lucas>
 
 #let gasoline-weak-label = "[G-Low]"
@@ -1172,9 +1168,9 @@ $
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
 $<eq-gasoline-strong>
 #let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
-The two instances only differ in three places, in the constant scalars preceding the $e_j$. While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems easier to prove asymptotic bounds for because the solutions found by @alg-iterative-rounding have more structure (compare @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong). That said, we did not manage to prove any asymptotic bounds for either instance and can only offer scores for specific parameters.
+The two instances only differ in three places, in the constant scalars preceding the $e_j$. Compared to the values preceding the $e_1$, these scalars are quite small.  While #gasoline-strong seems to achieve higher scores, but #gasoline-weak seems better suited for proving asymptotic bounds, because the result of @alg-iterative-rounding on #gasoline-weak have more structure (compare @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong). That said, we did not manage to prove any asymptotic bounds for either instance and can only offer scores for specific parameters.
 
-#example[We plot an optimal solution and the solution found by @alg-iterative-rounding for #gasoline-weak, with $d=3$ and $k=5$. This instance has $124$ elements and is unwieldy to write down in full, so we only show the permutation-matrices. Filled squares correspond to an entry of $1$, unmarked squares correspond to $0$.
+#example[Consider an optimal solution $π_Opt$ and the solution $π_IterRound$ found by @alg-iterative-rounding for #gasoline-weak, with $d=3$ and $k=5$. This instance has $124$ elements. We draw the same plots as in @example-plot-gasoline-lucas.
   #let deliveries = ((16, 2, 0), (16, 0, 2), (16, 2, 0), (16, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 2, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 0, 2))
   #let production = ((16, 1, 0), (16, 0, 1), (16, 1, 0), (16, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1))
   #let opt-permut = (60, 123, 61, 91, 62, 1, 63, 0, 64, 3, 65, 2, 66, 5, 67, 4, 68, 7, 69, 6, 70, 9, 71, 8, 72, 11, 73, 10, 74, 13, 75, 12, 76, 15, 77, 14, 78, 17, 79, 16, 80, 19, 81, 18, 82, 21, 83, 20, 84, 23, 85, 22, 86, 25, 87, 24, 88, 27, 89, 26, 90, 29, 92, 28, 93, 31, 94, 30, 95, 33, 96, 32, 97, 35, 98, 34, 99, 37, 100, 36, 101, 39, 102, 38, 103, 41, 104, 40, 105, 43, 106, 42, 107, 45, 108, 44, 109, 47, 110, 46, 111, 49, 112, 48, 113, 51, 114, 50, 115, 53, 116, 52, 117, 55, 118, 54, 119, 57, 120, 56, 121, 59, 122, 58)
@@ -1188,18 +1184,18 @@ The two instances only differ in three places, in the constant scalars preceding
     lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
     caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
   ) <best-row-value-progression-weak>
-  Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  The first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $62+32+31=125$.],
+    caption: [Visualising the "warehouse" for $π_IterRound$ over time.\ The maximum capacity is $62+32+31=125$.],
   )
   #figure(
     draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising some $π_Opt$ over time. The maximum capacity is $32+2+2=36$.],
+    caption: [Visualising the "warehouse" for some $π_Opt$ over time.\ The maximum capacity is $32+2+2=36$.],
   )
-  Here, $IterRound(I)\/Opt(I) = 125\/36 ≈ 3.47$.
+  Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$.
 ]<example-plot-gasoline-funsearch-weak>
 #example[
   We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
@@ -1220,15 +1216,17 @@ The two instances only differ in three places, in the constant scalars preceding
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $62+62+62=186$.],
+    caption: [Visualising the "warehouse" for  $π_IterRound$ over time.\ The maximum capacity is $62+62+62=186$.],
   )
   #figure(
     draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_Opt$ over time. The maximum capacity is $32+4+4=40$.],
+    caption: [Visualising the "warehouse" for $π_Opt$ over time.\ The maximum capacity is $32+4+4=40$.],
   )
   Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
+#TODO[Values and plots for values of $d$ and $k$.]
+
 #TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
 #TODO[Grammar-/ Spell Checker]
 

@@ -36,7 +36,7 @@
   let timeline = production-deliveries.fold((range(dimension).map(_ => 0),), draw-state)
   let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
   let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold(range(dimension).map(_ => -10000), max)
-  let maxmaxhouse = calc.max(maxhouse.at(0), maxhouse.at(1))
+  let maxmaxhouse = calc.max(..maxhouse)
 
   if args.at("lq", default: false) {
     timeline = timeline.map(warehouse => sub(warehouse, minhouse))
