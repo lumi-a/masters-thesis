@@ -1154,94 +1154,80 @@ The following example is the instance found by @Lorieau[p:]:
   Thus, $IterRound(I)\/Opt(I)$ for this instance $I$ is $14\/8 = 1.75$.
 ]<example-plot-gasoline-lucas>
 
+#let gasoline-weak-label = "[G-Low]"
+#let gasoline-strong-label = "[G-High]"
+
 In contrast, the FunSearch found the following two very similar instances. Fix the dimension $d ≥ 2$ and parameter $k$.
-#math.equation(block: true, numbering: "(G1)")[$
+
+$
   X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[2 e_j]),quad
-      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]
-          #h(2em)
-$]<gasoline-weak>
-#math.equation(block: true, numbering: "(G1)")[$
+      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 1e_j]
+          #h(2em) #text(font: font-text, weight: "regular")[#gasoline-weak-label]
+$<eq-gasoline-weak>
+#let gasoline-weak = link(<eq-gasoline-weak>, gasoline-weak-label)
+#v(2em)
+$
   X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 4 e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[4 e_j]),quad
       Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]
-          #h(2em)
-$]<gasoline-strong>
-The two instances only differ in three places: In the constant scalars preceding the $e_j$.
+          #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
+$<eq-gasoline-strong>
+#let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
+The two instances only differ in three places, in the constant scalars preceding the $e_j$. While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems easier to prove asymptotic bounds for because the solutions found by @alg-iterative-rounding have more structure (compare @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong). That said, we did not manage to prove any asymptotic bounds for either instance and can only offer scores for specific parameters.
 
-For both instances, the first entry of every vector is always the same as in @example-plot-gasoline-lucas, whereas the remaining entries only have values from ${0, 1, 2}$ (for @gasoline-weak #TODO[These references are weird, why don't they use the equation labels?]) or ${0,2,4}$ (for @gasoline-strong), regardless of the dimension $d$ and choice of $k$.
-
-#example[
-  #let deliveries = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 1, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 1))
-  #let production = ((8, 1, 0), (8, 0, 1), (8, 1, 0), (8, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (12, 1, 0), (12, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (14, 1, 0), (14, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1), (15, 1, 0), (15, 0, 1))
-  #let opt-permut = (40, 43, 53, 59, 29, 0, 41, 1, 55, 2, 45, 3, 42, 10, 57, 9, 54, 8, 48, 5, 51, 4, 33, 11, 50, 6, 56, 7, 38, 14, 39, 23, 36, 18, 47, 21, 44, 26, 46, 17, 30, 22, 32, 27, 49, 12, 28, 15, 37, 24, 34, 19, 52, 16, 31, 13, 35, 20, 58, 25)
-  #let iterround-permut = (28, 43, 29, 59, 4, 5, 30, 0, 7, 31, 1, 6, 32, 8, 13, 33, 9, 12, 34, 10, 15, 35, 11, 14, 36, 16, 17, 18, 19, 20, 37, 21, 38, 22, 39, 23, 40, 24, 41, 25, 42, 26, 44, 27, 45, 46, 47, 48, 49, 50, 2, 51, 52, 53, 54, 55, 56, 3, 57, 58)
-  /*
-  #let breakjoin = arr => {
-    let chunks = arr.chunks(calc.floor(arr.len() / 2))
-    $#chunks.map(els => els.join(", ")).join($\ &$)$
-  }
-  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..x.map(str))$))]$
-  For $d=2$ and $k=4$, the instance #TODO[insert reference to instance] is:
-  #TODO[Does _anyone_ profit from seeing the specific instance and permutations??]
-  #text(size: 0.5em)[$
-    X = #list(deliveries) \
-    Y = #list(production)
-  $]
-  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
-  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
-  #text(size: 0.45em)[$
-    π_IterRound (X) = #list(iterround-permut), quad quad \
-    π_Opt (X) = #list(opt-permut), quad quad
-  $]
-  */
-  We plot @gasoline-weak for $d=3$ and $k=4$. #TODO[If you want, there's commented-out code above for showing the explicit instance and permutations, but it's output is _large_ and I don't think it contributes much.] Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and use a regular line-chart instead. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+#example[We plot an optimal solution and the solution found by @alg-iterative-rounding for #gasoline-weak, with $d=3$ and $k=5$. This instance has $124$ elements and is unwieldy to write down in full, so we only show the permutation-matrices. Filled squares correspond to an entry of $1$, unmarked squares correspond to $0$.
+  #let deliveries = ((16, 2, 0), (16, 0, 2), (16, 2, 0), (16, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 2, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 0, 2))
+  #let production = ((16, 1, 0), (16, 0, 1), (16, 1, 0), (16, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (24, 1, 0), (24, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (28, 1, 0), (28, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (30, 1, 0), (30, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1), (31, 1, 0), (31, 0, 1))
+  #let opt-permut = (60, 123, 61, 91, 62, 1, 63, 0, 64, 3, 65, 2, 66, 5, 67, 4, 68, 7, 69, 6, 70, 9, 71, 8, 72, 11, 73, 10, 74, 13, 75, 12, 76, 15, 77, 14, 78, 17, 79, 16, 80, 19, 81, 18, 82, 21, 83, 20, 84, 23, 85, 22, 86, 25, 87, 24, 88, 27, 89, 26, 90, 29, 92, 28, 93, 31, 94, 30, 95, 33, 96, 32, 97, 35, 98, 34, 99, 37, 100, 36, 101, 39, 102, 38, 103, 41, 104, 40, 105, 43, 106, 42, 107, 45, 108, 44, 109, 47, 110, 46, 111, 49, 112, 48, 113, 51, 114, 50, 115, 53, 116, 52, 117, 55, 118, 54, 119, 57, 120, 56, 121, 59, 122, 58)
+  #let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123)
   #figure(
-    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 25),
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
+  )<permutation-matrices-weak>
+  #let best-row-values = (34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 125, 125, 125)
+  #figure(
+    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
+    caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
+  ) <best-row-value-progression-weak>
+  Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. As in @example-gasoline-cookies, the first component is shown in #Blue[blue] and the second in #Purple[purple], while the third one is shown in #Red[red].
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $23+7+7 = 37$.],
+    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $62+32+31=125$.],
   )
   #figure(
-    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 25),
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_Opt$ over time. The maximum capacity is $16+2+2=20$.],
+    caption: [Visualising some $π_Opt$ over time. The maximum capacity is $32+2+2=36$.],
   )
-  Here, $IterRound(I)\/Opt(I) = 37\/20 = 1.85$.
+  Here, $IterRound(I)\/Opt(I) = 125\/36 ≈ 3.47$.
 ]<example-plot-gasoline-funsearch-weak>
 #example[
-  #let deliveries = ((8, 4, 0), (8, 0, 4), (8, 4, 0), (8, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (12, 4, 0), (12, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (14, 4, 0), (14, 0, 4), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 4, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (16, 0, 0), (0, 0, 4))
-  #let production = ((8, 2, 0), (8, 0, 2), (8, 2, 0), (8, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (12, 2, 0), (12, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (14, 2, 0), (14, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2), (15, 2, 0), (15, 0, 2))
-  #let opt-permut = (41, 59, 34, 43, 38, 3, 46, 2, 57, 1, 49, 0, 36, 5, 37, 10, 42, 9, 31, 6, 51, 7, 28, 8, 40, 11, 58, 4, 29, 13, 32, 12, 35, 27, 47, 24, 30, 19, 53, 18, 44, 15, 56, 26, 39, 23, 55, 14, 54, 17, 50, 22, 33, 21, 45, 16, 48, 25, 52, 20)
-  #let iterround-permut = (28, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59)
-  /*
-  #let breakjoin = arr => {
-    let chunks = arr.chunks(calc.floor(arr.len() / 2))
-    $#chunks.map(els => els.join(", ")).join($\ &$)$
-  }
-  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..x.map(str))$))]$
-  For $d=2$ and $k=4$, the instance #TODO[insert reference to instance] is:
-  #TODO[Does _anyone_ profit from seeing the specific instance and permutations??]
-  #text(size: 0.5em)[$
-    X = #list(deliveries) \
-    Y = #list(production)
-  $]
-  #let list = arr => $[&#breakjoin(arr.map(x => $#math.vec(..deliveries.at(x).map(str))$))]$
-  The permutation found by @alg-iterative-rounding, and an optimal permutation, are as follows:
-  #text(size: 0.45em)[$
-    π_IterRound (X) = #list(iterround-permut), quad quad \
-    π_Opt (X) = #list(opt-permut), quad quad
-  $]
-  */
-  We plot @gasoline-strong for $d=3$ and $k=4$ in the same way as @example-plot-gasoline-funsearch-weak.
+  We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
+
+  #let deliveries = ((16, 4, 0), (16, 0, 4), (16, 4, 0), (16, 0, 4), (24, 4, 0), (24, 0, 4), (24, 4, 0), (24, 0, 4), (24, 4, 0), (24, 0, 4), (24, 4, 0), (24, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (28, 4, 0), (28, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (30, 4, 0), (30, 0, 4), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 4, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 0, 4))
+  #let production = ((16, 2, 0), (16, 0, 2), (16, 2, 0), (16, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2), (31, 2, 0), (31, 0, 2))
+  #let opt-permut = (60, 91, 61, 123, 62, 0, 63, 1, 64, 2, 65, 3, 66, 4, 67, 5, 68, 6, 69, 7, 70, 8, 71, 9, 72, 10, 73, 11, 74, 12, 75, 13, 76, 14, 77, 15, 78, 16, 79, 17, 80, 18, 81, 19, 82, 20, 83, 21, 84, 22, 85, 23, 86, 24, 87, 25, 88, 26, 89, 27, 90, 28, 92, 29, 93, 30, 94, 31, 95, 32, 96, 33, 97, 34, 98, 35, 99, 36, 100, 37, 101, 38, 102, 39, 103, 40, 104, 41, 105, 42, 106, 43, 107, 44, 108, 45, 109, 46, 110, 47, 111, 48, 112, 49, 113, 50, 114, 51, 115, 52, 116, 53, 117, 54, 118, 55, 119, 56, 120, 57, 121, 58, 122, 59)
+  #let iterround-permut = (60, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123)
   #figure(
-    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 32),
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
+  )<permutation-matrices-strong>
+  #let iterround-values = (36, 38, 40, 42, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 186, 186, 186)
+  #figure(
+    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: green, range(iterround-values.len()), iterround-values)),
+    caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
+  ) <best-row-value-progression-strong>
+  #figure(
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $30+30+30=90$.],
+    caption: [Visualising $π_IterRound$ over time. The maximum capacity is $62+62+62=186$.],
   )
   #figure(
-    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 32),
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
-    caption: [Visualising $π_Opt$ over time. The maximum capacity is $16+4+4=24$.],
+    caption: [Visualising $π_Opt$ over time. The maximum capacity is $32+4+4=40$.],
   )
-  Here, $IterRound(I)\/Opt(I) = 90\/24 = 3.75$.
+  Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
 #TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
 #TODO[Grammar-/ Spell Checker]

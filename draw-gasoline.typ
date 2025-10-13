@@ -75,3 +75,9 @@
 
 
 #let typeset-permutation = (pi, deliveries) => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
+
+#let permutation-matrix = pi => {
+  let cellwidth = 0.15em
+  // We don't use a table here, way too many cells. We just colour the cells we care about⎵⎵.⎵⎵
+  box(stroke: 0.1em + gray, outset: 0.05em, width: pi.len() * cellwidth, height: pi.len() * cellwidth, pi.enumerate().map(ix-x => place(dx: ix-x.at(0) * cellwidth, dy: ix-x.at(1) * cellwidth, square(fill: black, stroke: none, width: cellwidth))).sum())
+}
