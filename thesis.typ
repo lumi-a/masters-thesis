@@ -6,6 +6,7 @@
 #let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
 #let TODO = body => text(size: 0.5em, fill: green)[\[TODO: #body\]]
 
+
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true)
 #let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true)
@@ -536,10 +537,7 @@ It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embed
 Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$.
 
 
-@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. We will write out this construction in #TODO[Insert reference]
-to show how we modified it.
-
-@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
+@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. @rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
 
 
 
@@ -548,8 +546,7 @@ Making progress on the different open problems in @section-problems-definitions 
 - For bin-packing, we would like to find an instance where the randomised Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution.
 - For the Pareto-sets of knapsack-problems, we would like to find an instance $I$ where an intermittent Pareto-set $P(I_(1:i))$ is much larger than the Pareto-set $P(I)$ of the whole instance.
 - For the Price of Hierarchy for $k$-median clustering, we would like to find instances whose Price of Hierarchy is large.
-- For the generalised gasoline problem, we would like to find instances where the iterative-rounding algorithm #TODO[Insert reference once you write down the algorithm.]
-  performs poorly compared to an optimum soution.
+- For the generalised gasoline problem, we would like to find instances where @alg-iterative-rounding performs poorly compared to an optimum soution.
 
 
 == Local Search
@@ -1130,7 +1127,7 @@ The following example is the instance found by @Lorieau[p:]:
     h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
     caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
   )<permutation-matrices-lucas>
-  Indeed, $π_IterRound$ is the identityWe also plot the progression of $BestRowValue$ over the course of @alg-iterative-rounding for this instance. These values are the result of minimisation-LPs and at every step of the algorithm, an additional constraint is imposed on that minimisation-LP, so this plot must be non-decreasing over time.
+  Indeed, $π_IterRound$ is the identity. We also plot the progression of $BestRowValue$ over the course of @alg-iterative-rounding for this instance. These values are the result of minimisation-LPs whose set of constraints grows over time, so this plot must be non-decreasing over time.
   #let best-row-values = (31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 62)
   #figure(
     lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, 67)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
@@ -1138,12 +1135,12 @@ The following example is the instance found by @Lorieau[p:]:
   ) <best-row-value-progression-lucas>
   Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" (like in @example-gasoline-cookies) makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. This instance here is $1$-dimensional, so only the stock of one "ingredient" needs to be tracked over time.
   #figure(
-    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64, diagram-height: 120pt),
     gap: 1em,
     caption: [Visualising the "warehouse" for $π_IterRound$ over time. The maximum capacity is $62$.],
   )
   #figure(
-    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64, diagram-height: 120pt),
     gap: 1em,
     caption: [Visualising the "warehouse" for $π_Opt$ over time. The maximum capacity is $32$.],
   )
@@ -1153,7 +1150,7 @@ The following example is the instance found by @Lorieau[p:]:
 #let gasoline-weak-label = "[G-Low]"
 #let gasoline-strong-label = "[G-High]"
 
-In contrast, the FunSearch found the following two very similar instances. Fix the dimension $d ≥ 2$ and parameter $k$.
+FunSearch found the following two very similar instances. Fix the dimension $d ≥ 2$ and parameter $k$.
 
 $
   X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[2 e_j]),quad
@@ -1168,7 +1165,9 @@ $
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
 $<eq-gasoline-strong>
 #let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
-The two instances only differ in three places, in the constant scalars preceding the $e_j$. Compared to the values preceding the $e_1$, these scalars are quite small.  While #gasoline-strong seems to achieve higher scores, but #gasoline-weak seems better suited for proving asymptotic bounds, because the result of @alg-iterative-rounding on #gasoline-weak have more structure (compare @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong). That said, we did not manage to prove any asymptotic bounds for either instance and can only offer scores for specific parameters.
+The two instances only differ in three places, in the constant scalars preceding the $e_j$. Compared to the values $u_i$ preceding the $e_1$, these scalars are quite small.
+
+While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems better suited for proving asymptotic bounds, because the outputs of @alg-iterative-rounding have more structure there (compare e.g. @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong below). That said, we did not manage to prove any asymptotic bounds for either instance and only note scores for specific parameters.
 
 #example[Consider an optimal solution $π_Opt$ and the solution $π_IterRound$ found by @alg-iterative-rounding for #gasoline-weak, with $d=3$ and $k=5$. This instance has $124$ elements. We draw the same plots as in @example-plot-gasoline-lucas.
   #let deliveries = ((16, 2, 0), (16, 0, 2), (16, 2, 0), (16, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (24, 2, 0), (24, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (28, 2, 0), (28, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (30, 2, 0), (30, 0, 2), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 2, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (32, 0, 0), (0, 0, 2))
@@ -1195,7 +1194,7 @@ The two instances only differ in three places, in the constant scalars preceding
     gap: 1em,
     caption: [Visualising the "warehouse" for some $π_Opt$ over time.\ The maximum capacity is $32+2+2=36$.],
   )
-  Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$.
+  Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$. This shows $ρ_IterRound^((3)) ≥ 3.46$, disproving one of the conjectures of @rajkovic[p:].
 ]<example-plot-gasoline-funsearch-weak>
 #example[
   We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
@@ -1223,9 +1222,96 @@ The two instances only differ in three places, in the constant scalars preceding
     gap: 1em,
     caption: [Visualising the "warehouse" for $π_Opt$ over time.\ The maximum capacity is $32+4+4=40$.],
   )
-  Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$.
+  Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$, which shows $ρ_IterRound^((3)) ≥ 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
-#TODO[Values and plots for values of $d$ and $k$.]
+
+While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the size of the instances lead to perfectly straight lines. _If_ these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
+
+#let gasoline-plots = file => {
+  let data = json(file)
+  let colormap = (green, blue)
+
+  let simplify(x, n: 1, times-n: false) = {
+    // We want to typeset fractions nicely, but doing so is _really_ hard.
+    // Next time, better just hardcode the sixteen numbers you care about.
+    if calc.abs(calc.round(x * n) - (x * n)) < 0.00001 {
+      if n != 1 {
+        if times-n {
+          if (x * n) == 1 {
+            $n \/ #n$
+          } else {
+            $#(x * n) n \/ #n$
+          }
+        } else {
+          $#(x * n) \/ #n$
+        }
+      } else {
+        if times-n {
+          if x == 1 {
+            $n$
+          } else {
+            $#x n$
+          }
+        } else {
+          if x == 0 {
+            $$
+          } else if x > 0 {
+            $+#x$
+          } else {
+            $#x$
+          }
+        }
+      }
+    } else {
+      simplify(x, n: n + 1, times-n: times-n)
+    }
+  }
+
+  let maxlengths = calc.max(..data.values().map(v => calc.max(..v.at("lengths"))))
+  let maxscore = calc.max(..data.values().map(v => calc.max(..v.at("apx"))))
+
+  data
+    .keys()
+    .map(d => {
+      let D = data.at(d)
+
+      let apx-slope = (D.at("apx").at(-1) - D.at("apx").at(0)) / (D.at("lengths").at(-1) - D.at("lengths").at(0))
+      let apx-intercept = D.at("apx").at(0) - apx-slope * D.at("lengths").at(0)
+
+      let opt-slope = (D.at("opt").at(-1) - D.at("opt").at(0)) / (D.at("lengths").at(-1) - D.at("lengths").at(0))
+      let opt-intercept = D.at("opt").at(0) - opt-slope * D.at("lengths").at(0)
+
+      set text(.8em)
+      show lq.selector(lq.legend): set grid(gutter: 0pt)
+
+      figure(
+        lq.diagram(
+          ylabel: [Value],
+          xlabel: [Length of $X$],
+          width: 7cm,
+          xaxis: (lim: (0, maxlengths * 1.05)),
+          yaxis: (lim: (0, maxscore * 1.05)),
+          legend: (position: top + left),
+          cycle: colormap,
+          lq.plot(D.at("lengths"), D.at("apx"), mark: "s", label: [Iterative Rounding]),
+          lq.plot(D.at("lengths"), D.at("opt"), mark: "x", label: [Optimal Value]),
+        ),
+        caption: [For $d=#d$, $IterRound ∼ #simplify(apx-slope, times-n: true) #simplify(apx-intercept)$ and $Opt ∼ #simplify(opt-slope, times-n: true) #simplify(opt-intercept)$. If this holds asymptotically, it would imply $ρ^((#d))_IterRound ≥ #(calc.round(1000 * apx-slope / opt-slope) / 1000)$.],
+      )
+    })
+}
+#subpar.grid(
+  columns: (1fr, 1fr),
+  ..gasoline-plots("gasoline-empirical-values-weak.json"),
+  gap: 1em,
+  caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$ plotted against the length $n≔|X|$ of the instance, along with empirical linear extrapolations.]
+)
+#subpar.grid(
+  columns: (1fr, 1fr),
+  ..gasoline-plots("gasoline-empirical-values-weak.json"),
+  gap: 1em,
+  caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ plotted against the length $n≔|X|$ of the instance, along with empirical linear extrapolations.]
+)
 
 #TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
 #TODO[Grammar-/ Spell Checker]
