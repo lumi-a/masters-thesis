@@ -1225,7 +1225,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$, which shows $ρ_IterRound^((3)) ≥ 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
 
-While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the size of the instances lead to perfectly straight lines. _If_ these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
+While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the size of the instances showed perfectly straight lines. _If_ these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
   let data = json(file)
@@ -1243,7 +1243,13 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
             $#(x * n) n \/ #n$
           }
         } else {
-          $#(x * n) \/ #n$
+          if x == 0 {
+            $$
+          } else if x > 0 {
+            $+#(x * n) \/ #n$
+          } else {
+            $#(x * n) \/ #n$
+          }
         }
       } else {
         if times-n {
@@ -1267,8 +1273,8 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
     }
   }
 
-  let maxlengths = calc.max(..data.values().map(v => calc.max(..v.at("lengths"))))
-  let maxscore = calc.max(..data.values().map(v => calc.max(..v.at("apx"))))
+  let maxlengths = calc.max(..data.values().map(v => calc.max(..v.at("lengths")))) * 1.05
+  let maxscore = calc.max(..data.values().map(v => calc.max(..v.at("apx")))) + 20
 
   data
     .keys()
@@ -1278,7 +1284,7 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
       let apx-slope = (D.at("apx").at(-1) - D.at("apx").at(0)) / (D.at("lengths").at(-1) - D.at("lengths").at(0))
       let apx-intercept = D.at("apx").at(0) - apx-slope * D.at("lengths").at(0)
 
-      let opt-slope = (D.at("opt").at(-1) - D.at("opt").at(0)) / (D.at("lengths").at(-1) - D.at("lengths").at(0))
+      let opt-slope = (D.at("opt").at(1) - D.at("opt").at(0)) / (D.at("lengths").at(1) - D.at("lengths").at(0))
       let opt-intercept = D.at("opt").at(0) - opt-slope * D.at("lengths").at(0)
 
       set text(.8em)
@@ -1289,14 +1295,24 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
           ylabel: [Value],
           xlabel: [Length of $X$],
           width: 7cm,
-          xaxis: (lim: (0, maxlengths * 1.05)),
-          yaxis: (lim: (0, maxscore * 1.05)),
+          xaxis: (lim: (0, maxlengths)),
+          yaxis: (lim: (0, maxscore)),
           legend: (position: top + left),
           cycle: colormap,
-          lq.plot(D.at("lengths"), D.at("apx"), mark: "s", label: [Iterative Rounding]),
+          lq.plot(D.at("lengths"), D.at("apx"), mark: ".", label: [Iterative Rounding]),
           lq.plot(D.at("lengths"), D.at("opt"), mark: "x", label: [Optimal Value]),
+          ..D
+            .at("lengths")
+            .zip(D.at("apx"))
+            .enumerate()
+            .map(vs => {
+              let k = vs.at(0) + 2
+              let x = vs.at(1).at(0)
+              let y = vs.at(1).at(1)
+              lq.place(x, y + 9, text(0.8em)[$k"="#k$])
+            }),
         ),
-        caption: [For $d=#d$, $IterRound ∼ #simplify(apx-slope, times-n: true) #simplify(apx-intercept)$ and $Opt ∼ #simplify(opt-slope, times-n: true) #simplify(opt-intercept)$. If this holds asymptotically, it would imply $ρ^((#d))_IterRound ≥ #(calc.round(1000 * apx-slope / opt-slope) / 1000)$.],
+        caption: [For $d=#d$, $IterRound ∼ #simplify(apx-slope, times-n: true) #simplify(apx-intercept)$ and $Opt ∼ #simplify(opt-slope, times-n: true) #simplify(opt-intercept)$. If this holds asymptotically, it would imply $ρ^((#d))_IterRound ≥ #(calc.round(1000000 * apx-slope / opt-slope) / 1000000)$.],
       )
     })
 }
@@ -1304,13 +1320,14 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   columns: (1fr, 1fr),
   ..gasoline-plots("gasoline-empirical-values-weak.json"),
   gap: 1em,
-  caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$ plotted against the length $n≔|X|$ of the instance, along with empirical linear extrapolations.]
+  caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$  (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations.]
 )
+
 #subpar.grid(
   columns: (1fr, 1fr),
-  ..gasoline-plots("gasoline-empirical-values-weak.json"),
+  ..gasoline-plots("gasoline-empirical-values-strong.json"),
   gap: 1em,
-  caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ plotted against the length $n≔|X|$ of the instance, along with empirical linear extrapolations.]
+  caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations.]
 )
 
 #TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
