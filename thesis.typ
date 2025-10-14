@@ -218,8 +218,6 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
 
 @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
-#TODO[Maybe use an example where all pareto-sets are distinct, to actually use the implementation-runtime of nemhauser-ullmann]
-
 #example[
   Consider the items:
   $
@@ -425,7 +423,7 @@ In particular, the instance in @example-hierarchical-clustering proves that $PoH
 
 == Generalised Gasoline-Problem
 
-As a motivating example for the problem (similar to @Lorieau[p:]), we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, on Monday, we might be asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 1)$ for our cookie-production, whereas each Tuesday, we must consume more and sweeter cookies, hence having to use $y_2 = vec(5, 5)$ amounts of flour and sugar. We can get flour and sugar delivered to our factory overnight, but we must pick these amounts from a list of seven possible delivery-trucks that are the same every week, but we can choose on which day of the week we would like to receive each truck. For instance, we can choose to have $x_1 = vec(4, 4)$ flour and sugar delivered to our factory, or $x_2 = vec(7, 10)$. Within a week, we can only order each delivery-truck exactly once, and we can only accept one delivery-truck per night because our driveway is too narrow. It's unlikely that we will be fortunate enough to have, for every demand-value $y_i$, a matching delivery-value $x_i$, so we must resort to storing leftover ingredients in our yet-to-be-built warehouse overnight.
+As a motivating example for the problem (similar to @Lorieau[p:]), we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, on Monday, we might be asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 1)$ for our cookie-production, whereas each Tuesday, we must consume more and sweeter cookies, hence having to use $y_2 = vec(5, 5)$ amounts of flour and sugar. We can get flour and sugar delivered to our factory overnight, but we must pick these amounts from a list of seven possible delivery-trucks that are the same every week, but we can choose on which day of the week we would like to receive each truck. For instance, we can choose to have $x_1 = vec(4, 4)$ flour and sugar delivered to our factory on some day, or $x_2 = vec(7, 10)$. Within a week, we can only order each of the seven delivery-trucks exactly once, and we can only accept one delivery-truck per night because our driveway is too narrow. It's unlikely that we will be fortunate enough to have, for every demand-vector $y_i$, a matching delivery-vector $x_i$ (in which case we would just order exactly the ingredients that we'd need on the next day), so we must resort to storing leftover ingredients overnight in our yet-to-be-built warehouse.
 
 Corporate has been kind enough to ensure that $y_1 + … + y_7 = x_1 + … + x_7$, meaning that, at the end of every week, we will have exactly the same amount of ingredients in our warehouse as at the beginning of the week. However, storing ingredients takes costly space, so we would like to minimise the total amount of warehouse we need to build, while the only free variable under our control is the permutation of the delivery-trucks across the week. Let $S_n$ be the set of permutations on $n$ elements. Mathematically, our task is:
 $
@@ -446,11 +444,11 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
           quad
           Y = & [vec(3, 4), vec(2, 8), vec(8, 1), vec(1, 5), vec(9, 4), vec(2, 10), vec(7, 5)],
   $
-  (corporate warranted $x_1"+"…"+"x_7=y_1"+"…"+"y_7$), together with the following permutation of deliveries:
+  ($x_1"+"…"+"x_7=y_1"+"…"+"y_7$, as warranted by corporate), together with the following permutation of deliveries:
   $
     π(X) ≔ #draw-gasoline.typeset-permutation(iterative-rounding-permutation, deliveries).
   $
-  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (blue) and sugar (purple) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
+  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (#Blue[blue]) and sugar (#Purple[purple]) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse at night, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies during the day. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
   #figure(
     draw-gasoline.draw-permutation(iterative-rounding-permutation, deliveries, production),
     kind: image,
@@ -1225,7 +1223,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$, which shows $ρ_IterRound^((3)) ≥ 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
 
-While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the size of the instances showed perfectly straight lines. _If_ these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
+While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the size of the instances showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$ (the actual values are $20$ and $24$, respectively). _If_ these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
   let data = json(file)
@@ -1281,10 +1279,10 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
     .map(d => {
       let D = data.at(d)
 
-      let apx-slope = (D.at("apx").at(-1) - D.at("apx").at(0)) / (D.at("lengths").at(-1) - D.at("lengths").at(0))
+      let apx-slope = (D.at("apx").at(-1) - D.at("apx").at(-2)) / (D.at("lengths").at(-1) - D.at("lengths").at(-2))
       let apx-intercept = D.at("apx").at(0) - apx-slope * D.at("lengths").at(0)
 
-      let opt-slope = (D.at("opt").at(1) - D.at("opt").at(0)) / (D.at("lengths").at(1) - D.at("lengths").at(0))
+      let opt-slope = (D.at("opt").at(-1) - D.at("opt").at(-2)) / (D.at("lengths").at(-1) - D.at("lengths").at(-2))
       let opt-intercept = D.at("opt").at(0) - opt-slope * D.at("lengths").at(0)
 
       set text(.8em)
@@ -1312,22 +1310,22 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
               lq.place(x, y + 9, text(0.8em)[$k"="#k$])
             }),
         ),
-        caption: [For $d=#d$, $IterRound ∼ #simplify(apx-slope, times-n: true) #simplify(apx-intercept)$ and $Opt ∼ #simplify(opt-slope, times-n: true) #simplify(opt-intercept)$. If this holds asymptotically, it would imply $ρ^((#d))_IterRound ≥ #(calc.round(1000000 * apx-slope / opt-slope) / 1000000)$.],
+        caption: [For $d=#d$, #if d == "5" [ignoring $k=2$,] $IterRound ∼ #simplify(apx-slope, times-n: true) #simplify(apx-intercept)$ and $Opt ∼ #simplify(opt-slope, times-n: true) #simplify(opt-intercept)$. If true asymptotically, it would imply $ρ^((#d))_IterRound ≥ #(calc.round(1000000 * apx-slope / opt-slope) / 1000000)$.],
       )
     })
 }
 #subpar.grid(
   columns: (1fr, 1fr),
   ..gasoline-plots("gasoline-empirical-values-weak.json"),
-  gap: 1em,
-  caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$  (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations.]
+  gap: 1.5em,
+  caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$  (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ d+1$.]
 )
 
 #subpar.grid(
   columns: (1fr, 1fr),
   ..gasoline-plots("gasoline-empirical-values-strong.json"),
-  gap: 1em,
-  caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations.]
+  gap: 1.5em,
+  caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
 
 #TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
