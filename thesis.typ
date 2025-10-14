@@ -469,7 +469,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
 
   With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
 ]<example-gasoline-cookies>
-Generally, an instance of the Gasoline-Problem #TODO[Explain why it's called that?]
+Generally, an instance of the Gasoline-Problem (named so due to a puzzle by @Lovsz1979CombinatorialPA[p:] involving gas-stations along a circular race-track)
 consists of two sequences of $d$-dimensional vectors containing non-negative integral entries:
 $
   X = (x_1,…,x_n) ∈ ℕ_(≥0)^(n×d), quad
