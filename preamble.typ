@@ -32,7 +32,7 @@
 }
 
 #let preamble(body) = [
-  #set page(margin: (left: 20mm, right: 20mm, top: 20mm, bottom: 20mm), numbering: "1", number-align: center)
+  #set page(margin: (left: 15mm, right: 15mm, top: 15mm, bottom: 15mm), numbering: "1", number-align: center)
   #set list(indent: 1em)
   #set enum(indent: 1em, numbering: "1.", full: true)
 
