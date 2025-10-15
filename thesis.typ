@@ -88,10 +88,13 @@ In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All
 - _Next-Fit_: When item $w_i$ arrives, pack it into the bin that $w_(i-1)$ was assigned to, or open a new bin if this is not possible.
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
 
-For the above algorithms, usually $𝒜(I) < Opt(I)$, see @bin-packing-example. The following definitions allow us to compare the performance of different heuristics:
+These heuristics will usually not output an optimal solution, i.e. a packing that uses the fewest number of bins (see @bin-packing-example). The following definitions allow us to compare the performance of different heuristics:
 
 #definition[
-  Let $cal(I)$ be the set of all (nonempty) bin-packing instances. For some instance $I∈cal(I)$, let $Opt(I)$ be the number of bins in an optimal packing, and $cal(A)(I)$ be the number of bins in the packing found by a bin-packing algorithm $cal(A)$. The *(absolute) approximation-ratio of $𝒜$* is $R_𝒜 ≔ sup_(I∈ℐ) 𝒜(I)/Opt(I)$.
+  Let $cal(I)$ be the set of all (nonempty) bin-packing instances. For some instance $I∈cal(I)$, let $Opt(I)$ be the number of bins in an optimal packing, and $cal(A)(I)$ be the number of bins in the packing found by a bin-packing algorithm $cal(A)$. The *(absolute) approximation-ratio of $𝒜$* is
+  $
+    R_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
+  $
 ]
 The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, the $R_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
 - For every instance, the packing found by Best-Fit will never use more than $1.7$ times more bins than an optimal packing, and
@@ -99,18 +102,20 @@ The approximation-ratio of an algorithm captures the worst-case performance of a
 
 @firstFitAnalysis[p:] proved that $R_FirstFit = 1.7$ as well, and @nextFitAnalysis[p:] showed $R_NextFit = 2$.
 
-Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that _the entire input_ $I$ -- including the order of its items -- can be chosen by an adversary. In fact, we might assume that most of our inputs are not decided by an adversary at all. Thus, we define a less pessimistic measure for the performance of an algorithm:
+Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that an adversary can choose _the entire input_ $I$ including the order of its items. Consider a less pessimistic measure for the performance of an algorithm:
 
 #definition[
-  Let $S_n$ be the set of permutations on $n$ elements, i.e. the symmetric group.
-  - The *absolute random-order-ratio of $𝒜$* is $"RR"_𝒜 ≔ sup_(I∈ℐ) 𝔼_(π∈S_(|I|))[𝒜(π(I))/Opt(I)]$.
+  Let $S_n$ be the set of permutations on $n$ elements, i.e. the symmetric group. The *absolute random-order-ratio of $𝒜$* is
+  $
+    "RR"_𝒜 quad≔quad sup_(I∈ℐ) 𝔼_(π∈S_(|I|))[𝒜(π(I))/Opt(I)].
+  $
 ]
 
-That is to say: We still assume an adversary can choose the _items_ of the instance, but the order of the items is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items.
+That is to say: We still assume an adversary can choose the _items_ of the instance, but their order is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items.
 @bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, with the lower bound improved to $1.3$ by @binPackingRevisited[p:].
 
 #example[
-  This example is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$ by.
+  This example is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
   Consider bins of capacity $c=3000$ and the instance:
   $
     I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
@@ -133,7 +138,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we find a sequence of instances that show $"RR"_BestFit ≥ 1.5$, matching the upper bound and proving $"RR"_BestFit = 1.5$ exactly.
+Using FunSearch, we find a sequence of instances that show $"RR"_BestFit ≥ 1.5$, matching the upper bound.
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective is to _maximize_ the total profit of the items we put in the bin.
