@@ -1371,9 +1371,7 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
 
-As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$. What is the behaviour for values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ _would_ lead to an equivalent instance, but $X$ and $Y$ must be integral).
-
-Empirically, $I_2 = #gasoline-strong$ is best-possible among all $I_α$, while $I_1=#gasoline-weak$ is best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
+As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$. What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ _would_ lead to an equivalent instance, but $X$ and $Y$ must be integral).
 
 #{
   let data = csv("data/gasoline-α-d=3-k=3.csv")
@@ -1394,6 +1392,8 @@ Empirically, $I_2 = #gasoline-strong$ is best-possible among all $I_α$, while $
     caption: [Scores #TODO[Did you define "Score" for gasoline anywhere?] of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity.],
   )
 }
+
+Empirically, $I_2 = #gasoline-strong$ is best-possible among all $I_α$, while $I_1=#gasoline-weak$ is best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
 
 
 #TODO[Grammar-/ Spell Checker]
