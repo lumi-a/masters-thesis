@@ -106,7 +106,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   #let lesser-packing = xs => scale(60%, draw-packing.packing(3000, xs))
   #figure(
     grid(
-      align: left,
+      //align: left,
       columns: (33%, 33%, 33%),
       lesser-packing(((1016, 1004), (992, 1004), (1016,))), lesser-packing(((1004, 992, 1004), (1016, 1016))), lesser-packing(((1016, 992), (1004, 1004), (1016,))),
       lesser-packing(((1004, 1004, 992), (1016, 1016))), lesser-packing(((1016, 1004), (1004, 1016), (992,))), lesser-packing(((992, 1016), (1004, 1004), (1016,))),
@@ -189,7 +189,7 @@ A *solution* is any sub-list of the list of items $I$, regardless of whether it 
 
 === Pareto-Sets
 
-In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_: #TODO[Add citation]
+In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_ @RoeglinBookChapter:
 #definition[
   For solutions $A$ and $B$, we say $A$ *dominates* $B$ if and only if:
   $
@@ -216,7 +216,7 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
   ],
 )<alg-nemhauser-ullmann>
 
-@alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
+This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
 
 #example[
   Consider the items:
@@ -241,18 +241,20 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
         )
         + h(1fr)
     ),
-    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$) points, and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
   )
-]
-Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether:
+]<example-shrinking-pareto-set>
+Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether
 $
   Score(I)
   quad ≔ quad
-  (|P_n|) / (max_(1≤i≤n) |P(I_(1:i))|)
+  (max_(1≤i≤n) |P(I_(1:i))|) / (|P_n|)
 $
-can always be bounded by some constant not depending on $I$. If it could be bounded, @alg-nemhauser-ullmann would have a runtime bounded by $O(n⋅|P(I)|)$. Note that $Score(I) ≤ 2^n$, because $|P_i| ≤ 2^n$ and $|P_n| ≥ 1$.
+can always be bounded by some constant not depending on $I$. If it could be bounded, @alg-nemhauser-ullmann would have a runtime bounded by $O(n⋅|P(I)|)$.
 
-So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances with $Score(I) ≥ n^(O(√n))$, or more precisely: $Score(I) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time.
+For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
+
+So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances with $Score(I) ≥ n^(O(√n))$, or more precisely $Score(I) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time.
 
 #TODO[Insert link to proof-section]
 
