@@ -361,7 +361,7 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
     $
 ]
 
-The structure of hierarchical clusterings is useful for, for example, taxonomy. Finding a hierarchical clustering in practice can be done via _agglomerative clustering_, a greedy method where we start with $H_n$ containing each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge the pair of clusters that increases the objective the least.
+The structure of hierarchical clusterings is useful for, for example, taxonomy. In practice, finding _some_ hierarchical clustering can be done via _agglomerative clustering_, a greedy method where we start with $H_n$ containing each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge the pair of clusters that increases the objective the least.
 
 The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
 
@@ -431,7 +431,7 @@ The additional structure of hierarchical clustering does come at a cost, however
   ]
 }
 
-To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ can have significantly higher cost than $k$-clusterings for large $k$, so this would not capture a lot of information about the quality of the clusterings $H_i$ for low $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering.
+To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ can have significantly higher cost than $k$-clusterings for large $k$, so this would lose information about the quality of the $H_i$ for small $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering.
 
 #definition[
   For a clustering-instance $I$ and a cost-function $Cost$, the *approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ on $I$ is:
@@ -447,6 +447,8 @@ For a fixed cost-function $Cost$, we say that a hierarchical clustering on an in
 
 The approximation-factor of the hierarchical clustering in @example-hierarchical-clustering is $≈1.262$: The hierarchical clusterings and optimal clusterings shown there only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$.
 
+Although agglomerative clustering computes a hierarchical clustering whose approximation-factor is low in practice, this hierarchical clustering need not be optimal. In this work, we only concern ourselves with optimal hierarchical clusterings.
+
 For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering.
 
 #definition[
@@ -458,7 +460,9 @@ For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchi
     sup_(I∈cal(I)) (min_(H ∈ cal(H)(I)) Apx_Cost (H)).
   $
 ]
-In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$.
+In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$, because the hierarchical clustering there is optimal for this instance.
+
+#TODO[Talk about existing bounds on PoH, and what you bring to the table]
 
 == Generalised Gasoline-Problem
 
