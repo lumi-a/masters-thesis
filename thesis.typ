@@ -514,7 +514,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   For a different visualisation, we can trace the state of the warehouse in a phase-portrait:
 
   #figure(
-    h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, green, (-1, 12), (-1, 15)) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, blue, (-1, 12), (-1, 15)) + h(1fr),
+    h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, green, (-1, 12), (-1, 15), true) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, blue, (-1, 12), (-1, 15), true) + h(1fr),
     caption: [The phase-portraits of the warehouses of $π$ (left) and $π_Opt$ (right), along with the smallest rectangles containing all points.],
   ) <example-cookies-phase-portrait>
 
@@ -1277,6 +1277,31 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
 ]<example-plot-gasoline-funsearch-strong>
 
 Despite the instance being similar, the proof used by @Lorieau[p:] to show $ρ^((1))_IterRound ≥ 2$ does not work here. It relied on using the same optimal solution for $LP'$ for all iterations during the first half of the algorithm. This can not apply to #gasoline-weak or #gasoline-strong: Compare @best-row-value-progression-lucas to @best-row-value-progression-weak and @best-row-value-progression-strong. In @Lorieau[p:]'s instance, the $BestRowValue$ is constant at first (this is necessary, as the same optimal solution can be used for the different $LP'$). However, for #gasoline-weak and #gasoline-strong, the $BestRowValue$ inrceases immediately, meaning the optimum for $LP'$ must keep changing for the first half of the algorithm. If we wanted to prove asymptotic bounds for either instance, our next step would be to prove properties of optimal $LP'$-solutions at each iteration of the first half of @alg-iterative-rounding. Proving optimality of these $LP'$-solutions would also be more difficult, as we can't use the same argument as @Lorieau[p:] did, and the dual LP is unwieldy.
+
+
+Lastly, we also show phase-portraits (like in @example-cookies-phase-portrait for @example-gasoline-cookies) for specific instances.
+#{
+  let deliveries = ((16, 2), (16, 2), (24, 2), (24, 2), (24, 2), (24, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (0, 2))
+  let production = ((16, 1), (16, 1), (24, 1), (24, 1), (24, 1), (24, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1))
+  let opt-permut = (46, 61, 45, 0, 58, 1, 30, 2, 57, 4, 44, 3, 53, 5, 47, 11, 42, 9, 40, 10, 32, 13, 56, 8, 59, 7, 54, 6, 51, 12, 35, 20, 39, 15, 50, 27, 38, 17, 43, 29, 55, 21, 36, 25, 33, 19, 31, 14, 49, 18, 48, 28, 34, 26, 52, 24, 37, 22, 41, 16, 60, 23)
+  let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 60)
+
+  figure(
+    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
+    caption: [Phase-portraits of $π_IterRound$ (left) and $π_Opt$ for #gasoline-weak with $d=2$ and $k=5$.],
+  )
+}
+#{
+  let deliveries = ((16, 4), (16, 4), (24, 4), (24, 4), (24, 4), (24, 4), (28, 4), (28, 4), (28, 4), (28, 4), (28, 4), (28, 4), (28, 4), (28, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (30, 4), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (0, 4))
+  let production = ((16, 2), (16, 2), (24, 2), (24, 2), (24, 2), (24, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2), (31, 2))
+  let opt-permut = (32, 61, 52, 1, 57, 0, 34, 3, 30, 5, 44, 4, 56, 2, 48, 13, 42, 7, 60, 12, 35, 6, 58, 9, 50, 10, 36, 8, 46, 11, 51, 22, 55, 26, 37, 18, 45, 14, 53, 23, 40, 29, 43, 16, 59, 21, 47, 24, 54, 28, 38, 17, 39, 20, 31, 15, 49, 25, 33, 27, 41, 19)
+  let iterround-permut = (0, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 60)
+
+  figure(
+    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
+    caption: [Phase-portraits of $π_IterRound$ (left) and $π_Opt$ for #gasoline-strong with $d=2$ and $k=5$.],
+  )
+}
 
 == Empirical Data
 While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances is computationally prohibitive. If these linear relationships held true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.

@@ -82,7 +82,7 @@
   }
 }
 
-#let trace-permutation = (pi, deliveries, production, color, xlim, ylim, ..args) => {
+#let trace-permutation = (pi, deliveries, production, color, xlim, ylim, labels, ..args) => {
   let (_, timeline) = get-pds-timeline(pi, deliveries, production)
   let dimension = deliveries.at(0).len()
   let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
@@ -90,8 +90,13 @@
 
   lq.diagram(
     xaxis: (lim: xlim),
-    xlabel: [Flour],
-    ylabel: [Sugar],
+    width: if labels { 180pt } else { 222pt },
+    height: if labels { 120pt } else { 150pt },
+    ..if labels {
+      (xlabel: [Flour], ylabel: [Sugar])
+    } else {
+      (:)
+    },
     yaxis: (lim: ylim),
     lq.plot(
       timeline.map(x => x.at(0) - minhouse.at(0)),
