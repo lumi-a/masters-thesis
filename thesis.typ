@@ -32,6 +32,22 @@
 #let Opt = math.op("Opt")
 #let Avg = math.op("Avg")
 
+#figure(
+  table(
+    columns: 6,
+    stroke: none,
+    align: (left, right, right, right, right, right),
+    table.header([Problem], [Previous Best], [Local Search], [FunSearch], [Co-FunSearch], [Known Upper Bound]),
+    table.hline(),
+    [Knapsack], [2.0], [11.2], [6.33], [$n^(O (sqrt(n)))$], [$O (2^n)$],
+    [Best-Fit], [1.3], [1.478], [1.497], [1.5], [1.5],
+    [$k$-median], [1.0], [1.36], [1.538], [1.618], [16.0],
+    [Gasoline], [2.0], [2.11], [3.05], [4.65], [None],
+  ),
+  caption: [Comparison of Co-FunSearch with base FunSearch, local
+    search and SOTA on different problems. #TODO[Figure out if and how you want to have distinct words for FunSearch and Co-FunSearch.]],
+)
+
 = Problems, Definitions and Previous Results <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
 In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
