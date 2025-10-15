@@ -1,5 +1,5 @@
 #import "preamble.typ": *; #show: preamble
-#import "draw-packing.typ"; #import "draw-knapsack.typ"; #import "draw-clustering.typ"; #import "draw-gasoline.typ"
+#import "visualisations/draw-packing.typ"; #import "visualisations/draw-knapsack.typ"; #import "visualisations/draw-clustering.typ"; #import "visualisations/draw-gasoline.typ"
 #import "@preview/subpar:0.2.2"
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *;
@@ -582,7 +582,7 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
 
 #figure(
   {
-    let trajectories = range(10).map(i => read("assets/data/randomised-best-fit-local-search/" + str(i) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (split.at(0), split.at(1)))).map(history => history + ((10000, history.last().at(1)),))
+    let trajectories = range(10).map(i => read("data/randomised-best-fit-local-search/" + str(i) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (split.at(0), split.at(1)))).map(history => history + ((10000, history.last().at(1)),))
     trajectories.push(trajectories.remove(0)) // For cycling colors, the default ones put an illegible one at the top.
     context (
       lq.diagram(
@@ -1165,7 +1165,7 @@ $
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
 $<eq-gasoline-strong>
 #let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
-The two instances only differ in three places, in the constant scalars preceding the $e_j$. Compared to the values $u_i$ preceding the $e_1$, these scalars are quite small.
+The two instances only differ in three places, in the constant scalars preceding the $e_j$. Specifically, #gasoline-strong is just #gasoline-weak multiplied by the diagonal matrix $op("diag")(1,2,…,2)$. Compared to the values $u_i$ preceding the $e_1$, these constant scalars are quite small.
 
 While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems better suited for proving asymptotic bounds, because the outputs of @alg-iterative-rounding have more structure there (compare e.g. @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong below). That said, we did not manage to prove any asymptotic bounds for either instance and only note scores for specific parameters, and patterns we spotted in those scores.
 
@@ -1318,17 +1318,20 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
 }
 #subpar.grid(
   columns: (1fr, 1fr),
-  ..gasoline-plots("gasoline-empirical-values-weak.json"),
+  ..gasoline-plots("data/gasoline-empirical-values-weak.json"),
   gap: 1.5em,
   caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$  (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ d+1$.]
 )
 
 #subpar.grid(
   columns: (1fr, 1fr),
-  ..gasoline-plots("gasoline-empirical-values-strong.json"),
+  ..gasoline-plots("data/gasoline-empirical-values-strong.json"),
   gap: 1.5em,
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
+
+As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$. What is the behaviour for values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ _would_ lead to an equivalent instance, but $X$ and $Y$ must be integral).
+
 
 #TODO[Grammar-/ Spell Checker]
 
