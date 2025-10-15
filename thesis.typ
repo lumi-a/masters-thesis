@@ -1332,6 +1332,28 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
 
 As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$. What is the behaviour for values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ _would_ lead to an equivalent instance, but $X$ and $Y$ must be integral).
 
+Empirically, $I_2 = #gasoline-strong$ is best-possible among all $I_α$, while $I_1=#gasoline-weak$ is best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
+
+#{
+  let data = csv("data/gasoline-α-d=3-k=3.csv")
+  figure(
+    lq.diagram(
+      width: 100%,
+      height: 150pt,
+      yaxis: (lim: (1, auto)),
+      ylabel: $IterRound(I_α)\/Opt(I_α)$,
+      xlabel: $α$,
+      lq.scatter(
+        data.map(x => float(x.at(0))),
+        data.map(x => float(x.at(1))),
+        mark: ",",
+        color: (data.map(x => if x.at(2) == "True" { blue } else { red })),
+      ),
+    ),
+    caption: [Scores #TODO[Did you define "Score" for gasoline anywhere?] of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity.],
+  )
+}
+
 
 #TODO[Grammar-/ Spell Checker]
 
