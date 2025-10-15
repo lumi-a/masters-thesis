@@ -307,11 +307,25 @@ Naturally, these different objectives can yield different optimal clusterings, a
 .#..#.......#..#..#.............
 ...#...#.....##..#.#............
 ")
-  context [#figure(
-      h(1fr) + draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, red) + h(1fr) + draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, blue) + h(1fr),
-      caption: [Two different $k"="3$-clusterings for the same  $20$ points in $ℝ^2$.\ Left: An optimal $k$-median clustering. Right: An optimal $k$-means clustering. #TODO[Do two examples side by side, one optimal and one sub-optimal?]
-      ],
-    ) <clustering-example>
+  let kmedian-agglomerative = parse("
+#..#.......####..#..
+.#......##........#.
+....##....#.........
+")
+  let kmeans-agglomerative = parse("
+#...##.#....#..#...#
+.#......##......#.#.
+.............##..#..
+")
+
+  [#subpar.grid(
+      columns: (1fr, 1fr),
+      context figure(draw-clustering.draw-clustering(points, kmedian-agglomerative, page.width * 0.3, 0.02, green), caption: [A sub-optimal $k$-median clustering/* (objective $5.104$)*/, obtained via agglomerative clustering.]), context figure(draw-clustering.draw-clustering(points, kmeans-agglomerative, page.width * 0.3, 0.02, cyan), caption: [A sub-optimal $k$-means clustering/* (objective $5.083$)*/, obtained via agglomerative clustering.]),
+      context figure(draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, red), caption: [An optimal $k$-median clustering/* (objective $4.467$)*/.]), context figure(draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, blue), caption: [An optimal $k$-means clustering/* (objective $4.555$)*/.]),
+      gap: 1em,
+      caption: [Four different $k"="3$-clusterings for the same $20$ points in $ℝ^2$.],
+      label: <clustering-example>,
+    )
   ]
 }
 
@@ -326,7 +340,9 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
     $
 ]
 
-The structure of hierarchical clusterings is useful for, for example, taxonomy. It does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
+The structure of hierarchical clusterings is useful for, for example, taxonomy. Finding a hierarchical clustering in practice can be done via _agglomerative clustering_, a greedy method where we start with $H_n$ containing each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge the pair of clusters that increases the objective the least.
+
+The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so there might not exist a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering. The set of points in @example-hierarchical-clustering is such an example.
 
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
