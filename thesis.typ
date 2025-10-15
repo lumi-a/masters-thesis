@@ -141,7 +141,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
 Using FunSearch, we find a sequence of instances that show $"RR"_BestFit ≥ 1.5$, matching the upper bound.
 
 == Knapsack Problem
-In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective is to _maximize_ the total profit of the items we put in the bin.
+In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
 
 #let Weight = math.op("Weight")
 #let Profit = math.op("Profit")
@@ -222,7 +222,7 @@ In practice, one might not know the capacity beforehand, or might have unlimited
 
   #TODO[Not really a set. Maybe do use index-vectors.]
 ]
-See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, much smaller than $2^6$, the size of the entire solution-space. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
+See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
 Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullmann algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
 #figure(
@@ -262,7 +262,7 @@ This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With s
         )
         + h(1fr)
     ),
-    caption: [Drawing the solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, by plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If only counting Pareto-optimal solutions with unique weight and profit, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+    caption: [The solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If treating Pareto-optimal solutions with the same weight and profit as identical, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
   )
 ]<example-shrinking-pareto-set>
 Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether
