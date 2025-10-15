@@ -7,13 +7,8 @@
 #let sub = (x, y) => x.zip(y).map(v => v.at(0) - v.at(1))
 #let norm = v => calc.sqrt(v.map(r => r * r).sum())
 #let normed = v => scale(v, 1 / norm(v))
-#let draw-permutation = (pi, deliveries, production, ..args) => {
-  let heightscale = 0.25em
-  let one-d = args.at("one-d", default: false)
-  let barwidth = if (one-d) { 0.9em } else { 0.85em }
-  let draw-vec = args.at("draw-vec", default: d => $vec(#[#d.at(0)], #[#d.at(1)])$)
-  let box-height = args.at("box-height", default: 0.5em)
-  let boxbuffer = if one-d { 1.5 } else { 3 }
+
+#let get-pds-timeline = (pi, deliveries, production) => {
   let production-deliveries = production
     .enumerate()
     .map(ixp => {
@@ -34,6 +29,20 @@
 
   let dimension = deliveries.at(0).len()
   let timeline = production-deliveries.fold((range(dimension).map(_ => 0),), draw-state)
+  (production-deliveries, timeline)
+}
+
+#let draw-permutation = (pi, deliveries, production, ..args) => {
+  let heightscale = 0.25em
+  let one-d = args.at("one-d", default: false)
+  let barwidth = if (one-d) { 0.9em } else { 0.85em }
+  let draw-vec = args.at("draw-vec", default: d => $vec(#[#d.at(0)], #[#d.at(1)])$)
+  let box-height = args.at("box-height", default: 0.5em)
+  let boxbuffer = if one-d { 1.5 } else { 3 }
+  let dimension = deliveries.at(0).len()
+
+  let (production-deliveries, timeline) = get-pds-timeline(pi, deliveries, production)
+
   let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
   let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold(range(dimension).map(_ => -10000), max)
   let maxmaxhouse = calc.max(..maxhouse)
@@ -71,6 +80,32 @@
       [#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.t$#draw-vec(d)])#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.b$#draw-vec(p)])]
     })))
   }
+}
+
+#let trace-permutation = (pi, deliveries, production, color, xlim, ylim, ..args) => {
+  let (_, timeline) = get-pds-timeline(pi, deliveries, production)
+  let dimension = deliveries.at(0).len()
+  let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
+  let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold(range(dimension).map(_ => -10000), max)
+
+  lq.diagram(
+    xaxis: (lim: xlim),
+    xlabel: [Flour],
+    ylabel: [Sugar],
+    yaxis: (lim: ylim),
+    lq.plot(
+      timeline.map(x => x.at(0) - minhouse.at(0)),
+      timeline.map(x => x.at(1) - minhouse.at(1)),
+      color: color,
+    ),
+    lq.rect(
+      0,
+      0,
+      width: maxhouse.at(0),
+      height: maxhouse.at(1),
+      stroke: stroke(paint: color.transparentize(50%), dash: "dashed"),
+    ),
+  )
 }
 
 

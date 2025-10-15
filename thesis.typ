@@ -31,6 +31,7 @@
 #let Mutation = math.op("Mutation")
 #let Opt = math.op("Opt")
 #let Avg = math.op("Avg")
+#let IterRound = math.op("IterRound")
 
 #figure(
   table(
@@ -510,6 +511,15 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   )
   Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
 
+  For a different visualisation, we can trace the state of the warehouse in a phase-portrait:
+
+  #figure(
+    h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, green, (-1, 12), (-1, 15)) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, blue, (-1, 12), (-1, 15)) + h(1fr),
+    caption: [The phase-portraits of the warehouses of $π$ (left) and $π_Opt$ (right), along with the smallest rectangles containing all points.],
+  ) <example-cookies-phase-portrait>
+
+  The width and height of the smallest rectangle encompassing all those points is exactly the maximum capacity that our flour-warehouse and sugar-warehouse require.
+
   With the $L_1$ cost-function used above, $π$ has a cost of $11+13=24$, whereas $π_Opt$ has a cost of $10+10=20$ and is indeed an optimal permutation for this instance.
 ]<example-gasoline-cookies>
 Generally, an instance of the Gasoline-Problem (named so due to a puzzle by @Lovsz1979CombinatorialPA[p:] involving gas-stations along a circular race-track)
@@ -524,6 +534,8 @@ $
    "where"quad α & = min_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i) ∈ ℤ^d \
                β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
 $
+A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the line in $ℝ^d$ being traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is smallest (see @example-cookies-phase-portrait).
+
 Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries only consist of $1$s. The problem can be written as an integer linear program (ILP) with a permutation-matrix $Z ∈ {0,1}^(d×d)$:
 #figure(
   kind: "Program",
@@ -557,7 +569,7 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$
       + Initialise $BestRowIndex ≔ -1$ and $BestRowValue ≔ ∞$
       + For $RowIndex ∈ UnfixedRows$:
         + Let $LP'$ be the program $LP$ with the added constraint "$Z_(RowIndex,ColumnIndex) = 1$".
-        + Let $RowValue$ be the optimum value of the LP.
+        + Let $RowValue$ be the optimum value of the $LP'$.
         + If $RowValue < BestRowValue$:
           + $BestRowIndex ≔ RowIndex$ and $BestRowValue ≔ RowValue$.
       + Add the constraint "$Z_(BestRowIndex,ColumnIndex) = 1$" to $LP$.
@@ -565,8 +577,6 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$
     + $UnfixedRows$ is empty and $Z$ is fixed entirely.
   ],
 ) <alg-iterative-rounding>
-
-#let IterRound = math.op("IterRound")
 
 Let $ℐ_d$ be the set of all instances of the generalised gasoline-problem in $d$ dimensions. For some instance $I$, let $IterRound(I)$ be the value of the solution found by @alg-iterative-rounding, and let $Opt(I)$ be the value of an optimum solution. The *Approximation-Ratio* in $d$ dimensions of @alg-iterative-rounding is:
 $
@@ -1266,7 +1276,10 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   Here, $IterRound(I)\/Opt(I) = 186\/40 = 4.65$, which shows $ρ_IterRound^((3)) ≥ 4.65$.
 ]<example-plot-gasoline-funsearch-strong>
 
-While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances quickly becomes computationally prohibitive. If these linear relationships hold true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
+Despite the instance being similar, the proof used by @Lorieau[p:] to show $ρ^((1))_IterRound ≥ 2$ does not work here. It relied on using the same optimal solution for $LP'$ for all iterations during the first half of the algorithm. This can not apply to #gasoline-weak or #gasoline-strong: Compare @best-row-value-progression-lucas to @best-row-value-progression-weak and @best-row-value-progression-strong. In @Lorieau[p:]'s instance, the $BestRowValue$ is constant at first (this is necessary, as the same optimal solution can be used for the different $LP'$). However, for #gasoline-weak and #gasoline-strong, the $BestRowValue$ inrceases immediately, meaning the optimum for $LP'$ must keep changing for the first half of the algorithm. If we wanted to prove asymptotic bounds for either instance, our next step would be to prove properties of optimal $LP'$-solutions at each iteration of the first half of @alg-iterative-rounding. Proving optimality of these $LP'$-solutions would also be more difficult, as we can't use the same argument as @Lorieau[p:] did, and the dual LP is unwieldy.
+
+== Empirical Data
+While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances is computationally prohibitive. If these linear relationships held true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
   let data = json(file)
@@ -1371,7 +1384,7 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
 
-As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$. What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ _would_ lead to an equivalent instance, but $X$ and $Y$ must be integral).
+As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ must be integral).
 
 #{
   let data = csv("data/gasoline-α-d=3-k=3.csv")
