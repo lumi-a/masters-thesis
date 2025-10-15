@@ -181,7 +181,7 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
       )
     },
 
-    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in purple. The optimum is circled in blue.\ Pareto-optimal solutions are marked by $#sym.star.filled$.],
+    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in #Purple[purple]. The optimum is circled in #Blue[blue].\ Pareto-optimal solutions are marked by $#sym.star.filled$.],
   ) <fig-example-knapsack>
 ] <knapsack-example>
 
@@ -1330,7 +1330,6 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
 
-#TODO[Colourise all mentions of colours, so that color-blind readers may have an easier time inferring what colours are used (despite us using Paul Tol's CVD-respecting palette)]
 #TODO[Grammar-/ Spell Checker]
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
