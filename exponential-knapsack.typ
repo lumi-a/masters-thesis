@@ -73,9 +73,9 @@ Now, let $I$ be an instance of the Knapsack-Problem with a sub-instance $J$ such
 
 #example(numbering: none)[
   $
-    I ≔ [vec(4, 4),quad vec(4, 4),quad vec(2, 1),quad vec(1, 2),quad vec(2, 2)].
+    I ≔ lr(size: #50%, [underbrace(vec(4, 4)\,quad vec(4, 4)\,quad vec(2, 1)\,quad vec(1, 2), ≕J),quad vec(2, 2)]).
   $
-  Here, $J = [vec(4, 4), vec(4, 4), vec(2, 1), vec(1, 2)]$ has size $12$, while $P_5 = P(I)$ has size $10$.
+  Here, $P(J)$ has size $12$, while $P_5 = P(I)$ has size $10$.
 ]
 
 Let $α ≔ abs(P(J))/abs(P(I))$ be the ratio of their sizes, which is greater than $1$.
