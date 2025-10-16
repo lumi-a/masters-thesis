@@ -84,7 +84,7 @@ Thus, $abs(P(J^k)) \/ abs(P(I^k)) = α^k$ (exponential growth), whereas $abs(I^k
 
 #line(length: 100%)
 
-For an instance $I$, and a list $ℒ$ of sublists of $I$ (e.g. $ℒ = P(I)$), we say that $ℒ$ is *duplicate-free* iff there is no pair of lists $L_1, L_2 ∈ ℒ$ such that both $Weight(L_1)=Weight(L_2)$ and $Profit(L_1)=Profit(L_2)$. This property is useful because, if $P(I)$ is duplicate-free, then the representation of $P(I)$ in the Nemhauser-Ullmann algorithm has size $abs(P(I))$, as well (as opposed to being smaller by ignoring duplicates).
+For an instance $I$, we say that $P(I)$ is *duplicate-free* iff there is no pair of lists $L_1, L_2 ∈ P(I)$ such that both $Weight(L_1)=Weight(L_2)$ and $Profit(L_1)=Profit(L_2)$. This property is useful because, if $P(I)$ is duplicate-free, then the representation of $P(I)$ in the Nemhauser-Ullmann algorithm has size $abs(P(I))$ too (as opposed to being smaller by ignoring duplicates).
 
 #lemma[
   For $M≥norm(A)$, the pareto-set $P(A ⊕ M B)$ is duplicate-free iff both $P(A)$ and $P(B)$ are duplicate-free.
