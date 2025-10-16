@@ -12,7 +12,7 @@
 
 Let $A$ and $B$ be two instances of the Knapsack-problem, given as lists of $vec("Weight", "Profit")$-vectors.
 - Let $⊕$ denote list-concatenation. This is associative but not commutative.
-- Let $|A|$ be the length of the list $A$.
+- Let $abs(A)$ be the length of the list $A$.
 - For some scalar $M∈R$, let $M B ≔ [M ⋅b mid(|) b ∈ B]$.
 - Let $norm(A) ≔ norm(scripts(∑)_(a∈A)a)_∞ +1$.
 
@@ -22,9 +22,9 @@ $
   quad=quad
   A ⊕ [vec(norm(A)⋅w, norm(A)⋅p) med mid(|)med vec(w, p) ∈ B].
 $
-Here, $norm(A)$ is a large scalar to make the elements from $B$ more relevant than the elements from $A$
+Here, $norm(A)$ is a large scalar to make the elements from $B$ more relevant than the elements from $A$.
 #lemma[
-  For all $M∈ℝ$ (including $M=0$), $lr(size: #150%, |A⊕ M B|) = |A|+|B|$.
+  For all $M∈ℝ$ (including $M=0$): $abs(A⊕ M B) = abs(A)+abs(B)$.
 ] <size-lemma>
 #proof[
   It's just list-concatenation.
@@ -63,7 +63,7 @@ For some instance $I$, let $P(I)$ be its pareto-set.
       $
       so $D_A$ dominates $L_A$, hence $L_A ∉P(A)$.
 ]
-In other words, $P(A ⊕ M B) = lr(size: #150%, [L_A ⊕ M L_B med mid(|)med L_A ∈ P(A), L_B ∈ P(B)])$. So $abs(P(A ⊕ M B)) = |A|⋅|B|$, for any $M ≥ norm(A)$.
+In other words, $P(A ⊕ M B) = lr(size: #150%, [L_A ⊕ M L_B med mid(|)med L_A ∈ P(A), L_B ∈ P(B)])$. So $abs(P(A ⊕ M B)) = abs(A)⋅abs(B)$, for any $M ≥ norm(A)$.
 
 Let $I$ be some instance of the Knapsack-Problem, and $J$ a sub-instance of $I$. Let $M ≔ norm(I)$, fix some $k∈ℕ$ and consider the following instances:
 $
