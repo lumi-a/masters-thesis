@@ -69,7 +69,16 @@ For some instance $I$, let $P(I)$ be its pareto-set.
 ]
 
 
-Now, let $I$ be an instance of the Knapsack-Problem with a sub-instance $J$ such that $abs(P(J)) > abs(P(I))$ (instances like that do exist). Let $α ≔ abs(P(J))/abs(P(I))$ be the ratio of their sizes, which is greater than $1$.
+Now, let $I$ be an instance of the Knapsack-Problem with a sub-instance $J$ such that $abs(P(J)) > abs(P(I))$.
+
+#example(numbering: none)[
+  $
+    I ≔ [vec(4, 4),quad vec(4, 4),quad vec(2, 1),quad vec(1, 2),quad vec(2, 2)].
+  $
+  Here, $J = [vec(4, 4), vec(4, 4), vec(2, 1), vec(1, 2)]$ has size $12$, while $P_5 = P(I)$ has size $10$.
+]
+
+Let $α ≔ abs(P(J))/abs(P(I))$ be the ratio of their sizes, which is greater than $1$.
 
 Let $M ≔ norm(I)$, fix some $k∈ℕ$ and consider the following two instances:
 $
@@ -81,6 +90,19 @@ $
 - The corollary implies that $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k)) = abs(P(J))^k$.
 
 Thus, $abs(P(J^k)) \/ abs(P(I^k)) = α^k$ (exponential growth), whereas $abs(I^k) = abs(I)⋅k$ (linear growth).
+
+In the above example, $I$ has size $5$, and $abs(P(I))/abs(P(J)) = 1.2$, so we get:
+
+#theorem(numbering: none)[
+  For a knapsack-instance $I$ of size $n$, there can exist a sub-instance $J$ such that:
+  $
+    abs(P(J))/abs(P(I))
+    quad ≥ quad
+    1.2^(n\/5)
+    ≈ 1.037^n.
+  $
+]
+For an instance $I$ where $(abs(P(J))\/abs(P(I)))^(1\/abs(I))$ larger than $1.037$, we would get an even better bound.
 
 #line(length: 100%)
 
