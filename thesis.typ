@@ -20,6 +20,8 @@
 
 #set heading(numbering: "1.1")
 
+#let Weight = math.op("Weight")
+#let Profit = math.op("Profit")
 #let Cost = math.op("Cost")
 #let Opt = math.op("Opt")
 #let PoH = math.op("PoH")
@@ -143,9 +145,6 @@ Using FunSearch, we find a sequence of instances that show $"RR"_BestFit ≥ 1.5
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
-
-#let Weight = math.op("Weight")
-#let Profit = math.op("Profit")
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
