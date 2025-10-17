@@ -524,12 +524,12 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   )
   Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
 
-  For a different visualisation, we can trace the state of the warehouse in a phase-portrait:
+  For a different visualisation, we can trace the state of the warehouse in phase-space:
 
   #figure(
     h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, green, (-1, 12), (-1, 15), true) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, blue, (-1, 12), (-1, 15), true) + h(1fr),
-    caption: [The phase-portraits of the warehouses of $π$ (left) and $π_Opt$ (right), along with the smallest rectangles containing all points.],
-  ) <example-cookies-phase-portrait>
+    caption: [Tracing the states of the warehouses of $π$ (left) and $π_Opt$ (right) in phase-space, along with the smallest rectangles containing all points.],
+  ) <example-cookies-phase-space>
 
   The width and height of the smallest rectangle encompassing all those points is exactly the maximum capacity that our flour-warehouse and sugar-warehouse require.
 
@@ -547,7 +547,7 @@ $
    "where"quad α & = min_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i) ∈ ℤ^d \
                β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
 $
-A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the line in $ℝ^d$ being traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is smallest (see @example-cookies-phase-portrait).
+A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the line in $ℝ^d$ being traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is smallest (see @example-cookies-phase-space).
 
 Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries only consist of $1$s. The problem can be written as an integer linear program (ILP) with a permutation-matrix $Z ∈ {0,1}^(d×d)$:
 #figure(
@@ -1292,7 +1292,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
 Despite the instance being similar, the proof used by @Lorieau[p:] to show $ρ^((1))_IterRound ≥ 2$ does not work here. It relied on using the same optimal solution for $LP'$ for all iterations during the first half of the algorithm. This can not apply to #gasoline-weak or #gasoline-strong: Compare @best-row-value-progression-lucas to @best-row-value-progression-weak and @best-row-value-progression-strong. In @Lorieau[p:]'s instance, the $BestRowValue$ is constant at first (this is necessary, as the same optimal solution can be used for the different $LP'$). However, for #gasoline-weak and #gasoline-strong, the $BestRowValue$ inrceases immediately, meaning the optimum for $LP'$ must keep changing for the first half of the algorithm. If we wanted to prove asymptotic bounds for either instance, our next step would be to prove properties of optimal $LP'$-solutions at each iteration of the first half of @alg-iterative-rounding. Proving optimality of these $LP'$-solutions would also be more difficult, as we can't use the same argument as @Lorieau[p:] did, and the dual LP is unwieldy.
 
 
-Lastly, we also show phase-portraits (like in @example-cookies-phase-portrait for @example-gasoline-cookies) for specific instances.
+Lastly, we also show traces in phase-space (like in @example-cookies-phase-space for @example-gasoline-cookies) for specific instances.
 #{
   let deliveries = ((16, 2), (16, 2), (24, 2), (24, 2), (24, 2), (24, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (0, 2))
   let production = ((16, 1), (16, 1), (24, 1), (24, 1), (24, 1), (24, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1))
@@ -1301,7 +1301,7 @@ Lastly, we also show phase-portraits (like in @example-cookies-phase-portrait fo
 
   figure(
     h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
-    caption: [Phase-portraits of $π_IterRound$ (left) and $π_Opt$ for #gasoline-weak with $d=2$ and $k=5$.],
+    caption: [Tracing $π_IterRound$ (left) and $π_Opt$ (right) in phase-space, for #gasoline-weak with $d=2$ and $k=5$.],
   )
 }
 #{
@@ -1312,7 +1312,7 @@ Lastly, we also show phase-portraits (like in @example-cookies-phase-portrait fo
 
   figure(
     h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
-    caption: [Phase-portraits of $π_IterRound$ (left) and $π_Opt$ for #gasoline-strong with $d=2$ and $k=5$.],
+    caption: [Tracing $π_IterRound$ (left) and $π_Opt$ (right) in phase-space, for #gasoline-strong with $d=2$ and $k=5$.],
   )
 }
 
