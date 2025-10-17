@@ -998,6 +998,13 @@ The length of the instance
 $𝕀_2$ is not $n$ but $m colon.eq lr(|𝕀_2|) = 2 n + k$, resulting
 in an actual lower bound of $O ( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
 
+#theorem[
+  There exist instances $I$ such that:
+  $
+    Score(I) quad=quad (max_(j=1,…,|I|) abs(P(I_(1:j))))/(abs(P(I))) quad≥quad O ( (abs(I)/ 2)^((sqrt(abs(I) \/ 2) - 3) \/ 2) ).
+  $
+]<nemhauser-ullmann-theorem>
+
 In implementations of the Nemhauser-Ullmann algorithm, two
 Pareto-optimal packings can be treated as equivalent if they have the
 same total weight and total profit. Hence, the runtime can be
@@ -1171,6 +1178,10 @@ points have weight $1$.
 For large $d$, this fraction
 $c / d = (sqrt(4 d^2 + (3 - d)^2) + d - 3)/(2 d)$ converges to
 $(1+ sqrt(5))/2$, the golden ratio.
+
+#theorem[
+  The Price of Hierarchy for $k$-median clustering $PoH_(k"-median")$ is at least $(1+√5)/2 ≈ 1.618$.
+]
 
 
 == Gasoline
