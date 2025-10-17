@@ -141,7 +141,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we find a sequence of instances that show $"RR"_BestFit ≥ 1.5$, matching the upper bound.
+Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$ and matching the upper bound.
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
