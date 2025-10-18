@@ -539,8 +539,8 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
 Generally, an instance of the Gasoline-Problem (named so due to a puzzle by @Lovsz1979CombinatorialPA[p:] involving gas-stations along a circular race-track)
 consists of two sequences of $d$-dimensional vectors containing non-negative integral entries:
 $
-  X = (x_1,…,x_n) ∈ ℕ_(≥0)^(n×d), quad
-  Y = (y_1,…,y_n) ∈ ℕ_(≥0)^(n×d),
+  X = (x_1,…,x_n) ∈ ℤ_(≥0)^(n×d), quad
+  Y = (y_1,…,y_n) ∈ ℤ_(≥0)^(n×d),
 $
 who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
 $
