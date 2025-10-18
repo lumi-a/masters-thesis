@@ -51,7 +51,7 @@
     timeline = timeline.map(warehouse => sub(warehouse, minhouse))
     lq.diagram(
       width: 100%,
-      height: args.at("diagram-height", default: 150pt),
+      height: args.at("diagram-height", default: 128pt),
       yaxis: (lim: (auto, args.at("y-axis-lim", default: auto))),
       xaxis: (ticks: none, lim: (-3, timeline.len() + 2)),
       ..range(timeline.at(0).len()).map(d => lq.plot(

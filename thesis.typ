@@ -1303,7 +1303,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
 Despite the instance being similar, the proof used by @Lorieau[p:] to show $ρ^((1))_IterRound ≥ 2$ does not work here. It relied on using the same optimal solution for $LP'$ for all iterations during the first half of the algorithm. This can not apply to #gasoline-weak or #gasoline-strong: Compare @best-row-value-progression-lucas to @best-row-value-progression-weak and @best-row-value-progression-strong. In @Lorieau[p:]'s instance, the $BestRowValue$ is constant at first (this is necessary, as the same optimal solution can be used for the different $LP'$). However, for #gasoline-weak and #gasoline-strong, the $BestRowValue$ inrceases immediately, meaning the optimum for $LP'$ must keep changing for the first half of the algorithm. If we wanted to prove asymptotic bounds for either instance, our next step would be to prove properties of optimal $LP'$-solutions at each iteration of the first half of @alg-iterative-rounding. Proving optimality of these $LP'$-solutions would also be more difficult, as we can't use the same argument as @Lorieau[p:] did, and the dual LP is unwieldy.
 
 
-Lastly, we also show traces in phase-space (like in @example-cookies-phase-space for @example-gasoline-cookies) for specific instances.
+Lastly, we also show traces in phase-space (like in @example-cookies-phase-space for @example-gasoline-cookies) for specific $2$-dimensional instances.
 #{
   let deliveries = ((16, 2), (16, 2), (24, 2), (24, 2), (24, 2), (24, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (28, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (30, 2), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (32, 0), (0, 2))
   let production = ((16, 1), (16, 1), (24, 1), (24, 1), (24, 1), (24, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (28, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (30, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1), (31, 1))
@@ -1433,7 +1433,7 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
 
-As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ must be integral).
+As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ were required to be integral in the problem-statement).
 
 #{
   let data = csv("data/gasoline-α-d=3-k=3.csv")
@@ -1455,7 +1455,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
   )
 }
 
-Empirically, $I_2 = #gasoline-strong$ is best-possible among all $I_α$, while $I_1=#gasoline-weak$ is best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
+This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all $I_α$, and $I_1=#gasoline-weak$ being best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
 
 
 #TODO[Grammar-/ Spell Checker]
