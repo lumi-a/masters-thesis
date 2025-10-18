@@ -296,10 +296,6 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
     "where" μ(C) ≔ 1/(|C|) ⋅ ∑_(x∈C) x.
   $
   The total cost of a clustering is again the sum of the cost of its clusters.
-
-#TODO[Maybe add more cost-functions. Would also mean that the below figures would need more examples. Worse yet, more examples where the outcomes are unique.]
-
-/*
 - In $k$-center clustering, the cost of the cluster $C$ is the _radius_ of that cluster:
   $
     Cost(C) = min_(μ ∈ ℝ^d) (max_(x∈C) ‖x-μ‖_2)
@@ -310,9 +306,8 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
     Cost(C) = max_(x,y ∈ C) ‖x-y‖_2
   $
   The cost of a clustering is again the _maximum_ of the costs of its clusters.
-*/
 
-Naturally, these different objectives can yield different optimal clusterings, as seen in @clustering-example.
+Naturally, different objectives can yield different optimal clusterings, as seen in @clustering-example.
 
 #let parse = str => str.trim().split().map(line => line.trim().split("").enumerate().filter(ixchar => ixchar.at(1) == "#").map(ixchar => ixchar.at(0) - 1)) // https://typst.app/docs/reference/foundations/str/#definitions-split
 #let parse-hierarchical = text => text.split("---").map(section => parse(section))
@@ -476,7 +471,13 @@ For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchi
 ]
 In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$, because the hierarchical clustering there is optimal for this instance.
 
-#TODO[Talk about existing bounds on PoH, and what you bring to the table]
+For the above cost-functions, the following bounds on the Price of Hierarchy were previously known:
+- $PoH_(k"-median") ≤ 16$ @dai2014
+- $PoH_(k"-means") ≤ 32$ @upperBoundKMeans
+- $PoH_(k"-center") = 4$ @priceOfHierarchicalClustering
+- $PoH_(k"-diameter") = 3+2√2$ @priceOfHierarchicalClustering
+
+Using FunSearch, we construct a sequence of instances that shows the first non-trivial lower-bound on the Price of Hierarchy for $k$-median of $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$.
 
 == Generalised Gasoline-Problem
 
