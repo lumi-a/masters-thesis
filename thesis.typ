@@ -17,6 +17,14 @@
 // #set figure(gap: 1em)
 #show figure.caption: emph
 
+#show link: old-link => {
+  if old-link.body.has("text") and old-link.body.text == old-link.dest and old-link.dest.starts-with("https://") {
+    link(old-link.dest)[#old-link.dest.slice("https://".len())]
+  } else {
+    old-link
+  }
+}
+
 
 #set heading(numbering: "1.1")
 
@@ -451,8 +459,10 @@ To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could 
     Cost(H_i) / Cost(Opt_i),
   $
   where $Opt_i$ is an optimal $i$-clustering on $I$ with respect to $Cost$.
-]
-For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$. The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
+
+  For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$.
+] <def-optimal-hierarchical-clustering>
+The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
 
 The hierarchical clusterings and optimal clusterings in @example-hierarchical-clustering only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$, so the approximation-factor of that hierarchical-clustering is $1.78/1.41 ≈ 1.262$.
 
@@ -813,6 +823,39 @@ We also created an interface to display results about FunSearch runs in the form
   block(stroke: 0.1em + gray, width: 90%, image("assets/website.png")),
   caption: [The #link("https://lumi-a.github.io/funsearch")[website] showing outcomes of FunSearch runs.],
 ) <website>
+
+When a query returns a program, it is evaluated by assigning it a score (higher being better). These scores were problem-specific.
+
+=== Scoring Bin-Packing
+For a bin-packing instance $I$, we calculated the optimal (smallest) number of bins $Opt(I)$ by calling the existing solver `packingsolver`#footnote(link("https://github.com/fontanf/packingsolver")) @fontan, which is based on column-generation.
+
+We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_(|I|))[BestFit(π(I))]$ exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Mean"$ as an estimate.
+
+The score assigned to $I$ was $op("Mean")\/Opt(I)$.
+
+=== Scoring Knapsack
+For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the Pareto-Set when solutions with the same total weight and total profit are treated as identical. Our implementation proved troublesome, containing several bugs we had to fix along the way.
+
+For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann, but keep track of the largest Pareto-Set $P_"largest"$ over time and the running maximum of $abs(P_"largest") \/ abs(P_i)$. The final score is this maximum. That is, the assigned score is:
+$
+  Score(I)
+  quad = quad
+  max_(i = 1,…,abs(I))
+  [max_(j = 1,…,i) abs(P_j) / abs(P_i)]
+$
+
+=== Scoring Hierarchical Clustering
+For this, we had to compute an _optimal_ hierarchical clustering in the sense of @def-optimal-hierarchical-clustering. We did not find any existing solver for this, and brute-force methods are intractable: The number of different hierarchical clusterings on $32$ points is around $1.78⋅10^42$.
+
+At first, we attempted to formulate the problem as an ILP to be solved with Gurobi @gurobi, but that also proved ineffective, so we wrote our own solver instead.
+
+For every $k=1,…,n$, it first computes an approximate $k$-clustering via heuristics ($k$means++ or agglomerative clustering), which is used as an upper bound on the optimal $k$-clustering, which is then computed via branch-and-bound: Let $P = [p_1,…,p_n]$ be the list of vertices. We keep a priority-queue storing partial clusterings, i.e. partitions of some initial sub-list $[p_1,…,p_i]$. The neighbors of such a partial clustering are all possible partial clusterings obtained by adding $p_(i+1)$ to either an existing clustering, or putting it into a new singleton-cluster (if the total number of clusters is smaller than $k$). At each step, we take the partial clustering with the lowest priority off the priority-queue and add its neighbours to the priority-queue, where their priority is simply the total cost of that partial clustering, unless they exceed the upper bound on the optimal clustering.
+
+After computing an optimal $k$-clustering for each $k$, we compute _some_ hierarchical clustering via agglomerative clustering, and then an optimal hierarchical clustering, again via branch-and-bound, but this time proceeding level-wise from level $k=n$ to level $k=1$ (if we started from $k=2$, we would immediately have $2^n$ neighbours to inspect). This time, the priority of a partial hierarchical clustering is the maximum of $Cost(H_i) / Opt_i$ over all levels $H_i$ that have been clustered so far (compare @def-optimal-hierarchical-clustering).
+
+To speed up the search even further, we used memoization for computing costs of clusters, efficient memory-representation via bit-vectors and allocating on the stack as much as possible. With this, we were able to compute optimal hierarchical clusterings on $32$ points.
+
+Written in rust, it is available on crates.io#footnote(link("https://crates.io/crates/exact-clustering")) with documentation on docs.rs #footnote(link("https://docs.rs/exact-clustering")), the repository is on GitHub #footnote(link("https://github.com/lumi-a/exact-clustering")). We also provide python-bindings (on PyPi#footnote(link("https://pypi.org/project/exact-clustering")), GitHub#footnote(link("https://github.com/lumi-a/py-exact-clustering"))) via #link("https://www.maturin.rs")[Maturin]. The code is heavily benchmarked, tested, and documented, so that other researchers may easily use it.
 
 
 #TODO[Describe the tuning of the instances more]
