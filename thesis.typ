@@ -802,6 +802,18 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
 
 We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code, manually tuned that code (e.g. by removing redundant items or making the instance more symmetrical, see #TODO[insert references to later tuning-figures])
 
+== Implementation Details
+Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
+
+We replaced the single-threaded evaluation-loop (query the LLM to get one new program, evaluate the program, repeat) with a multi-threaded producer-consumer pattern, where multiple queries are made in parallel, and evaluated asynchronously. Furthermore, each query is batched, producing several new programs (default: $4$) instead of just one, which is more cost-effective as the input-tokens are only billed once per batch.
+
+We also created an interface to display results about FunSearch runs in the form of a website#footnote(link("https://lumi-a.github.io/funsearch")) (see @website). This helped with collaboration, analysing the outcomes and benchmarking different choices of parameters.
+
+#figure(
+  block(stroke: 0.1em + gray, width: 90%, image("assets/website.png")),
+  caption: [The #link("https://lumi-a.github.io/funsearch")[website] showing outcomes of FunSearch runs.],
+) <website>
+
 
 #TODO[Describe the tuning of the instances more]
 
@@ -877,7 +889,7 @@ $m + 1$ into the same bin with high probability:
     $
 ]
 
-With more effort, one could find better bounds on the probability, but that simply will not be necessary, as we already obtain a sufficient lower-bound on the absolute random-order-ratio:
+With more effort, one could obtain tighter bounds on the probability. But that simply will not be necessary, as this weak bound already yields a sufficient lower-bound on the absolute random-order-ratio:
 $
   "RR"_BestFit
   quad=quad sup_(I' ∈ ℐ) 𝔼_(π∈S_(|I'|))[BestFit(π(I'))/Opt(I')]
@@ -1461,4 +1473,4 @@ This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all
 
 #TODO[Grammar-/ Spell Checker]
 
-#bibliography("bibliography.bib", style: "chicago-author-date")
+#bibliography("bibliography.bib", style: "chicago-author-date")#image("assets/website.png")
