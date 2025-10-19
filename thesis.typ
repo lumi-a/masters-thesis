@@ -857,6 +857,9 @@ To speed up the search even further, we used memoization for computing costs of 
 
 Written in rust, it is available on crates.io#footnote(link("https://crates.io/crates/exact-clustering")) with documentation on docs.rs #footnote(link("https://docs.rs/exact-clustering")), the repository is on GitHub #footnote(link("https://github.com/lumi-a/exact-clustering")). We also provide python-bindings (on PyPi#footnote(link("https://pypi.org/project/exact-clustering")), GitHub#footnote(link("https://github.com/lumi-a/py-exact-clustering"))) via #link("https://www.maturin.rs")[Maturin]. The code is heavily benchmarked, tested, and documented, so that other researchers may easily use it.
 
+=== Scoring Gasoline
+An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`.
+
 
 #TODO[Describe the tuning of the instances more]
 
@@ -1507,7 +1510,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
         color: (data.map(x => if x.at(2) == "True" { blue } else { red })),
       ),
     ),
-    caption: [Scores #TODO[Did you define "Score" for gasoline anywhere?] of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity.],
+    caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity.],
   )
 }
 
