@@ -1677,4 +1677,4 @@ This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all
 
 #TODO[Grammar-/ Spell Checker]
 
-#bibliography("bibliography.bib", style: "chicago-author-date")#image("assets/website.png")
+#bibliography("bibliography.bib", style: "chicago-author-date")
