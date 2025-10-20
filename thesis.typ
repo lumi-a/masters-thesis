@@ -865,6 +865,52 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
 
 = Results
 == Bin-Packing
+
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em, width: 100%, align(left, body))
+
+  #subpar.grid(
+    columns: (1fr, 1fr),
+    kind: raw,
+    figure(caption: [Initial program.])[
+      ```py
+      def get_items() -> list[float]:
+          """Return a new bin-packing-instance, specified by the list of items.
+
+          The items must be floats between 0 and 1."""
+          items = [0.4, 0.5, 0.6]
+          return items
+      ```
+    ],
+    figure(caption: [A step in tuning @code-bin-packing-funsearch-output by hand.])[
+      ```py
+      def get_items() -> list[float]:
+          a = 7
+          b = 5
+          return [1.0 / a] * a + [1.0 / b] * b
+      ```
+    ],
+    grid.cell(
+      colspan: 2,
+    )[
+      #figure(caption: [A program found by FunSearch after $10$ trials of 2,400 samples each.])[```py
+      def get_items() -> list[float]:
+          """Return a new bin-packing-instance, specified by the list of items.
+
+          The items must be floats between 0 and 1."""
+          """Yet another version of `get_items_v0`, `get_items_v1`, and `get_items_v2`, with some lines altered."""
+          items = [0.8, 0.2, 0.6, 0.4]
+          # Split the first item into seven smaller items and the fourth item into five smaller items
+          items = [0.114, 0.114, 0.114, 0.114, 0.114, 0.114, 0.114] + items[1:3] + [0.08, 0.08, 0.08, 0.08, 0.08]
+          return items
+      ```]<code-bin-packing-funsearch-output>
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating bin packing instances, with model open-mistral-nemo and a temperature of $1.5$.],
+  )
+]
+
 For fixed $m in ℕ$, consider the instance:
 
 $
