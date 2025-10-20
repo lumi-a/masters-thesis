@@ -868,7 +868,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
 
 #[
   #show raw: set text(size: 0.75em)
-  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em, width: 100%, align(left, body))
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
 
   #subpar.grid(
     columns: (1fr, 1fr),
@@ -883,7 +883,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
           return items
       ```
     ],
-    figure(caption: [A step in tuning @code-bin-packing-funsearch-output by hand.])[
+    figure(caption: [After tuning @code-bin-packing-funsearch-output by hand.])[
       ```py
       def get_items() -> list[float]:
           a = 7
@@ -894,7 +894,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
     grid.cell(
       colspan: 2,
     )[
-      #figure(caption: [A program found by FunSearch after $10$ trials of 2,400 samples each.])[```py
+      #figure(caption: [A program found by FunSearch after $10$ trials of $2,400$ samples each.])[```py
       def get_items() -> list[float]:
           """Return a new bin-packing-instance, specified by the list of items.
 
@@ -995,6 +995,8 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem
+#TODO[Knapsack-Code output]
+
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
 To analyze the sizes of the instance's and subinstances' Pareto-sets, we define the two segments
 of the instance: For $a, b, d, n in bb(Z)_(≥ 1)$ with
@@ -1154,6 +1156,57 @@ for the runtime of the Nemhauser-Ullmann algorithm.
 
 
 == $k$-median Clustering
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: (1fr, 1fr),
+    kind: raw,
+    figure(caption: [Initial program.])[
+      ```py
+      def get_weighted_points() -> list[tuple[float, np.ndarray]]:
+          """Return a new weighted clustering-problem, specified by a list of weighted points.
+          The returned tuple consists of the weight of the point, and the point itself."""
+          weighted_points = [(1.0, np.array([0, 0, 0, 0])), (1e8, np.array([1, 0, 0, 0]))]
+          return weighted_points
+      ```
+    ],
+    figure(caption: [After tuning @code-clustering-funsearch-output by hand.])[
+      ```py
+      def get_weighted_points() -> list[tuple[float, np.ndarray]]:
+          return [
+              (1.0, np.zeros(14)),
+              *[(1.0, -np.eye(14)[i]) for i in range(14)],
+              (1e10, np.ones(14) / 20),
+          ]
+      ```
+    ],
+    grid.cell(
+      colspan: 2,
+    )[
+      #figure(caption: [A program found by FunSearch after $10$ trials of $2,200$ samples each.])[```py
+      def get_weighted_points() -> list[tuple[float, np.ndarray]]:
+          """Return a new weighted clustering-problem, specified by a list of weighted points.
+          The returned tuple consists of the weight of the point, and the point itself."""
+          return [
+              (1.0, np.zeros(14)),
+              (1e10, np.ones(14)),
+              *[(1.0, np.eye(14)[i]) for i in range(7)],
+              *[(1.0, np.eye(14)[i]*-1) for i in range(7, 13)],
+              *[(1e10-i*1e9, np.linspace(i*0.1, (i+1)*0.1, 14, endpoint=False)) for i in range(7)],
+              (1e11, np.array([13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0])),
+              (1e12, np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])),
+              (1e13, np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])*10),
+              (1e14, np.array([14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1])*100),
+              (1e15, np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])*1000),
+      ```]<code-clustering-funsearch-output>
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating clustering-instances. The model used was open-mistral-nemo with a temperature of $1.5$.],
+  )
+]
+
 Fix the dimension $d ≥ 4$. Put
 $c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
 the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d ≥ 4$, we
@@ -1290,6 +1343,64 @@ $(1+ sqrt(5))/2$, the golden ratio.
 
 
 == Gasoline
+#[
+  #show raw.where(block: true): set text(size: 0.75em)
+  #show raw.where(block: true): body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: 1fr,
+    kind: raw,
+    figure(caption: [Initial program.])[
+      ```py
+      def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
+          """Return a new gasoline-problem, specified by the two lists of 2d-non-negative-integer-points.
+          Both lists must have length at most n and consist only of points in N^2.
+          """
+          k = int(math.log2(n + 2)) - 1
+          xs, ys = [], []
+          for i in range(1, k):
+              rounded = int(2**k * (1 - 2 ** (-i)))
+              xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
+              ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
+
+          xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
+          xs.append(np.array([0, 0]))
+
+          rounded = int(2**k * (1 - 2 ** (-k)))
+          ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
+
+          return xs, ys
+      ```
+    ],
+    figure(caption: [The difference between the initial program and a program found by\ FunSearch after $10$ trials of 950 samples each, which we only tuned by discarding\ the final element of both lists.])[
+      ```diff
+       def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
+           """Yet another variation of the gasoline-problem generator."""
+           k = int(math.log2(n + 2)) - 1
+           xs, ys = [], []
+           for i in range(1, k):
+               rounded = int(2**k * (1 - 2 ** (-i)))
+               xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
+      -        ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
+      +        ys.extend([np.array([rounded, 2]) for _ in range(2**i)])  # No change
+
+      -    xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
+      +    xs.extend([np.array([2**k, 4]) for _ in range(2**k - 2)])  # No change
+      -    xs.append(np.array([0, 0]))
+      +    xs.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
+      +    xs.append(np.array([2**k, 2]))  # Changed from [2**k, 0] to [2**k, 2]
+
+           rounded = int(2**k * (1 - 2 ** (-k)))
+      -    ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
+      +    ys.extend([np.array([rounded, 2]) for _ in range(2**k - 1)])  # No change
+      +    ys.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
+      ```
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating $2$-dimensional gasoline-instances. The model used was open-mistral-nemo with a temperature of $1.5$. Lists were clipped to length $n$ before evaluation, and the final element of `ys` set such that `sum(xs) == sum(ys)`.],
+  )
+]
+
 The following example is the instance found by @Lorieau[p:]:
 
 #example[
