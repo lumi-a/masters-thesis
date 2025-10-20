@@ -811,7 +811,9 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
 
 == Tuning the FunSearch-Output <sec-funsearch-tuning-introduction>
 
-We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code, manually tuned that code (e.g. by removing redundant items or making the instance more symmetrical, see #TODO[insert references to later tuning-figures])
+We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmatrical (see @evolution-clustering, where we replaced `np.linspace` (which produces a sequence of evenly-spaced numbers) with `np.ones` (which produces a sequence of identical numbers)), and checking after every step whether the program's score decreased noticeably.
+
+Not all programs lent themselves to this, some programs just produced pseudo-random numbers, e.g. using trigonometric functions, but if successfull, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
 
 == Implementation Details
 Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
@@ -909,6 +911,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
     ],
     gap: 1em,
     caption: [The evolution of programs generating bin packing instances, with model open-mistral-nemo and a temperature of $1.5$.],
+    label: <evolution-bin-packing>,
   )
 ]
 
@@ -1205,6 +1208,7 @@ for the runtime of the Nemhauser-Ullmann algorithm.
     ],
     gap: 1em,
     caption: [The evolution of programs generating clustering-instances. The model used was open-mistral-nemo with a temperature of $1.5$.],
+    label: <evolution-clustering>,
   )
 ]
 
@@ -1668,7 +1672,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
         color: (data.map(x => if x.at(2) == "True" { blue } else { red })),
       ),
     ),
-    caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity.],
+    caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity (for the shown $α$, this happens iff $α≤1.0$).],
   )
 }
 
