@@ -553,15 +553,15 @@ $
   X = (x_1,…,x_n) ∈ ℤ_(≥0)^(n×d), quad
   Y = (y_1,…,y_n) ∈ ℤ_(≥0)^(n×d),
 $
-who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
+who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. In the above example, $d=2$ (the number of different ingredients) and $n=7$ (the length of a week). Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
 $
   min_(π in S_n) & quad ‖α-β‖_1 \
    "where"quad α & = min_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i) ∈ ℤ^d \
                β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
 $
-A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the line in $ℝ^d$ being traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is smallest (see @example-cookies-phase-space).
+A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the polygonal-chain in $ℝ^d$ traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is minimal (see @example-cookies-phase-space).
 
-Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries only consist of $1$s. The problem can be written as an integer linear program (ILP) with a permutation-matrix $Z ∈ {0,1}^(d×d)$:
+Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries consist only of $1$s. The gasoline-problem can be written as an integer linear program (ILP) as follows:
 #figure(
   kind: "Program",
   supplement: "Program",
@@ -576,7 +576,9 @@ Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of
   $,
   caption: [The integer linear program for the generalised gasoline-problem.],
 )<ilp-gasoline>
-The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear. With this ILP, we can formulate the Iterative-Rounding algorithm:
+The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear.
+
+The gasoline-problem is NP-hard, but for $d=2$, a $2$-approximation exists @Gasoline2018 for $d=1$. For general $d$, a different approximation-algorithm exists, with no known approximation-guarantee: #TODO[You'll only have defined approximation-ratio in about 3 sentences, so don't talk about it here yet.]
 #let UnfixedRows = math.op("UnfixedRows")
 #let ColumnIndex = math.op("ColumnIndex")
 #let BestRowIndex = math.op("BestRowIndex")
