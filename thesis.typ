@@ -3,6 +3,7 @@
 #import "@preview/subpar:0.2.2"
 #import "@preview/lilaq:0.5.0" as lq
 #import "@preview/lovelace:0.3.0": *;
+#import "@preview/zero:0.5.0": format-table
 #let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
 #let TODO = body => text(size: 0.5em, fill: green)[\[TODO: #body\]]
 
@@ -43,21 +44,21 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
-#figure(
-  table(
-    columns: 6,
+#figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (see @sec-funsearch-introduction), and FunSearch with hand-tuning (see @sec-funsearch-tuning-introduction).])[
+  #show: format-table(none, auto, auto, auto, auto)
+  #table(
+    columns: 5,
     stroke: none,
-    align: (left, right, right, right, right, right),
-    table.header([Problem], [Previous Best], [Local Search], [FunSearch], [Co-FunSearch], [Known Upper Bound]),
+    align: (left, auto, auto, auto, auto),
+    table.header([], [Best-Fit], [Knapsack], [$k$-median], [Gasoline]),
     table.hline(),
-    [Knapsack], [2.0], [11.2], [6.33], [$n^(O (sqrt(n)))$], [$O (2^n)$],
-    [Best-Fit], [1.3], [1.478], [1.497], [1.5], [1.5],
-    [$k$-median], [1.0], [1.36], [1.538], [1.618], [16.0],
-    [Gasoline], [2.0], [2.11], [3.05], [4.65], [None],
-  ),
-  caption: [Comparison of Co-FunSearch with base FunSearch, local
-    search and SOTA on different problems. #TODO[Figure out if and how you want to have distinct words for FunSearch and Co-FunSearch.]],
-)
+    [Previous Best Lower Bound], [2.0], [1.3], [1.0], [2.0],
+    [Local Search], [11.2], [1.478], [1.36], [2.11],
+    [FunSearch without Hand-Tuning], [646.938], [1.497], [1.538], [3.05],
+    [FunSearch with Hand-Tuning], [$n^(O (sqrt(n)))$], [1.5], [1.618], [4.65],
+    [Known Upper Bound], [$O (2^n)$], [1.5], [13.66], [None],
+  )
+]
 
 = Problems, Definitions and Previous Results <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
@@ -624,7 +625,7 @@ Making progress on the different open problems in @section-problems-definitions 
 - For the generalised gasoline problem, we would like to find instances where @alg-iterative-rounding performs poorly compared to an optimum soution.
 
 
-== Local Search
+== Local Search <sec-local-search>
 Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach #TODO[Add many, many citations]
 is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
@@ -701,7 +702,7 @@ Instead, to motivate our next steps, we will try learning from the instance, per
   caption: [The sorted best instance found in the trials of @local-search-plot, achieving a score of $1.3725$.],
 ) <local-search-instance>
 
-== Local Search on Code Instead of Vectors
+== FunSearch: Local Search on Code Instead of Vectors <sec-funsearch-introduction>
 
 To mitigate these issues we could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
@@ -738,8 +739,6 @@ To mitigate these issues we could --instead of searching for lists of numbers-- 
 However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
 Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we may mathematically analyse the asymptotic behaviour of the function for large list-lengths after the fact.
-
-#TODO[Describe FunSearch more. Concurrency, multiple programs in a prompt, islands, potential merging (though it didnt matter), favouring shorter programs in the prompt]
 
 #figure(
   align(left, box(stroke: 0.1em + gray, radius: 0.5em, inset: 1em, text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
@@ -809,6 +808,8 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   ])),
   caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
 ) <example-response>
+
+== Tuning the FunSearch-Output <sec-funsearch-tuning-introduction>
 
 We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code, manually tuned that code (e.g. by removing redundant items or making the instance more symmetrical, see #TODO[insert references to later tuning-figures])
 
