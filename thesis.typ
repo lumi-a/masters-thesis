@@ -44,6 +44,7 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
+= Problems, Definitions and Previous Results <section-problems-definitions>
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (see @sec-funsearch-introduction), and FunSearch with hand-tuning (see @sec-funsearch-tuning-introduction).])[
   #show: format-table(none, auto, auto, auto, auto)
   #table(
@@ -59,8 +60,6 @@
     [Known Upper Bound], [$O (2^n)$], [1.5], [13.66], [None],
   )
 ]
-
-= Problems, Definitions and Previous Results <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
 In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
 
@@ -630,8 +629,8 @@ Making progress on the different open problems in @section-problems-definitions 
 
 
 == Local Search <sec-local-search>
-Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach #TODO[Add many, many citations]
-is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
+Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach
+is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]). For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
@@ -819,7 +818,7 @@ We used FunSearch to find "bad" instances for the four problems listed above. Af
 
 Not all programs lent themselves to this, some programs just produced pseudo-random numbers, e.g. using trigonometric functions, but if successfull, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
 
-== Implementation Details
+== Implementation Details <sec-implementation-details>
 Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
 
 We replaced the single-threaded evaluation-loop (query the LLM to get one new program, evaluate the program, repeat) with a multi-threaded producer-consumer pattern, where multiple queries are made in parallel, and evaluated asynchronously. Furthermore, each query is batched, producing several new programs (default: $4$) instead of just one, which is more cost-effective as the input-tokens are only billed once per batch.
