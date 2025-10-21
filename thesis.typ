@@ -45,7 +45,7 @@
 #let IterRound = math.op("IterRound")
 
 = Problems, Definitions and Previous Results <section-problems-definitions>
-#figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (see @sec-funsearch-introduction), and FunSearch with hand-tuning (see @sec-funsearch-tuning-introduction).])[
+#figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
   #show: format-table(none, auto, auto, auto, auto)
   #table(
     columns: 5,
@@ -53,11 +53,13 @@
     align: (left, auto, auto, auto, auto),
     table.header([], [Best-Fit], [Knapsack], [$k$-median], [Gasoline]),
     table.hline(),
-    [Previous Best Lower Bound], [2.0], [1.3], [1.0], [2.0],
-    [Local Search], [11.2], [1.478], [1.36], [2.11],
-    [FunSearch without Hand-Tuning], [646.938], [1.497], [1.538], [3.05],
-    [FunSearch with Hand-Tuning], [$n^(O (sqrt(n)))$], [1.5], [1.618], [4.65],
-    [Known Upper Bound], [$O (2^n)$], [1.5], [13.66], [None],
+    [Previous Best Lower Bound], [1.3], [2.0], [1.0], [2.0],
+    table.hline(stroke: gray + 0.05em),
+    [Local Search], [1.478], [1.93], [1.36], [2.11],
+    [FunSearch without Hand-Tuning], [1.497], [646.93], [1.538], [3.05],
+    [FunSearch with Hand-Tuning], [1.5], [$n^(O (sqrt(n)))$], [1.618], [4.65],
+    table.hline(stroke: gray + 0.05em),
+    [Known Upper Bound], [1.5], [$O (2^n)$], [16.0], [None],
   )
 ]
 == Bin-Packing <section-problems-bin-packing>
