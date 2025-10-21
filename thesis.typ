@@ -1494,8 +1494,11 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
     gap: 1em,
     caption: [Visualising the "warehouse" for some $π_Opt$ over time.\ The maximum capacity is $32+2+2=36$.],
   )
-  Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$. This shows $ρ_IterRound^((3)) ≥ 3.46$, disproving one of the conjectures of @rajkovic[p:].
+  Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$. This shows $ρ_IterRound^((3)) ≥ 3.46$, disproving one the conjecture of @rajkovic[p:] that $ρ_IterRound^((d))=2$ for $d>2$.
 ]<example-plot-gasoline-funsearch-weak>
+
+@Lorieau[p:Section 2.3.3] already attempted to disprove this conjecture using local search, but was unsuccessful. In our experiments with local search, we were also unable to find instances with $IterRound(I)/Opt(I) > 2$ when starting from a _random instance_. However, when starting local search from the instance in @example-plot-gasoline-lucas instead -- $k=4$, embedded into $ℝ^2$ in the canonical way -- we _did_ find instances with $IterRound(I)/Opt(I) = 2.1$. However, we were unable to generalise these instances to higher dimensions nor spot any patterns (as described for the FunSearch instance below in @sec-empirical-data-gasoline).
+
 #example[
   We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
 
@@ -1552,7 +1555,7 @@ Lastly, we also show traces in phase-space (like in @example-cookies-phase-space
   )
 }
 
-== Empirical Data
+== Empirical Data <sec-empirical-data-gasoline>
 While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances is computationally prohibitive. If these linear relationships held true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
