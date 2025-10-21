@@ -106,14 +106,14 @@ These heuristics will usually not output an optimal solution, i.e. a packing tha
 #definition[
   Let $ℐ$ be the set of all (nonempty) bin-packing instances. For some instance $I∈ℐ$, let $Opt(I)$ be the number of bins in an optimal packing, and $𝒜(I)$ be the number of bins in the packing found by a bin-packing algorithm $𝒜$. The *(absolute) approximation-ratio of $𝒜$* is
   $
-    R_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
+    ρ_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
   $
 ]
-The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, the $R_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
+The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, the $ρ_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
 - For every instance, the packing found by Best-Fit will never use more than $1.7$ times more bins than an optimal packing, and
 - There is a sequence of instances $I_1, I_2, …$ such that $BestFit(I_j)/Opt(I_j)$ converges to $1.7$.
 
-@firstFitAnalysis[p:] proved that $R_FirstFit = 1.7$ as well, and @nextFitAnalysis[p:] showed $R_NextFit = 2$.
+@firstFitAnalysis[p:] proved that $ρ_FirstFit = 1.7$ as well, and @nextFitAnalysis[p:] showed $ρ_NextFit = 2$.
 
 Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that an adversary can choose _the entire input_ $I$ including the order of its items. Consider a less pessimistic measure for the performance of an algorithm:
 
