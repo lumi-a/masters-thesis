@@ -103,7 +103,7 @@ In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All
 These heuristics will usually not output an optimal solution, i.e. a packing that uses the fewest number of bins (see @bin-packing-example). The following definitions allow us to compare the performance of different heuristics:
 
 #definition[
-  Let $cal(I)$ be the set of all (nonempty) bin-packing instances. For some instance $I∈cal(I)$, let $Opt(I)$ be the number of bins in an optimal packing, and $cal(A)(I)$ be the number of bins in the packing found by a bin-packing algorithm $cal(A)$. The *(absolute) approximation-ratio of $𝒜$* is
+  Let $ℐ$ be the set of all (nonempty) bin-packing instances. For some instance $I∈ℐ$, let $Opt(I)$ be the number of bins in an optimal packing, and $𝒜(I)$ be the number of bins in the packing found by a bin-packing algorithm $𝒜$. The *(absolute) approximation-ratio of $𝒜$* is
   $
     R_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
   $
@@ -472,12 +472,12 @@ Although agglomerative clustering computes a hierarchical clustering whose appro
 For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering:
 
 #definition[
-  Let $cal(I)$ be the set of all clustering-instances, and $Cost$ some cost-function. For a fixed clustering-instance $I$, let $cal(H)(I)$ be the (finite) set of all hierarchical clusterings on $I$.
+  Let $ℐ$ be the set of all clustering-instances, and $Cost$ some cost-function. For a fixed clustering-instance $I$, let $cal(H)(I)$ be the (finite) set of all hierarchical clusterings on $I$.
   The *Price of Hierarchy for $Cost$* is defined as:
   $
     PoH_Cost
     quad ≔quad
-    sup_(I∈cal(I)) (min_(H ∈ cal(H)(I)) Apx_Cost (H)).
+    sup_(I∈ℐ) (min_(H ∈ cal(H)(I)) Apx_Cost (H)).
   $
 ]
 In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$, because the hierarchical clustering there is optimal for this instance.
@@ -561,7 +561,16 @@ $
 $
 A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the polygonal-chain in $ℝ^d$ traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is minimal (see @example-cookies-phase-space).
 
-Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of appropriate dimensions whose entries consist only of $1$s. The gasoline-problem can be written as an integer linear program (ILP) as follows:
+Even for $d=1$, this problem is NP-hard @Gasoline2018, so _approximation-algorithms_ have been studied instead:
+
+#definition[
+  Let $ℐ_d$ be the set of all $d$-dimensional instances of the gasoline-problem. For some instance $I∈ℐ_d$, let $Opt(I)$ be the value of an optimal solution, and $𝒜(I)$ be the value of the solution found by some algorithm $𝒜$. The *approximation-ratio of $𝒜$ in $d$ dimensions* is:
+  $
+    ρ^((d))_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
+  $
+]
+
+For $d=1$, an algorithm with approximation-ratio $2$ exists @Gasoline2018. For general $d$, a different algorithm exists, based on iterative rounding, for which we first write the gasoline-problem as an ILP. Let $𝟙$ be a vector of appropriate dimensions whose entries consist only of $1$s.
 #figure(
   kind: "Program",
   supplement: "Program",
@@ -576,9 +585,8 @@ Even for $d=1$, this problem is NP-hard @Gasoline2018. Let $𝟙$ be a vector of
   $,
   caption: [The integer linear program for the generalised gasoline-problem.],
 )<ilp-gasoline>
-The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" as $β ≥ α$, and thus indeed linear.
+The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β ≥ α$, so this is indeed a linear objective.
 
-The gasoline-problem is NP-hard, but for $d=2$, a $2$-approximation exists @Gasoline2018 for $d=1$. For general $d$, a different approximation-algorithm exists, with no known approximation-guarantee: #TODO[You'll only have defined approximation-ratio in about 3 sentences, so don't talk about it here yet.]
 #let UnfixedRows = math.op("UnfixedRows")
 #let ColumnIndex = math.op("ColumnIndex")
 #let BestRowIndex = math.op("BestRowIndex")
@@ -605,17 +613,11 @@ The gasoline-problem is NP-hard, but for $d=2$, a $2$-approximation exists @Gaso
   ],
 ) <alg-iterative-rounding>
 
-Let $ℐ_d$ be the set of all instances of the generalised gasoline-problem in $d$ dimensions. For some instance $I$, let $IterRound(I)$ be the value of the solution found by @alg-iterative-rounding, and let $Opt(I)$ be the value of an optimum solution. The *Approximation-Ratio* in $d$ dimensions of @alg-iterative-rounding is:
-$
-  ρ^((d))_IterRound
-  ≔ sup_(I∈ℐ_d) IterRound(I)/Opt(I).
-$
-It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the obvious way yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values.
+In this work, we are interested in finding lower bounds on the approximation-ratio $ρ^((d))_IterRound$ of @alg-iterative-rounding. It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the obvious way yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values (see @Lorieau[p:Section 3.2]).
 
-Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$.
+Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. r@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
-
-@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$. @rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
 
 
 
