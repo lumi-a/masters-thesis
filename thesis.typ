@@ -151,7 +151,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$ and matching the upper bound.
+Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$ and matching the upper bound. See @sec-results-bin-packing for details.
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
@@ -285,10 +285,7 @@ can always be bounded by some constant not depending on $I$.
 
 For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
 
-So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time.
-
-#TODO[Insert link to proof-section]
-
+So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time. See @sec-results-knapsack for details.
 
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
@@ -489,7 +486,7 @@ For the above cost-functions, the following bounds on the Price of Hierarchy wer
 - $PoH_(k"-center") = 4$ @priceOfHierarchicalClustering
 - $PoH_(k"-diameter") = 3+2√2$ @priceOfHierarchicalClustering
 
-Using FunSearch, we construct a sequence of instances that shows the first non-trivial lower-bound on the Price of Hierarchy for $k$-median of $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$.
+Using FunSearch, we construct a sequence of instances that shows the first non-trivial lower-bound on the Price of Hierarchy for $k$-median of $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$. See @sec-results-clustering for details.
 
 == Generalised Gasoline-Problem
 
@@ -618,7 +615,7 @@ In this work, we are interested in finding lower bounds on the approximation-rat
 
 Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. r@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
-@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture.
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ O(d)$, see @sec-results-gasoline for details.
 
 
 
@@ -872,7 +869,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
 #TODO[Describe the tuning of the instances more]
 
 = Results
-== Bin-Packing
+== Bin-Packing <sec-results-bin-packing>
 
 #[
   #show raw: set text(size: 0.75em)
@@ -1003,7 +1000,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
   The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is exactly $1.5$.
 ]
 
-== Knapsack Problem
+== Knapsack Problem <sec-results-knapsack>
 #TODO[Knapsack-Code output]
 
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
@@ -1164,7 +1161,7 @@ for the runtime of the Nemhauser-Ullmann algorithm.
 ]
 
 
-== $k$-median Clustering
+== $k$-median Clustering <sec-results-clustering>
 #[
   #show raw: set text(size: 0.75em)
   #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
@@ -1352,7 +1349,7 @@ $(1+ sqrt(5))/2$, the golden ratio.
 ]
 
 
-== Gasoline
+== Gasoline <sec-results-gasoline>
 #[
   #show raw.where(block: true): set text(size: 0.75em)
   #show raw.where(block: true): body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
