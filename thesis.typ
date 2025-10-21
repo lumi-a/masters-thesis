@@ -44,7 +44,6 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
-#show heading.where(level: 1): heading => pagebreak() + heading
 = Problems, Definitions and Previous Results <section-problems-definitions>
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
   #show: format-table(none, auto, auto, auto, auto)
