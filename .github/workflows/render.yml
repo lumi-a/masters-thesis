@@ -8,6 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: fontist/setup-fontist@v2
+        with:
+          fontist-version: '1.x'
       - run: |
           fontist install "Fira Sans"
           fontist install "Libertinus"
