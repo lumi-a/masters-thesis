@@ -247,7 +247,7 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
   ],
 )<alg-nemhauser-ullmann>
 
-This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, but this need not be the case:
+This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$ --- which would imply a runtime of $O(n⋅abs(P_n))$ --- but this need not be the case:
 
 #example[
   Consider the items:
@@ -281,7 +281,7 @@ $
   quad ≔ quad
   (max_(1≤i≤n) |P(I_(1:i))|) / (|P_n|)
 $
-can always be bounded by some constant not depending on $I$. If it could be bounded, @alg-nemhauser-ullmann would have a runtime bounded by $O(n⋅|P(I)|)$.
+can always be bounded by some constant not depending on $I$.
 
 For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
 
