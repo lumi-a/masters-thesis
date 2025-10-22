@@ -45,8 +45,6 @@
 #let IterRound = math.op("IterRound")
 
 
-
-
 == Academic Integrity
 #TODO[Note that we also wrote a paper together (once it's on arxiv), and how you only copied things from there that you wrote yourself.]
 
@@ -56,7 +54,7 @@ Except where explicitly noted otherwise, no part of this thesis was written by a
 - I sparingly used generative AI for coding (see @sec-implementation-details). This was helpful for repetitive problems with lots of training-data (e.g. the JavaScript code for the website) and unhelpful for critical implementations with fewer training-data (e.g. branch and bound in the clustering-solver).
 
 
-= Problems, Definitions and Previous Results <section-problems-definitions>
+= Prior Work and Summary of Results <section-problems-definitions>
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
   #show: format-table(none, auto, auto, auto, auto)
   #table(
@@ -75,7 +73,7 @@ Except where explicitly noted otherwise, no part of this thesis was written by a
   )
 ]
 == Bin-Packing <section-problems-bin-packing>
-In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
+In the bin-packing problem, we are given a bin-capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its contained items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
 
 #example[
   We have to assign the following five items to bins with capacity $c=10$:
@@ -84,7 +82,7 @@ In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items 
   $
   #subpar.grid(
     figure(
-      draw-packing.packing(10, ((7, 3), (4, 2, 4))),
+      draw-packing.packing(10, ((4, 2, 4), (7, 3))),
       caption: [An optimal packing.],
     ),
     <bin-packing-optimal>,
@@ -103,17 +101,17 @@ In the bin-packing problem, we are given a capacity $c$ and a list of $n$ items 
       caption: [The packing found by _First-Fit_.],
     ),
 
-    caption: [Different Packings for @bin-packing-example, with bins of capacity $10$.],
+    caption: [Different Packings for $w_1,…,w_5$, with bins of capacity $10$.],
     columns: (1fr, 1fr),
   )
 ] <bin-packing-example>
 
-In practice, heuristics are used @binPackingRevisited @binPackingHeuristics. All of the following heuristics are _online_: The items $w_i$ arrive in sequence and the heuristic has to assign $w_i$ permanently to a bin. Once the item $w_i$ has been processed, its assignment can not be changed.
+In practice, heuristics are used, which do not attempt to find the best possible packing, but quickly find a packing that still uses few bins @binPackingRevisited @binPackingHeuristics. All of the following heuristics are _online_: The items $w_i$ arrive in sequence and the heuristic has to assign $w_i$ permanently to a bin. Once the item $w_i$ has been processed, its assignment can not be changed.
 - _Best-Fit_: When item $w_i$ arrives, pack it into a bin which has the least remaining space among the bins that can contain $w_i$. If no such bin exists, open a new one.
 - _Next-Fit_: When item $w_i$ arrives, pack it into the bin that $w_(i-1)$ was assigned to, or open a new bin if this is not possible.
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
 
-These heuristics will usually not output an optimal solution, i.e. a packing that uses the fewest number of bins (see @bin-packing-example). The following definitions allow us to compare the performance of different heuristics:
+These heuristics will usually not output an optimal solution, i.e. a packing that uses the fewest number of bins (see @bin-packing-example). To compare the performance of different heuristics, we can use the following definition:
 
 #definition[
   Let $ℐ$ be the set of all (nonempty) bin-packing instances. For some instance $I∈ℐ$, let $Opt(I)$ be the number of bins in an optimal packing, and $𝒜(I)$ be the number of bins in the packing found by a bin-packing algorithm $𝒜$. The *(absolute) approximation-ratio of $𝒜$* is
@@ -121,13 +119,13 @@ These heuristics will usually not output an optimal solution, i.e. a packing tha
     ρ_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
   $
 ]
-The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, the $ρ_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
-- For every instance, the packing found by Best-Fit will never use more than $1.7$ times more bins than an optimal packing, and
+The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, $ρ_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
+- For every instance, the packing found by Best-Fit will never use more than $1.7$ times as many bins as an optimal packing, and
 - There is a sequence of instances $I_1, I_2, …$ such that $BestFit(I_j)/Opt(I_j)$ converges to $1.7$.
 
 @firstFitAnalysis[p:] proved that $ρ_FirstFit = 1.7$ as well, and @nextFitAnalysis[p:] showed $ρ_NextFit = 2$.
 
-Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that an adversary can choose _the entire input_ $I$ including the order of its items. Consider a less pessimistic measure for the performance of an algorithm:
+Comparing algorithms by their absolute approximation-ratios can be a bit pessimistic: In practice, if we are in a position where we must use an online-algorithm, it might not be the case that an adversary can choose _the entire input_ $I$ including the order of its items. Hence, we consider a less pessimistic measure for the performance of an algorithm:
 
 #definition[
   Let $S_n$ be the set of permutations on $n$ elements, i.e. the symmetric group. The *absolute random-order-ratio of $𝒜$* is
@@ -136,11 +134,11 @@ Comparing algorithms by their absolute approximation-ratios can be a bit pessimi
   $
 ]
 
-That is to say: We still assume an adversary can choose the _items_ of the instance, but their order is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items.
-@bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, with the lower bound improved to $1.3$ by @binPackingRevisited[p:].
+That is to say: We still assume an adversary can choose the _items_ of the instance, but their _order_ is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items ($Opt(I) = Opt(π(I))$ for all $π∈S_(abs(I))$).
+@bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, and @binPackingRevisited[p:] improved the lower bound to $1.3$.
 
 #example[
-  This example is (one element of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
+  This example is (one instance of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
   Consider bins of capacity $c=3000$ and the instance:
   $
     I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
@@ -163,7 +161,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$ and matching the upper bound. See @sec-results-bin-packing for details.
+Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$. Because this matches the upper bound, this proves that $"RR"_BestFit = 1.5$ exactly. See @sec-results-bin-packing for details.
 
 == Knapsack Problem
 In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
