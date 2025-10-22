@@ -298,21 +298,23 @@ can always be bounded by some constant not depending on $I$. For the specific $I
 So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time. See @sec-results-knapsack for details.
 
 == $k$-median Clustering
-In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
-- In $k$-median clustering, the $L_1$-norm is used instead, and the distance not measured from the centroid $mu$ but instead the best possible choice among the points in $C$:
+In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. Clustering is a useful tool for data-analysis. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
+- In $k$-median clustering, the cost of a cluster $C$ is: #h(1fr)
   $
     Cost(C)
     = min_(mu in C) sum_(x in C) norm(x - mu)_1
   $
-  The total cost of a clustering $C_1,…,C_k$ is the sum of its costs: $Cost(C_1) + … + Cost(C_k)$.
-- In $k$-means clustering, the cost of a cluster $C$ is: #h(1fr)
+  That is, for the best choice of a center $μ∈C$, sum the distances of all points $x∈C$ from $μ$. The total cost of a clustering $C_1,…,C_k$ is the sum of its costs: $Cost(C_1) + … + Cost(C_k)$.
+- $k$-means clustering is similar to $k$-median, but we use the squared $L_2$ norm and the center $μ$ may be any point from the ambient space, it need not be a point in $C$. In this scenario, the optimal choice of $μ$ turns out to be the average of all points in $C$:
   $
     Cost(C) =
     ∑_(x∈C) ‖x-μ(C)‖_2^2,
     quad
     "where" μ(C) ≔ 1/(|C|) ⋅ ∑_(x∈C) x.
   $
+
   The total cost of a clustering is again the sum of the cost of its clusters.
+
 - In $k$-center clustering, the cost of the cluster $C$ is the _radius_ of that cluster:
   $
     Cost(C) = min_(μ ∈ ℝ^d) (max_(x∈C) ‖x-μ‖_2)
@@ -387,9 +389,9 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
     $
 ]
 
-This nested structure of hierarchical clusterings is useful for, for example, taxonomy. In practice, finding _some_ hierarchical clustering can be done via *agglomerative clustering*, a greedy method where we start with $H_n$ as having each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge a pair of clusters that increases the objective the least.
+This nested structure of hierarchical clusterings is useful for, for example, taxonomy. Finding _some_ hierarchical clustering in practice can be done via *agglomerative clustering*, a greedy method where we start with $H_n$ as having each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge a pair of clusters that increases the objective the least.
 
-The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an optimal $i$-clustering *need not exist*. The set of points in @example-hierarchical-clustering is such an example.
+The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an _optimal_ $i$-clustering *need not exist*. The set of points in @example-hierarchical-clustering is such an example.
 
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
@@ -460,22 +462,20 @@ The additional structure of hierarchical clustering does come at a cost, however
 To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ usually have significantly higher cost than $k$-clusterings for large $k$, so this would lose information about the quality of the $H_i$ for small $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering:
 
 #definition[
-  For a clustering-instance $I$ and a cost-function $Cost$, the *approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ on $I$ is:
+  For a clustering-instance $I$ and a cost-function $Cost$, the *approximation-factor of a hierarchical clustering* $(H_1, …, H_n)$ for $I$ is:
   $
     Apx_Cost (H_1, …, H_n)
     quad ≔quad
     max_(i=1,…,n)
     Cost(H_i) / Cost(Opt_i),
   $
-  where $Opt_i$ is an optimal $i$-clustering on $I$ with respect to $Cost$.
+  where $Opt_i$ is an optimal $i$-clustering for $I$ with respect to $Cost$.
 
-  For a fixed cost-function $Cost$, we say that a hierarchical clustering on an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$.
+  For a fixed cost-function $Cost$, we say that a hierarchical clustering of an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$ (this always exists because the set of hierarchical clusterings is finite).
 ] <def-optimal-hierarchical-clustering>
-The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$.
+The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$. The hierarchical clusterings and optimal clusterings in @example-hierarchical-clustering only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$, so the approximation-factor of that hierarchical-clustering is $1.78/1.41 ≈ 1.262$.
 
-The hierarchical clusterings and optimal clusterings in @example-hierarchical-clustering only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$, so the approximation-factor of that hierarchical-clustering is $1.78/1.41 ≈ 1.262$.
-
-Although agglomerative clustering computes a hierarchical clustering whose approximation-factor is low in practice, this hierarchical clustering need not be optimal. In this work, we only concern ourselves with optimal hierarchical clusterings.
+Although agglomerative clustering computes a hierarchical clustering whose approximation-factor is low in practice, this hierarchical clustering need not be optimal among all possible hierarchical clusterings. In this work, we only concern ourselves with optimal hierarchical clusterings.
 
 For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering:
 
@@ -490,13 +490,15 @@ For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchi
 ]
 In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$, because the hierarchical clustering there is optimal for this instance.
 
-For the above cost-functions, the following bounds on the Price of Hierarchy were previously known:
+For the above cost-functions, the following bounds on the Price of Hierarchy are known:
 - $PoH_(k"-median") ≤ 16$ @dai2014
 - $PoH_(k"-means") ≤ 32$ @upperBoundKMeans
 - $PoH_(k"-center") = 4$ @priceOfHierarchicalClustering
-- $PoH_(k"-diameter") = 3+2√2$ @priceOfHierarchicalClustering
+- $PoH_(k"-diameter") = 3+2√2 ≈ 5.828$ @priceOfHierarchicalClustering
 
-Using FunSearch, we construct a sequence of instances that shows the first non-trivial lower-bound on the Price of Hierarchy for $k$-median of $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$. See @sec-results-clustering for details.
+No non-trivial lower bounds on $PoH_(k"-median")$ are known. Using FunSearch, we obtained a sequence of instances that shows $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$. See @sec-results-clustering for details.
+
+We also made similar attempts for other objectives, and for the approximation-ratio of agglomerative-clustering, but to no success. #TODO[Either move this, or insert a reference to, a later section on failed experiments.]
 
 == Generalised Gasoline-Problem
 
