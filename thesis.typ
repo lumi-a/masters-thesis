@@ -164,14 +164,16 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
 Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$. Because this matches the upper bound, this proves that $"RR"_BestFit = 1.5$ exactly. See @sec-results-bin-packing for details.
 
 == Knapsack Problem
-In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we are only allowed to use a single bin of capacity $c$ and the total weight of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the total profit of the items we put in the bin.
+In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
+
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. #TODO[Maybe just use bit-vectors.] For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
   $
     I = [vec(4, 9),quad vec(5, 1),quad vec(13, 14),quad vec(3, 8),quad vec(11, 4),quad vec(6, 14)]
   $
-  The optimal list of items to put into our bin is $[vec(4, 9), vec(5, 1), vec(3, 8), vec(6, 14)]$, with a total weight of $18$ and a total profit of $32$.
+  An optimal solution is $[vec(4, 9), vec(5, 1), vec(3, 8), vec(6, 14)]$, with total weight $18$ and total profit $32$.
   #figure(
     {
       let items = ((4, 9), (5, 1), (13, 14), (3, 8), (11, 4), (6, 14))
@@ -222,15 +224,15 @@ In the traditional Knapsack-Problem, we are given a capacity $c$ and a list $I$ 
       )
     },
 
-    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in #Purple[purple]. The optimum is circled in #Blue[blue].\ Pareto-optimal solutions are marked by $#sym.star.filled$.],
+    caption: [All $2^6$ possible solutions to @knapsack-example. Solutions exceeding capacity $c=20$ are marked in #Purple[purple]. The optimum is circled in #Blue[blue]. Pareto-optimal solutions are marked by $#sym.star.filled$.],
   ) <fig-example-knapsack>
 ] <knapsack-example>
 
-A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
-
 === Pareto-Sets
 
-In practice, one might not know the capacity beforehand, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$. To cover all these cases simultaneously, we can narrow down the space by eliminating all solutions that can never be optimal. The set of those solutions is the _Pareto-set_ @RoeglinBookChapter:
+In practice, one might not know the capacity $c$, or might have unlimited capacity but some tradeoff-function between weights and profits, for example $u(w, p) = p - w^2$ that must be maximised instead. The original objective ("maximise total profit while having total weight at most $c$") can also be expressed by such a tradeoff-function, $u(w, p) = p ⋅ χ_(w ≤ c)$, where $χ$ is the indicator-function.
+
+All of these cases can be covered simultaneously: We can narrow down the space by eliminating all solutions that can never be optimal for any reasonable tradeoff-function. The set of those solutions is the _Pareto-set_ @RoeglinBookChapter:
 #definition[
   For solutions $A$ and $B$, we say $A$ *dominates* $B$ if and only if:
   $
@@ -242,7 +244,7 @@ In practice, one might not know the capacity beforehand, or might have unlimited
 
   #TODO[Not really a set. Maybe do use index-vectors.]
 ]
-See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, hence one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and finding a solution in $P(I)$ that maximizes the objective. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
+See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, so one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and, for a given tradeoff-function $u$, finding a solution in $P(I)$ that maximizes $u$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
 Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullmann algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
 #figure(
@@ -257,7 +259,7 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
   ],
 )<alg-nemhauser-ullmann>
 
-This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$ --- which would imply a runtime of $O(n⋅abs(P_n))$ --- but this need not be the case:
+This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. #TODO[Somewhere around here, a note would be useful discussing the difference between Pareto-Size and "Pareto-Size but we treat same total weight and total profit as identical"] Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, which would imply a runtime of $O(n⋅abs(P_n))$. However, this need not be the case:
 
 #example[
   Consider the items:
@@ -282,7 +284,7 @@ This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With s
         )
         + h(1fr)
     ),
-    caption: [The solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by a star. The number of visible points is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions share the same total weight and total profit. If treating Pareto-optimal solutions with the same weight and profit as identical, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+    caption: [The solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by #sym.star.filled. For $I_(1:4)$ (respectively $I_(1:5)$), the number of visible solutions is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions have the same total weight and total profit. If treating Pareto-optimal solutions with the same weight and profit as identical, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
   )
 ]<example-shrinking-pareto-set>
 Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether
@@ -291,11 +293,9 @@ $
   quad ≔ quad
   (max_(1≤i≤n) |P(I_(1:i))|) / (|P_n|)
 $
-can always be bounded by some constant not depending on $I$.
+can always be bounded by some constant not depending on $I$. For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
 
-For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
-
-So far, the instances with the highest score only achieved around $Score(I) ≈ 2$. Using FunSearch, we were able to find a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time. See @sec-results-knapsack for details.
+So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time. See @sec-results-knapsack for details.
 
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
