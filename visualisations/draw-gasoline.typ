@@ -1,4 +1,5 @@
 #import "@preview/lilaq:0.5.0" as lq
+#import "@preview/tiptoe:0.3.1"
 
 #let scale = (x, s) => x.map(r => r * s)
 #let add = (x, y) => x.zip(y).map(v => v.at(0) + v.at(1))
@@ -67,6 +68,8 @@
     let squares = timeline.map(warehouse => (flourbar(warehouse), sugarbar(warehouse), h(if one-d { (barwidth / 2) } else { barwidth }))).flatten()
 
     let line = (y, color) => place(dy: (maxmaxhouse - y) * heightscale, line(length: ((2 / 6) + production-deliveries.len()) * 2 * boxbuffer * barwidth, stroke: (paint: color, thickness: 0.1em)))
+
+
     align(left + bottom)[
       #line(maxhouse.at(0) + 0.15, blue)
       #if one-d [] else { line(maxhouse.at(1) - 0.15, purple) }
@@ -79,6 +82,10 @@
       let d = pd.at(1)
       [#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.t$#draw-vec(d)])#box(width: barwidth * boxbuffer, height: box-height, align(center)[$arrow.b$#draw-vec(p)])]
     })))
+
+    if args.at("weekdays", default: false) {
+      align(left + bottom, stack(dir: ltr, h(barwidth * 2.75), ..range(production-deliveries.len()).map(ix => { box(width: 2 * barwidth * boxbuffer, height: box-height, align(center)[#("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").at(ix)]) })))
+    }
   }
 }
 
@@ -87,6 +94,8 @@
   let dimension = deliveries.at(0).len()
   let minhouse = timeline.fold(range(dimension).map(_ => 100000), min)
   let maxhouse = timeline.map(pd => sub(pd, minhouse)).fold(range(dimension).map(_ => -10000), max)
+
+  timeline.push(timeline.at(0))
 
   lq.diagram(
     xaxis: (lim: xlim),
@@ -98,11 +107,13 @@
       (:)
     },
     yaxis: (lim: ylim),
-    lq.plot(
-      timeline.map(x => x.at(0) - minhouse.at(0)),
-      timeline.map(x => x.at(1) - minhouse.at(1)),
-      color: color,
-    ),
+    ..timeline
+      .windows(2)
+      .map(start-stop => {
+        let start = sub(start-stop.at(0), minhouse)
+        let stop = sub(start-stop.at(1), minhouse)
+        lq.line(start, stop, tip: tiptoe.triangle.with(length: 0.5em), stroke: color)
+      }),
     lq.rect(
       0,
       0,

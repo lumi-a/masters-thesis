@@ -502,15 +502,19 @@ We also made similar attempts for other objectives, and for the approximation-ra
 
 == Generalised Gasoline-Problem
 
-As a motivating example for the problem (similar to @Lorieau[p:]), we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, on Monday, we might be asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 1)$ for our cookie-production, whereas each Tuesday, we must consume more and sweeter cookies, hence having to use $y_2 = vec(5, 5)$ amounts of flour and sugar. We can get flour and sugar delivered to our factory overnight, but we must pick these amounts from a list of seven possible delivery-trucks that are the same every week, but we can choose on which day of the week we would like to receive each truck. For instance, we can choose to have $x_1 = vec(4, 4)$ flour and sugar delivered to our factory on some day, or $x_2 = vec(7, 10)$. Within a week, we can only order each of the seven delivery-trucks exactly once, and we can only accept one delivery-truck per night because our driveway is too narrow. It's unlikely that we will be fortunate enough to have, for every demand-vector $y_i$, a matching delivery-vector $x_i$ (in which case we would just order exactly the ingredients that we'd need on the next day), so we must resort to storing leftover ingredients overnight in our yet-to-be-built warehouse.
+As a motivating example for the gasoline-problem (similar to @Lorieau[p:]), we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, each Monday, we are asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 4)$ for our cookie-production, whereas each Tuesday, we must produce more and sweeter cookies, having to use $y_2 = vec(2, 8)$ amounts of flour and sugar.
 
-Corporate has been kind enough to ensure that $y_1 + … + y_7 = x_1 + … + x_7$, meaning that, at the end of every week, we will have exactly the same amount of ingredients in our warehouse as at the beginning of the week. However, storing ingredients takes costly space, so we would like to minimise the total amount of warehouse we need to build, while the only free variable under our control is the permutation of the delivery-trucks across the week. Let $S_n$ be the set of permutations on $n$ elements. Mathematically, our task is:
+We get flour and sugar delivered to our factory overnight, but we must pick these amounts from a list of seven possible delivery-trucks that are the same every week. We can choose on which day of the week we would like to receive each truck. For instance, we can choose to have $x_1 = vec(5, 3)$ flour and sugar delivered to our factory on Monday, or $x_2 = vec(3, 10)$. Within a week, we must receive each of the seven delivery-trucks exactly once, and we can only accept one delivery-truck per night because our driveway is too narrow. It's unlikely that we will be fortunate enough to have, for every demand-vector $y_i$, a matching delivery-vector $x_i$ (in which case we would just order exactly the ingredients overnight that we would need on the next day), so we must resort to storing leftover ingredients overnight in our yet-to-be-built warehouse.
+
+Corporate has been kind enough to ensure that $y_1 + … + y_7 = x_1 + … + x_7$, meaning that, at the end of every week, we will have exactly the same amount of ingredients in our warehouse as at the beginning of the week. However, storing ingredients takes costly space, so we would like to minimise the total amount of warehouse we need to build, while the only free variable under our control is the permutation of the delivery-trucks across the week. If we are not clever in choosing this permutation, we might end up ordering some large trucks on some days with low production, which would waste a lot of warehouse space.
+
+Let $S_n$ be the set of permutations on $n$ elements. Mathematically, our task is:
 $
   min_(π in S_7) & quad ‖α-β‖_1 \
    "where"quad α & =min_(1≤k≤7)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i)quad #box(width: 14em, baseline: 50%)["In the evening, we must have at least $α$ ingredients left over."] \
                β & =max_(1≤k≤7)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i)quad #box(width: 14em, baseline: 50%)["After the delivery overight, we must store at most $β$ ingredients"]
 $
-where the minimum across vectors is taken entry-wise. As an objective, we choose $‖α-β‖_1$, meaning we trade off the cost for space in the flour-warehouse linearly against the cost of space in the sugar-warehouse. We do not lose generality on the tradeoff-ratio between the two, since tradeoffs like "Sugar-warehouse space is twice as expensive as flour-warehouse space" can be captured by choosing different units for measuring amounts of flour and sugar. Non-linear tradeoffs are not captured, however. We write $X = (x_1,…,x_7)$ and $Y = (y_1,…,y_7)$.
+where the minimum across vectors is taken entry-wise. As an objective, we choose $‖α-β‖_1$, meaning we trade off the cost for space in the flour-warehouse linearly against the cost of space in the sugar-warehouse. This does not lose generality on the tradeoff-_ratio_ between the two, since tradeoffs like "Sugar-warehouse space is twice as expensive as flour-warehouse space" can be captured by choosing different units for measuring amounts of flour and sugar in the $x_i$ and $y_i$ vectors. Non-linear tradeoffs are not captured, however. We write $X = (x_1,…,x_7)$ and $Y = (y_1,…,y_7)$.
 
 #example[
   #let deliveries = ((5, 3), (3, 10), (7, 8), (1, 2), (8, 9), (7, 4), (1, 1))
@@ -523,13 +527,13 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
           quad
           Y = & [vec(3, 4), vec(2, 8), vec(8, 1), vec(1, 5), vec(9, 4), vec(2, 10), vec(7, 5)],
   $
-  ($x_1"+"…"+"x_7=y_1"+"…"+"y_7$, as warranted by corporate), together with the following permutation of deliveries:
+  ($x_1"+"…"+"x_7$ equals $y_1"+"…"+"y_7$, as promised by corporate), together with the following permutation of deliveries:
   $
     π(X) ≔ #draw-gasoline.typeset-permutation(iterative-rounding-permutation, deliveries).
   $
-  The timeline of our warehouse can be visualised as follows: We use colored bars to represent the current amount of flour (#Blue[blue]) and sugar (#Purple[purple]) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse at night, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies during the day. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
+  We visualise the state of our warehouse over the course of the week as follows: We use colored bars to represent the current amount of flour (#Blue[blue]) and sugar (#Purple[purple]) in our warehouse. Vectors preceded by "$arrow.t$" indicate deliveries to our warehouse at night, vectors preceded by "$arrow.b$" indicate us consuming ingredients from the warehouse to bake cookies during the day. The two horizontal colored lines indicate the maximum number of the respective ingredient that the warehouse must store across the week. We choose the initial stocking of our warehouse _minimally_ such that we will always have enough ingredients to never run out (this choice is exactly $β$ from the above optimization problem). This ensures that our warehouse has the smallest possible size for this permutation, and that for both ingredients, there must be a day on which that ingredient's warehouse is fully depleted (otherwise our choice would not be minimal, we would have wasted space).
   #figure(
-    draw-gasoline.draw-permutation(iterative-rounding-permutation, deliveries, production),
+    draw-gasoline.draw-permutation(iterative-rounding-permutation, deliveries, production, weekdays: true),
     kind: image,
     gap: 1.5em,
     caption: [The (cyclical) state of the warehouse across the week for permutation $π$.],
@@ -539,12 +543,12 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
     π_Opt (X) ≔ #draw-gasoline.typeset-permutation(opt-permutation, deliveries),
   $
   #figure(
-    draw-gasoline.draw-permutation(opt-permutation, deliveries, production),
+    draw-gasoline.draw-permutation(opt-permutation, deliveries, production, weekdays: true),
     kind: image,
     gap: 1.5em,
     caption: [The (cyclical) state of the warehouse across the week for permutation $π_Opt$.],
   )
-  Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse space and sugar-warehouse space.
+  Here, the peak-capacity of the warehouse is only $10$ for both flour and sugar, so $π_Opt$ is a better choice than $π$ regardless of the tradeoff between the cost of flour-warehouse and sugar-warehouse.
 
   For a different visualisation, we can trace the state of the warehouse in phase-space:
 
@@ -563,20 +567,20 @@ $
   X = (x_1,…,x_n) ∈ ℤ_(≥0)^(n×d), quad
   Y = (y_1,…,y_n) ∈ ℤ_(≥0)^(n×d),
 $
-who have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. In the above example, $d=2$ (the number of different ingredients) and $n=7$ (the length of a week). Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
+which have the same total sum $x_1"+"…"+"x_n = y_1"+"…"+"y_n$. In the above example, $d=2$ (the number of different ingredients) and $n=7$ (the length of a week). Our objective is to find a permutation $π ∈ S_n$ of the $X$-entries that minimises the prefix-sum discrepancy:
 $
   min_(π in S_n) & quad ‖α-β‖_1 \
    "where"quad α & = min_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i) ∈ ℤ^d \
                β & =max_(1≤k≤n)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^(k-1) y_i) ∈ℤ^d.
 $
-A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the polygonal-chain in $ℝ^d$ traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is minimal (see @example-cookies-phase-space).
+A different interpretation of the problem is: We are given two sequences $X$ and $Y$ of vectors, with the same total sum. We must find a permutation $π$ of $X$ such that, when we plot the polygonal-chain in $ℝ^d$ traced by the prefix-sums of $π(x_1)-y_1+π(x_2)-y_2 + … +π(x_n)-y_n$, the sum of the sidelengths of the box containing all those points is minimal (see @example-cookies-phase-space for an example).
 
-Even for $d=1$, this problem is NP-hard @Gasoline2018, so _approximation-algorithms_ have been studied instead:
+Even for $d=1$, this problem is NP-hard @Gasoline2018, so approximation-algorithms have been studied instead:
 
 #definition[
   Let $ℐ_d$ be the set of all $d$-dimensional instances of the gasoline-problem. For some instance $I∈ℐ_d$, let $Opt(I)$ be the value of an optimal solution, and $𝒜(I)$ be the value of the solution found by some algorithm $𝒜$. The *approximation-ratio of $𝒜$ in $d$ dimensions* is:
   $
-    ρ^((d))_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
+    ρ^((d))_𝒜 quad≔quad sup_(I∈ℐ_d) 𝒜(I)/Opt(I).
   $
 ]
 
@@ -617,7 +621,7 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β �
         + Let $RowValue$ be the optimum value of the $LP'$.
         + If $RowValue < BestRowValue$:
           + $BestRowIndex ≔ RowIndex$ and $BestRowValue ≔ RowValue$.
-      + Add the constraint "$Z_(BestRowIndex,ColumnIndex) = 1$" to $LP$.
+      + Permanently add the constraint "$Z_(BestRowIndex,ColumnIndex) = 1$" to $LP$.
       + Remove $BestRowIndex$ from $UnfixedRows$.
     + $UnfixedRows$ is empty and $Z$ is fixed entirely.
   ],
@@ -625,9 +629,9 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β �
 
 In this work, we are interested in finding lower bounds on the approximation-ratio $ρ^((d))_IterRound$ of @alg-iterative-rounding. It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the obvious way yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values (see @Lorieau[p:Section 3.2]).
 
-Though we will not prove this, the permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding for that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. r@Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
+The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding on that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. @Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
-@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ O(d)$, see @sec-results-gasoline for details.
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ O(d)$, see @sec-results-gasoline for details.
 
 
 
