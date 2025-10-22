@@ -44,6 +44,18 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
+
+
+
+== Academic Integrity
+#TODO[Note that we also wrote a paper together (once it's on arxiv), and how you only copied things from there that you wrote yourself.]
+
+Except where explicitly noted otherwise, no part of this thesis was written by a Large Language Model (LLM). I _did_ use generative AI in the following ways:
+- LLMs are an integral component of FunSearch, the search-algorithm we used (see @sec-funsearch-introduction).
+- I used #link("https://gemini.google/overview/deep-research")[Gemini Deep Research] to find existing literature and references.
+- I sparingly used generative AI for coding (see @sec-implementation-details). This was helpful for repetitive problems with lots of training-data (e.g. the JavaScript code for the website) and unhelpful for critical implementations with fewer training-data (e.g. branch and bound in the clustering-solver).
+
+
 = Problems, Definitions and Previous Results <section-problems-definitions>
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
   #show: format-table(none, auto, auto, auto, auto)
