@@ -9,6 +9,14 @@
 #let norm = v => calc.sqrt(v.map(r => r * r).sum())
 #let normed = v => scale(v, 1 / norm(v))
 
+#let blue = rgb("#47A");
+#let cyan = rgb("#6CE");
+#let green = rgb("#283");
+#let yellow = rgb("#CB4");
+#let red = rgb("#E67");
+#let purple = rgb("#A37");
+#let gray = rgb("#BBB");
+
 #let get-pds-timeline = (pi, deliveries, production) => {
   let production-deliveries = production
     .enumerate()
@@ -58,8 +66,7 @@
       ..range(timeline.at(0).len()).map(d => lq.plot(
         range(timeline.len()),
         timeline.map(warehouse => warehouse.at(d)),
-        color: (rgb("#47A"), rgb("#A37"), rgb("#CB4")).at(d),
-        // stroke: stroke((blue, purple, red).at(d).transparentize(25%)),
+        color: (blue, purple, yellow).at(d),
       )),
     )
   } else {
