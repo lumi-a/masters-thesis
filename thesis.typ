@@ -856,16 +856,16 @@ Furthermore (though this was not done in the shown examples), the python-code ca
 
 == Tuning the FunSearch-Output <sec-funsearch-tuning-introduction>
 
-We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmatrical (see @evolution-clustering, where we replaced `np.linspace` (which produces a sequence of evenly-spaced numbers) with `np.ones` (which produces a sequence of identical numbers)), and checking after every step whether the program's score decreased noticeably.
+We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmetrical (see @evolution-clustering, where we replaced `np.linspace`, which produces a sequence of evenly-spaced numbers, with `np.ones`, which produces a sequence of identical numbers), and checking after every step whether the program's score decreased noticeably.
 
-Not all programs lent themselves to this, some programs just produced pseudo-random numbers, e.g. using trigonometric functions, but if successfull, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
+Not all programs found by FunSearch lend themselves to this. Some programs just produced pseudo-random numbers, e.g. using trigonometric functions. If tuning was successfull, though, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
 
 == Implementation Details <sec-implementation-details>
 Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
 
-We replaced the single-threaded evaluation-loop (query the LLM to get one new program, evaluate the program, repeat) with a multi-threaded producer-consumer pattern, where multiple queries are made in parallel, and evaluated asynchronously. Furthermore, each query is batched, producing several new programs (default: $4$) instead of just one, which is more cost-effective as the input-tokens are only billed once per batch.
+We replaced the single-threaded evaluation-loop (query the LLM to get one new program, evaluate the program, repeat) with a multi-threaded producer-consumer pattern, where multiple queries are made in parallel, and evaluated asynchronously across different threads. Furthermore, each query is batched, producing several new programs (default: $4$) instead of just one, which is more cost-effective as the input-tokens are only billed once per batch.
 
-We also created an interface to display results about FunSearch runs in the form of a website#footnote(link("https://lumi-a.github.io/funsearch")) (see @website). This helped with collaboration, analysing the outcomes and benchmarking different choices of parameters.
+We also created an interface to display results about FunSearch runs in the form of a website#footnote(link("https://lumi-a.github.io/funsearch")). This helped with collaboration, analysing the outcomes and benchmarking different choices of parameters.
 
 #figure(
   block(stroke: 0.1em + gray, width: 90%, image("assets/website.png")),
@@ -877,31 +877,29 @@ When a query returns a program, it is evaluated by assigning it a score (higher 
 === Scoring Bin-Packing
 For a bin-packing instance $I$, we calculated the optimal (smallest) number of bins $Opt(I)$ by calling the existing solver `packingsolver`#footnote(link("https://github.com/fontanf/packingsolver")) @fontan, which is based on column-generation.
 
-We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_(|I|))[BestFit(π(I))]$ exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Mean"$ as an estimate.
+We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_(|I|))[BestFit(π(I))]$ exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Avg"$ as an estimate.
 
-The score assigned to $I$ was $op("Mean")\/Opt(I)$.
+The score assigned to $I$ was $op("Avg")\/Opt(I)$.
 
 === Scoring Knapsack
-For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the Pareto-Set when solutions with the same total weight and total profit are treated as identical. Our implementation proved troublesome, containing several bugs we had to fix along the way.
+For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the Pareto-Set when solutions with the same total weight and total profit are treated as identical. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
 
-For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann, but keep track of the largest Pareto-Set $P_"largest"$ over time and the running maximum of $abs(P_"largest") \/ abs(P_i)$. The final score is this maximum. That is, the assigned score is:
+For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann and keep track of the largest Pareto-Set $P_"largest"$ and the running maximum of $abs(P_"largest") \/ abs(P_i)$ over time. The final score is this maximum. That is, the assigned score is:
 $
   Score(I)
   quad = quad
   max_(i = 1,…,abs(I))
-  [max_(j = 1,…,i) abs(P_j) / abs(P_i)]
+  [max_(1≤j≤i) abs(P_j) / abs(P_i)]
 $
 
 === Scoring Hierarchical Clustering
-For this, we had to compute an _optimal_ hierarchical clustering in the sense of @def-optimal-hierarchical-clustering. We did not find any existing solver for this, and brute-force methods are intractable: The number of different hierarchical clusterings on $32$ points is around $1.78⋅10^42$.
+The score of an instance is the approximation-factor of an _optimal_ hierarchical clustering in the sense of @def-optimal-hierarchical-clustering. We did not find any existing solver for this, and brute-force methods are intractable: The number of different hierarchical clusterings on $32$ points is around $1.78⋅10^42$. At first, we attempted to formulate the problem as an ILP to be solved with Gurobi @gurobi, but that also proved ineffective, so we wrote our own solver instead.
 
-At first, we attempted to formulate the problem as an ILP to be solved with Gurobi @gurobi, but that also proved ineffective, so we wrote our own solver instead.
-
-For every $k=1,…,n$, it first computes an approximate $k$-clustering via heuristics ($k$means++ or agglomerative clustering), which is used as an upper bound on the optimal $k$-clustering, which is then computed via branch-and-bound: Let $P = [p_1,…,p_n]$ be the list of vertices. We keep a priority-queue storing partial clusterings, i.e. partitions of some initial sub-list $[p_1,…,p_i]$. The neighbors of such a partial clustering are all possible partial clusterings obtained by adding $p_(i+1)$ to either an existing clustering, or putting it into a new singleton-cluster (if the total number of clusters is smaller than $k$). At each step, we take the partial clustering with the lowest priority off the priority-queue and add its neighbours to the priority-queue, where their priority is simply the total cost of that partial clustering, unless they exceed the upper bound on the optimal clustering.
+For every $k=1,…,n$, the solver first computes an approximate $k$-clustering via heuristics ($k$means++ or agglomerative clustering), providing an upper bound on the value of an optimal $k$-clustering. An actual optimum is then computed via branch-and-bound: Let $P = [p_1,…,p_n]$ be the list of vertices. We keep a priority-queue storing partial clusterings, i.e. partitions of some initial sub-list $[p_1,…,p_i]$. The neighbors of such a partial clustering are all possible partial clusterings obtained by adding $p_(i+1)$ to either an existing clustering, or putting it into a new singleton-cluster (if the total number of clusters is smaller than $k$). At each step, we take the partial clustering with the lowest priority off the priority-queue and add its neighbours to the priority-queue, where their priority is simply the total cost of that partial clustering, filtering out neighbours whose priority exceeds the upper bound on the optimal clustering (although the clustering is only partial, its value can only increase if more points are added).
 
 After computing an optimal $k$-clustering for each $k$, we compute _some_ hierarchical clustering via agglomerative clustering, and then an optimal hierarchical clustering, again via branch-and-bound, but this time proceeding level-wise from level $k=n$ to level $k=1$ (if we started from $k=2$, we would immediately have $2^n$ neighbours to inspect). This time, the priority of a partial hierarchical clustering is the maximum of $Cost(H_i) / Opt_i$ over all levels $H_i$ that have been clustered so far (compare @def-optimal-hierarchical-clustering).
 
-To speed up the search even further, we used memoization for computing costs of clusters, efficient memory-representation via bit-vectors and allocating on the stack as much as possible. With this, we were able to compute optimal hierarchical clusterings on $32$ points.
+To speed up the search, we used memoization for computing costs of individual clusters, efficient memory-representation via bit-vectors and allocating on the stack as much as possible. With this, we were able to compute optimal hierarchical clusterings on $32$ points.
 
 Written in rust, it is available on crates.io#footnote(link("https://crates.io/crates/exact-clustering")) with documentation on docs.rs #footnote(link("https://docs.rs/exact-clustering")), the repository is on GitHub #footnote(link("https://github.com/lumi-a/exact-clustering")). We also provide python-bindings (on PyPi#footnote(link("https://pypi.org/project/exact-clustering")), GitHub#footnote(link("https://github.com/lumi-a/py-exact-clustering"))) via #link("https://www.maturin.rs")[Maturin]. The code is heavily benchmarked, tested, and documented, so that other researchers may easily use it.
 
