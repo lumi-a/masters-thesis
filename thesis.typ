@@ -630,7 +630,7 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β �
   ],
 ) <alg-iterative-rounding>
 
-In this work, we are interested in finding lower bounds on the approximation-ratio $ρ^((d))_IterRound$ of @alg-iterative-rounding. It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the obvious way yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values (see @Lorieau[p:Section 3.2]).
+In this work, we are interested in finding lower bounds on the approximation-ratio $ρ^((d))_IterRound$ of @alg-iterative-rounding. It holds that $ρ^((1))_IterRound ≤ ρ^((2))_IterRound ≤ …$, because embedding a $d$-dimensional instance into $ℝ^(d+1)$ in the canonical way ($ℝ^d ∋ x ↦ (x, 0)$) yields a $(d+1)$-dimensional instance with the same $IterRound$- and $Opt$-values (see @Lorieau[p:Section 3.2]).
 
 The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding on that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. @Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
@@ -1394,64 +1394,6 @@ $(1+ sqrt(5))/2$, the golden ratio.
 
 
 == Gasoline <sec-results-gasoline>
-#[
-  #show raw.where(block: true): set text(size: 0.75em)
-  #show raw.where(block: true): body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
-
-  #subpar.grid(
-    columns: 1fr,
-    kind: raw,
-    figure(caption: [Initial program.])[
-      ```py
-      def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
-          """Return a new gasoline-problem, specified by the two lists of 2d-non-negative-integer-points.
-          Both lists must have length at most n and consist only of points in N^2.
-          """
-          k = int(math.log2(n + 2)) - 1
-          xs, ys = [], []
-          for i in range(1, k):
-              rounded = int(2**k * (1 - 2 ** (-i)))
-              xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
-              ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
-
-          xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
-          xs.append(np.array([0, 0]))
-
-          rounded = int(2**k * (1 - 2 ** (-k)))
-          ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
-
-          return xs, ys
-      ```
-    ],
-    figure(caption: [The difference between the initial program and a program found by\ FunSearch after $10$ trials of 950 samples each, which we only tuned by discarding\ the final element of both lists.])[
-      ```diff
-       def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
-           """Yet another variation of the gasoline-problem generator."""
-           k = int(math.log2(n + 2)) - 1
-           xs, ys = [], []
-           for i in range(1, k):
-               rounded = int(2**k * (1 - 2 ** (-i)))
-               xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
-      -        ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
-      +        ys.extend([np.array([rounded, 2]) for _ in range(2**i)])  # No change
-
-      -    xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
-      +    xs.extend([np.array([2**k, 4]) for _ in range(2**k - 2)])  # No change
-      -    xs.append(np.array([0, 0]))
-      +    xs.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
-      +    xs.append(np.array([2**k, 2]))  # Changed from [2**k, 0] to [2**k, 2]
-
-           rounded = int(2**k * (1 - 2 ** (-k)))
-      -    ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
-      +    ys.extend([np.array([rounded, 2]) for _ in range(2**k - 1)])  # No change
-      +    ys.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
-      ```
-    ],
-    gap: 1em,
-    caption: [The evolution of programs generating $2$-dimensional gasoline-instances. The model used was open-mistral-nemo with a temperature of $1.5$. Lists were clipped to length $n$ before evaluation, and the final element of `ys` set such that `sum(xs) == sum(ys)`.],
-  )
-]
-
 The following example is the instance found by @Lorieau[p:]:
 
 #example[
@@ -1488,6 +1430,64 @@ The following example is the instance found by @Lorieau[p:]:
   )
   Thus, for this instance, $IterRound(I)/Opt(I) = 62/32 = 1.9375$. More generally, if $I_k$  is the above instance for some $k$, @Lorieau[p:] showed that $IterRound(I_k)/Opt(I_k)$ is at least $2-2^(1-k)$.
 ]<example-plot-gasoline-lucas>
+
+#[
+  #show raw.where(block: true): set text(size: 0.75em)
+  #show raw.where(block: true): body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: 1fr,
+    kind: raw,
+    figure(caption: [Initial program. This is @example-plot-gasoline-lucas embedded into $ℝ^2$ via $x ↦ (x,0)$.])[
+      ```py
+      def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
+          """Return a new gasoline-problem, specified by the two lists of 2d-non-negative-integer-points.
+          Both lists must have length at most n and consist only of points in N^2.
+          """
+          k = int(math.log2(n + 2)) - 1
+          xs, ys = [], []
+          for i in range(1, k):
+              rounded = int(2**k * (1 - 2 ** (-i)))
+              xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
+              ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
+
+          xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
+          xs.append(np.array([0, 0]))
+
+          rounded = int(2**k * (1 - 2 ** (-k)))
+          ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
+
+          return xs, ys
+      ```
+    ],
+    figure(caption: [The difference between the initial program and a program found by\ FunSearch after $10$ trials of 950 samples each. We only tuned this\ by discarding the last element of both lists.])[
+      ```diff
+       def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
+           """Yet another variation of the gasoline-problem generator."""
+           k = int(math.log2(n + 2)) - 1
+           xs, ys = [], []
+           for i in range(1, k):
+               rounded = int(2**k * (1 - 2 ** (-i)))
+               xs.extend([np.array([rounded, 0]) for _ in range(2**i)])
+      -        ys.extend([np.array([rounded, 0]) for _ in range(2**i)])
+      +        ys.extend([np.array([rounded, 2]) for _ in range(2**i)])  # No change
+
+      -    xs.extend([np.array([2**k, 0]) for _ in range(2**k - 1)])
+      +    xs.extend([np.array([2**k, 4]) for _ in range(2**k - 2)])  # No change
+      -    xs.append(np.array([0, 0]))
+      +    xs.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
+      +    xs.append(np.array([2**k, 2]))  # Changed from [2**k, 0] to [2**k, 2]
+
+           rounded = int(2**k * (1 - 2 ** (-k)))
+      -    ys.extend([np.array([rounded, 0]) for _ in range(2**k)])
+      +    ys.extend([np.array([rounded, 2]) for _ in range(2**k - 1)])  # No change
+      +    ys.append(np.array([0, 1]))  # Changed from [0, 2] to [0, 1]
+      ```
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating $2$-dimensional gasoline-instances. The model used was open-mistral-nemo with a temperature of $1.5$. Lists were clipped to length $n$ before evaluation, and the final element of `ys` set such that `sum(xs) == sum(ys)`.],
+  )
+]
 
 #let gasoline-weak-label = "[G-Low]"
 #let gasoline-strong-label = "[G-High]"
@@ -1539,7 +1539,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$. This shows $ρ_IterRound^((3)) ≥ 3.46$, disproving one the conjecture of @rajkovic[p:] that $ρ_IterRound^((d))=2$ for $d>2$.
 ]<example-plot-gasoline-funsearch-weak>
 
-@Lorieau[p:Section 2.3.3] already attempted to disprove this conjecture using local search, but was unsuccessful. In our experiments with local search, we were also unable to find instances with $IterRound(I)/Opt(I) > 2$ when starting from a _random instance_. However, when starting local search from the instance in @example-plot-gasoline-lucas instead -- $k=4$, embedded into $ℝ^2$ in the canonical way -- we _did_ find instances with $IterRound(I)/Opt(I) = 2.1$. However, we were unable to generalise these instances to higher dimensions nor spot any patterns (as described for the FunSearch instance below in @sec-empirical-data-gasoline).
+@Lorieau[p:Section 2.3.3] already attempted to disprove this conjecture using local search, but was unsuccessful. In our experiments with local search, we were also unable to find instances with $IterRound(I)/Opt(I) > 2$ when starting from a _random instance_. However, when starting local search from the instance in @example-plot-gasoline-lucas instead --- $k=4$, embedded into $ℝ^2$ via $x ↦ (x, 0)$ --- we _did_ find instances with $IterRound(I)/Opt(I) = 2.1$. However, we were unable to generalise these instances to higher dimensions nor spot any patterns (as described for the FunSearch instance below in @sec-empirical-data-gasoline).
 
 #example[
   We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
