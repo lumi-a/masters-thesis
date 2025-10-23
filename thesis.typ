@@ -18,6 +18,9 @@
 // #set figure(gap: 1em)
 #show figure.caption: emph
 
+#let apx-color = red // Used for plotting gasoline algorithms
+#let opt-color = green // Distinguishes iterative-rounding vs opt
+
 #show link: old-link => {
   if old-link.body.has("text") and old-link.body.text == old-link.dest and old-link.dest.starts-with("https://") {
     link(old-link.dest)[#old-link.dest.slice("https://".len())]
@@ -553,7 +556,7 @@ where the minimum across vectors is taken entry-wise. As an objective, we choose
   For a different visualisation, we can trace the state of the warehouse in phase-space:
 
   #figure(
-    h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, green, (-1, 12), (-1, 15), true) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, blue, (-1, 12), (-1, 15), true) + h(1fr),
+    h(1fr) + draw-gasoline.trace-permutation(iterative-rounding-permutation, deliveries, production, apx-color, (-1, 12), (-1, 15), true) + h(2fr) + draw-gasoline.trace-permutation(opt-permutation, deliveries, production, opt-color, (-1, 12), (-1, 15), true) + h(1fr),
     caption: [Tracing the states of the warehouses of $π$ (left) and $π_Opt$ (right) in phase-space, along with the smallest rectangles containing all points.],
   ) <example-cookies-phase-space>
 
@@ -1463,13 +1466,13 @@ The following example is the instance found by @Lorieau[p:]:
   #let opt-permut = (30, 61, 31, 0, 32, 1, 33, 2, 34, 3, 35, 4, 36, 5, 37, 6, 38, 7, 39, 8, 40, 9, 41, 10, 42, 11, 43, 12, 44, 13, 45, 14, 46, 15, 47, 16, 48, 17, 49, 18, 50, 19, 51, 20, 52, 21, 53, 22, 54, 23, 55, 24, 56, 25, 57, 26, 58, 27, 59, 28, 60, 29)
   #let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61)
   #figure(
-    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut, apx-color) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut, opt-color) + h(1fr),
     caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
   )<permutation-matrices-lucas>
   Indeed, $π_IterRound$ is the identity. We also plot the progression of $BestRowValue$ over the course of @alg-iterative-rounding for this instance. These values are the result of minimisation-LPs whose set of constraints grows over time, so this plot must be non-decreasing over time.
   #let best-row-values = (31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 62)
   #figure(
-    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, 67)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
+    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, 67)), lq.plot(color: apx-color, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
     caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
   ) <best-row-value-progression-lucas>
   Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" (like in @example-gasoline-cookies) makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. This instance here is $1$-dimensional, so only the stock of one "ingredient" needs to be tracked over time.
@@ -1514,15 +1517,15 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   #let opt-permut = (60, 91, 61, 123, 62, 0, 63, 1, 64, 2, 65, 3, 66, 4, 67, 5, 68, 6, 69, 7, 70, 8, 71, 9, 72, 10, 73, 11, 74, 12, 75, 13, 76, 14, 77, 15, 78, 16, 79, 17, 80, 18, 81, 19, 82, 20, 83, 21, 84, 22, 85, 23, 86, 24, 87, 25, 88, 26, 89, 27, 90, 28, 92, 29, 93, 30, 94, 31, 95, 32, 96, 33, 97, 34, 98, 35, 99, 36, 100, 37, 101, 38, 102, 39, 103, 40, 104, 41, 105, 42, 106, 43, 107, 44, 108, 45, 109, 46, 110, 47, 111, 48, 112, 49, 113, 50, 114, 51, 115, 52, 116, 53, 117, 54, 118, 55, 119, 56, 120, 57, 121, 58, 122, 59)
   #let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123)
   #figure(
-    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut, apx-color) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut, opt-color) + h(1fr),
     caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
   )<permutation-matrices-weak>
   #let best-row-values = (34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 125, 125, 125)
   #figure(
-    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: green, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
+    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
     caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
   ) <best-row-value-progression-weak>
-  The first component is shown in #Blue[blue], the second in #Purple[purple], and the third one in #Red[red].
+  The first component is shown in #Blue[blue], the second in #Purple[purple], and the third one in #Yellow[yellow].
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
@@ -1546,14 +1549,11 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   #let opt-permut = (60, 91, 61, 123, 62, 0, 63, 1, 64, 2, 65, 3, 66, 4, 67, 5, 68, 6, 69, 7, 70, 8, 71, 9, 72, 10, 73, 11, 74, 12, 75, 13, 76, 14, 77, 15, 78, 16, 79, 17, 80, 18, 81, 19, 82, 20, 83, 21, 84, 22, 85, 23, 86, 24, 87, 25, 88, 26, 89, 27, 90, 28, 92, 29, 93, 30, 94, 31, 95, 32, 96, 33, 97, 34, 98, 35, 99, 36, 100, 37, 101, 38, 102, 39, 103, 40, 104, 41, 105, 42, 106, 43, 107, 44, 108, 45, 109, 46, 110, 47, 111, 48, 112, 49, 113, 50, 114, 51, 115, 52, 116, 53, 117, 54, 118, 55, 119, 56, 120, 57, 121, 58, 122, 59)
   #let iterround-permut = (60, 1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123)
   #figure(
-    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut) + h(1fr),
+    h(1fr) + draw-gasoline.permutation-matrix(iterround-permut, apx-color) + h(2fr) + draw-gasoline.permutation-matrix(opt-permut, opt-color) + h(1fr),
     caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
   )<permutation-matrices-strong>
   #let iterround-values = (36, 38, 40, 42, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 186, 186, 186)
-  #figure(
-    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: green, range(iterround-values.len()), iterround-values)),
-    caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
-  ) <best-row-value-progression-strong>
+  #figure(lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(iterround-values.len()), iterround-values)), caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.]) <best-row-value-progression-strong>
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
@@ -1578,7 +1578,7 @@ Lastly, we also show traces in phase-space (like in @example-cookies-phase-space
   let iterround-permut = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 60)
 
   figure(
-    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
+    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, apx-color, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, opt-color, (-7, 70), (-7, 70), false) + h(1fr),
     caption: [Tracing $π_IterRound$ (left) and $π_Opt$ (right) in phase-space, for #gasoline-weak with $d=2$ and $k=5$.],
   )
 }
@@ -1589,7 +1589,7 @@ Lastly, we also show traces in phase-space (like in @example-cookies-phase-space
   let iterround-permut = (0, 30, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 60)
 
   figure(
-    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, green, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, blue, (-7, 70), (-7, 70), false) + h(1fr),
+    h(1fr) + draw-gasoline.trace-permutation(iterround-permut, deliveries, production, apx-color, (-7, 70), (-7, 70), false) + h(2fr) + draw-gasoline.trace-permutation(opt-permut, deliveries, production, opt-color, (-7, 70), (-7, 70), false) + h(1fr),
     caption: [Tracing $π_IterRound$ (left) and $π_Opt$ (right) in phase-space, for #gasoline-strong with $d=2$ and $k=5$.],
   )
 }
@@ -1599,7 +1599,7 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
 
 #let gasoline-plots = file => {
   let data = json(file)
-  let colormap = (green, blue)
+  let colormap = (apx-color, opt-color)
 
   let simplify(x, n: 1, times-n: false) = {
     // We want to typeset fractions nicely, but doing so is _really_ hard.
@@ -1715,7 +1715,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
         data.map(x => float(x.at(0))),
         data.map(x => float(x.at(1))),
         mark: ",",
-        color: (data.map(x => if x.at(2) == "True" { blue } else { red })),
+        color: (data.map(x => if x.at(2) == "True" { blue } else { black })),
       ),
     ),
     caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity (for the shown $α$, this happens iff $α≤1.0$).],
