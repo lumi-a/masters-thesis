@@ -381,6 +381,8 @@ Naturally, different objectives can yield different optimal clusterings, as seen
   ]
 }
 
+There are also weighted versions of the $k$-median and $k$-means objectives, where each point $p$ has an associated non-negative weight $w(p)$, and the distance between $p$ and the centre $μ$ is multiplied by $w(p)$. For $k$-means, the optimal choice for $μ$ then is simply the weighted average of all points. The weighted and unweighted problems are mostly equivalent: If we restrict ourselves to integral weights, an equivalent unweighted instance has $w(p)$-many unweighted copies of $p$, for each $p$. If we restrict ourselves to rational weights, we can multiply by the product of the denominators to achieve integral weights again. For irrational weights, we can find an approximate rationally-weighted instance with the same optimal $k$-clusterings. #TODO[Citation needed, maybe?]
+
 When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering:
 
 #definition[
@@ -456,7 +458,7 @@ The additional structure of hierarchical clustering does come at a cost, however
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points.\ There is no set of optimal clusterings with a nested structure.\
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the (unweighted) $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points.\ There is no set of optimal clusterings with a nested structure.\
       The shown hierarchical and optimal clusterings only differ at level $k=2$.
     ])<example-hierarchical-clustering>
   ]
@@ -1210,6 +1212,7 @@ for the runtime of the Nemhauser-Ullmann algorithm.
 
 
 == $k$-median Clustering <sec-results-clustering>
+
 #[
   #show raw: set text(size: 0.75em)
   #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
