@@ -636,23 +636,44 @@ The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterativ
 
 
 = FunSearch
-Making progress on the different open problems in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have a problem-specific undesirable quality.
-- For bin-packing, we would like to find an instance where the randomised Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution.
-- For the Pareto-sets of knapsack-problems, we would like to find an instance $I$ where an intermittent Pareto-set $P(I_(1:i))$ is much larger than the Pareto-set $P(I)$ of the whole instance.
-- For the Price of Hierarchy for $k$-median clustering, we would like to find instances whose Price of Hierarchy is large.
-- For the generalised gasoline problem, we would like to find instances where @alg-iterative-rounding performs poorly compared to an optimum soution.
+Making progress on the different problems introduced it @section-problems-definitions involves a similar task for all of them: We would like to find instances that have some problem-specific undesirable quality:
+- For bin-packing, we would like to find an instance $I$ where, if $I$ is shuffled randomly, the Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution:
+  $
+    Score(I)
+    quad = quad
+    𝔼_(π∈S_(|I|))[BestFit(π(I))/Opt(I)].
+  $
+- For the Pareto-sets of knapsack-instances, we would like to find an instance $I$ where an intermittent Pareto-set $P(I_(1:i))$ is much larger than the Pareto-set $P(I)$ of the whole instance:
+  $
+    Score(I)
+    quad = quad
+    (max_(1≤i≤|I|) |P(I_(1:i))|) / (|P(I)|)
+  $
+- For the Price of Hierarchy for $k$-median clustering, we would like to find an instance $I$ where the optimal hierarchical clustering has a high approximation-factor:
+  $
+    Score(I)
+    quad = quad
+    min_(H ∈ cal(H)(I)) Apx_Cost (H)
+    quad = quad
+    min_(H ∈ cal(H)(I)) [max_(i=1,…,n) Cost(H_i) / Cost(Opt_i)]
+  $
+- For the generalised gasoline problem, we would like to find an instance $I$ where @alg-iterative-rounding performs poorly compared to an optimum soution:
+  $
+    Score(I)
+    quad = quad
+    IterRound(I) / Opt(I)
+  $
 
 
 == Local Search <sec-local-search>
-Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach
-is to employ some search-algorithm that searches for an instance of a high "score" across the space of all instances, where the score is e.g. the approximation-ratio of the instance (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]). For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
+Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]) is to employ some search-algorithm that searches for an instance of a high $Score$ across the space of all instances. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
   pseudocode-list(numbered-title: [Local Search for Instances Randomised Best-Fit Performs Poorly On])[
     + Fix the size $n$ of an instance, e.g. $n=10$.
-    + Define the $Score(I)$ of a bin-packing instance $I$:
-      + Calculate the value $Opt$ of an optimum solution to $I$, for instance\ using the implementation by @fontan[p:].
+    + Define the $Score_≈(I)$ of a bin-packing instance $I$:
+      + Calculate the value $Opt$ of an optimum solution to $I$.
       + Calculate 10000 trials of:
         + Let $I'$ be a random permutation of $I$
         + Run Best-Fit on $I'$
@@ -665,14 +686,16 @@ is to employ some search-algorithm that searches for an instance of a high "scor
     + Initialise $I$ as the list $[1/2, ..., 1/2]$ of length $n$.
     + #line-label(<codeline-iteration-count>) Repeat the following until some stopping-criterion is met:
       + Calculate $I' = Mutation(I)$
-      + If $Score(I') > Score(I)$:
+      + If $Score_≈(I') > Score_≈(I)$:
         + Replace $I$ with $I'$
       + Otherwise:
         + Keep $I$ unchanged.
   ],
 ) <algorithm-local-search-bin-packing>
 
-Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the noise's variance in $Mutation$, or stochastically allowing to replace $I$ with $I'$, even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
+Note that $Score_≈$ is only an approximation of the actual $Score(I) = 𝔼_(π∈S_(|I|))[BestFit(π(I))/Opt(I)]$, which can be intractable to compute due to the size of the symmetric group. It is also a (pseudo-)random variable, though this can be avoided by using a fixed seed for the evaluation. In our experiments, a number of $10000$ trials was large enough to lead to accurate estimates, while still being small enough to compute quickly.
+
+Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the noise's variance in $Mutation$, or stochastically allowing to replace $I$ with $I'$ even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
 #figure(
   {
@@ -693,9 +716,7 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
   caption: [Ten example trajectories of @algorithm-local-search-bin-packing, with the termination-condition for the loop in @codeline-iteration-count set after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
 ) <local-search-plot>
 
-Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem#footnote[The score-measurement we employ in @algorithm-local-search-bin-packing only uses a stochastic _estimation_ of the expected value, so this is not certain but highly probable.] to beat, the best trial achieving a score of $1.3725$, higher than the existing lower bound. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ possible permutations (the found instance (see @local-search-instance) has many exploitable symmetries, decreasing the required computations even further). We will not do so, however, in favour of proving a better result later on.
-
-Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have any discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance.
+Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat ($Score_≈$ is only an estimate of $Score$, so this is not certain), as the best trial achieves a score of $1.3725$. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ permutations, possibly exploiting symmetries in the instance. We will not do so, however, in favour of proving a better result later on. Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have any discernible pattern or noticeable symmetries.
 
 #figure(
   table(
@@ -720,43 +741,47 @@ Instead, to motivate our next steps, we will try learning from the instance, per
   caption: [The sorted best instance found in the trials of @local-search-plot, achieving a score of $1.3725$.],
 ) <local-search-instance>
 
+The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance. Unable to learn from this instance, we will try a different approach.
+
 == FunSearch: Local Search on Code Instead of Vectors <sec-funsearch-introduction>
 
-To mitigate these issues we could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
+We could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
 #example[
   An instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed via hardcoded numbers:
   #figure(
-    box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
-    items = [0.17166666666666666, 0.16791666666666666, 0.16697916666666665, 0.16674479166666667, 0.16668619791666667, 0.3283333333147069, 0.3320833333147069, 0.3330208333147069, 0.3332552083147069, 0.3333138020647069, 0.14666666666666667, 0.16166666666666665, 0.16541666666666666, 0.16635416666666666, 0.16658854166666665, 0.3533333333147069, 0.3383333333147069, 0.33458333331470685, 0.3336458333147069, 0.33341145831470687, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264, 0.5000000000186264]
-    ```],
-    caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=1$.],
+    text(0.5em, box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
+    items = [
+    0.17166666666666665751889153668230392213445156812668, 0.16791666666666665744082898026334760288591496646404, 0.16697916666666665742131334115860852307378081604838, 0.16674479166666665741643443138242375312074727844447, 0.16668619791666665741521470393837756063248889404349, 0.16667154947916665741490977207736601251042429794325, 0.16666788736979165741483353911211312547990814891818, 0.16666697184244790741481448087079990372227911166192, 0.16666674296061196991480971631047159828287185234785, 0.16666668574015298553980852517038952192302003751934, 0.16666667143503823944605822738536900283305708381221, 0.16666666785875955292262065293911387306056634538542, 0.16666666696468988129176125932755009061744366077873, 0.16666666674117246338404641092465914500666298962706, 0.16666666668529310890711769882393640860396782183914, 0.32833333333333331472551590702983748126762271484755, 0.33208333333333331480357846344879380051615931651019, 0.33302083333333331482309410255353288032829346692585, 0.33325520833333331482797301232971765028132700452976, 0.33331380208333331482919273977376384276958538893074, 0.33332845052083331482949767163477539089164998503099, 0.33333211263020831482957390460002827792216613405605, 0.33333302815755206482959296284134149967979517131231, 0.33333325703938800232959772740166980511920243062638, 0.33333331425984698670459891854175188147905424545490, 0.33333332856496173279834921632677240056901719916203, 0.33333333214124041932178679077302753034150793758881, 0.33333333303531009095264618438459131278463062219550, 0.33333333325882750886036103278748225839541129334718, 0.33333333331470686333728974488820499479810646113510, 0.14666666666666665699847449388926179381087422370911, 0.16166666666666665731072471956508707080502063035965, 0.16541666666666665738878727598404339005355723202229, 0.16635416666666665740830291508878246986569138243794, 0.16658854166666665741318182486496723981872492004186, 0.16664713541666665741440155230901343230698330444284, 0.16666178385416665741470648417002498042904790054308, 0.16666544596354165741478271713527786745956404956814, 0.16666636149088540741480177537659108921719308682441, 0.16666659037272134491480653993691939465660034613848, 0.16666664759318032928980773107700147101645216096699, 0.16666666189829507538355802886202199010641511467412, 0.16666666547457376190699560330827711987890585310090, 0.16666666636864343353785499691984090232202853770760, 0.16666666659216085144556984532273184793280920885927, 0.35333333333333331524593294982287960959120005926513, 0.33833333333333331493368272414705433259705365261458, 0.33458333333333331485562016772809801334851705095195, 0.33364583333333331483610452862335893353638290053629, 0.33341145833333331483122561884717416358334936293237, 0.33335286458333331483000589140312797109509097853139, 0.33333821614583331482970095954211642297302638243115, 0.33333455403645831482962472657686353594251023340609, 0.33333363850911456482960566833555031418488119614982, 0.33333340962727862732960090377522200874547393683576, 0.33333335240681964295459971263513993238562212200724, 0.33333333810170489686084941485011941329565916830011, 0.33333333452542621033741184040386428352316842987333, 0.33333333363135653870655244679230050108004574526663, 0.33333333340783912079883759838940955546926507411496, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526, 0.50000000000000000000001694065894508600713401475526]
+
+    ```]),
+    caption: [The instance for the lower-bound construction in @bestFitAbsoluteRatio[p:] for $k=3$.],
   )<hardcoded-best-fit>
-  However, @bestFitAbsoluteRatio[p:] actually defined these items as follows:
+  However, @bestFitAbsoluteRatio[p:] actually defined these items more like this:
   #figure(
     box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
-    k = 1
+    k = 3
     OPT = 10*k
     δ = 1/50
     d = lambda j: δ/(4**j)
     ε = d(10*k + 5)
 
-    b_plus = [1/6 + d(j) for j in range(1,1+OPT//2)]
-    c_minus = [1/3 - d(j) - ε for j in range(1,1+OPT//2)]
-    b_minus = [1/6 - d(j) for j in range(0,OPT//2)]
-    c_plus = [1/3 + d(j) - ε for j in range(0,OPT//2)]
+    b_plus   = [1/6 + d(j)     for j in range(1, 1+OPT//2)]
+    c_minus  = [1/3 - d(j) - ε for j in range(1, 1+OPT//2)]
+    b_minus  = [1/6 - d(j)     for j in range(0,   OPT//2)]
+    c_plus   = [1/3 + d(j) - ε for j in range(0,   OPT//2)]
     trailing = [1/2 + ε] * OPT
 
     items = b_plus + c_minus + b_minus + c_plus + trailing
     ```],
     caption: [The same instance as in @hardcoded-best-fit, using a more structured definition.],
   )<structured-best-fit>
-  For larger $k$, @hardcoded-best-fit grows even longer (though would run into floating-point rounding issues), while @structured-best-fit remains short and interpretable.
+  For larger $k$, @hardcoded-best-fit grows even longer, while @structured-best-fit remains short and interpretable.
 ]
 
 However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
-Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, this approach mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time. Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding that length, and we may mathematically analyse the asymptotic behaviour of the function for large list-lengths after the fact.
+Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, it mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time.
 
 #figure(
   align(left, box(stroke: 0.1em + gray, radius: 0.5em, inset: 1em, fill: white.darken(1%), text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
@@ -826,6 +851,8 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   ])),
   caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
 ) <example-response>
+
+Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter `length` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding the provided `length` by returning a score of $0$, and we may mathematically analyse the asymptotic behaviour of the function for large `length` after the fact. To make generalisation across different values of `length` more likely, we could also evaluate the function on multiple different values and take a weighted average.
 
 == Tuning the FunSearch-Output <sec-funsearch-tuning-introduction>
 
