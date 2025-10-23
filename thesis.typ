@@ -911,9 +911,12 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
 
 
 #TODO[Describe the tuning of the instances more]
+#TODO[The score is kinda relevant to the result-section, too. Maybe move the problem-specific implementation-details to the respective sections below?]
 
 = Results
 == Bin-Packing <sec-results-bin-packing>
+
+Here, we started with a trivial hardcoded instance (score $1.0$), and FunSearch soon found an instance with score $1.49815$. The theoretical upper bound is $1.5$, and the instance had an extremely simple structure.
 
 #[
   #show raw: set text(size: 0.75em)
@@ -940,6 +943,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
           return [1.0 / a] * a + [1.0 / b] * b
       ```
     ],
+    <code-bin-packing-post-tuning>,
     grid.cell(
       colspan: 2,
     )[
@@ -961,7 +965,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
   )
 ]
 
-For fixed $m in ℕ$, consider the instance:
+Further experimentation with the instance in @code-bin-packing-post-tuning indicated that, for the instance to have a high score, the constants `a` and `b` should be large and coprime. This is easily achieved as follows. For fixed $m in ℕ$, consider the instance:
 
 $
   I ≔ [underbrace(m + 1\,#h(0.5em) …\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) … \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m ⋅ (m + 1).
