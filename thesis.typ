@@ -1404,10 +1404,10 @@ $(1+ sqrt(5))/2$, the golden ratio.
 The following example is the instance found by @Lorieau[p:]:
 
 #example[
-  This is a $d"="1$-dimensional instance. Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $plus.circle$ denote list-concatenation, e.g. $[1,2] plus.circle [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
+  This is a $d"="1$-dimensional instance. Fix some $k∈ℕ$. For any $i$, define $u_i ≔ 2^k (1 - 2^(-i))$. Let $⊕$ denote list-concatenation, e.g. $[1,2] ⊕ [3,4] = [1,2,3,4]$. The $1$-dimensional instance found by @Lorieau[p:] can be written as follows:
   $
-    X & = (plus.circle.big_(i = 1)^(k - 1) plus.circle.big_1^(2^i) [u_i]) plus.circle (plus.circle.big_1^(2^k - 1) [2^k]) plus.circle [0], quad quad
-        Y & = plus.circle.big_(i = 1)^k plus.circle.big_1^(2^i) [u_i].
+    X & = (⨁_(i = 1)^(k - 1) ⨁_1^(2^i) [u_i]) ⊕ (⨁_1^(2^k - 1) [2^k]) ⊕ [0], quad quad
+        Y & = ⨁_(i = 1)^k ⨁_1^(2^i) [u_i].
   $
   #let deliveries = ((16,), (16,), (24,), (24,), (24,), (24,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (32,), (0,))
   #let production = ((16,), (16,), (24,), (24,), (24,), (24,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (28,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (30,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,), (31,))
@@ -1502,15 +1502,15 @@ The following example is the instance found by @Lorieau[p:]:
 FunSearch found the following two very similar instances. Fix the dimension $d ≥ 2$ and parameter $k$.
 
 $
-  X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[2 e_j]),quad
-      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 1e_j]
+  X & ≔ (⨁_(i=1)^(k-1) ⨁_1^(2^i) ⨁_(j=2)^d [u_i e_1 + 2e_j]) ⊕ (⨁_(j=2)^d (⨁_1^(2^k-1) [2^k e_1]) ⊕[2 e_j]),quad
+      Y & ≔ ⨁_(i=1)^k ⨁_1^(2^i) ⨁_(j=2)^d [u_i e_1 + 1e_j]
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-weak-label]
 $<eq-gasoline-weak>
 #let gasoline-weak = link(<eq-gasoline-weak>, gasoline-weak-label)
 #v(2em)
 $
-  X & ≔ (plus.big.circle_(i=1)^(k-1) plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 4 e_j]) plus.circle (plus.big.circle_(j=2)^d (plus.big.circle_1^(2^k-1) [2^k e_1]) plus.circle[4 e_j]),quad
-      Y & ≔ plus.big.circle_(i=1)^k plus.big.circle_1^(2^i) plus.big.circle_(j=2)^d [u_i e_1 + 2e_j]
+  X & ≔ (⨁_(i=1)^(k-1) ⨁_1^(2^i) ⨁_(j=2)^d [u_i e_1 + 4 e_j]) ⊕ (⨁_(j=2)^d (⨁_1^(2^k-1) [2^k e_1]) ⊕[4 e_j]),quad
+      Y & ≔ ⨁_(i=1)^k ⨁_1^(2^i) ⨁_(j=2)^d [u_i e_1 + 2e_j]
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
 $<eq-gasoline-strong>
 #let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
