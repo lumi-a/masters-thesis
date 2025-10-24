@@ -80,7 +80,7 @@ Now, let $I$ be an instance of the Knapsack-Problem with a sub-instance $J$ such
 
 Let $α ≔ abs(P(J))/abs(P(I))$ be the ratio of their sizes, which is greater than $1$.
 
-Let $M ≔ norm(I)$, fix some $k∈ℕ$ and consider the following two instances:
+Let $M ≔ norm(I)$ #text(fill: green)[this does not quite suffice, but $2norm(I)$ might do the trick?], fix some $k∈ℕ$ and consider the following two instances:
 $
   I^k & ≔ I ⊕ M^1I ⊕ M^2I ⊕ … ⊕ M^k I \
   J^k & ≔ J ⊕ M^1J ⊕ M^2J ⊕ … ⊕ M^k J
@@ -102,7 +102,7 @@ In the above example, $I$ has size $5$, and $abs(P(I))/abs(P(J)) = 1.2$, so we g
     ≈ 1.037^n.
   $
 ]
-For an instance $I$ where $(abs(P(J))\/abs(P(I)))^(1\/abs(I))$ larger than $1.037$, we would get an even better bound.
+For an instance $I$ where $(abs(P(J))\/abs(P(I)))^(1\/abs(I))$ is larger than $1.037$, we would get an even better bound.
 
 #line(length: 100%)
 
