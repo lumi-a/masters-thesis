@@ -47,6 +47,7 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
+#outline(depth: 2)
 
 == Academic Integrity
 #TODO[Note that we also wrote a paper together (once it's on arxiv), and how you only copied things from there that you wrote yourself.]
@@ -55,7 +56,6 @@ Except where explicitly noted otherwise, no part of this thesis was written by a
 - LLMs are an integral component of FunSearch, the search-algorithm we used (see @sec-funsearch-introduction).
 - I used #link("https://gemini.google/overview/deep-research")[Gemini Deep Research] to find existing literature and references.
 - I sparingly used generative AI for coding (see @sec-implementation-details). This was helpful for repetitive problems with lots of training-data (e.g. the JavaScript code for the website) and unhelpful for critical implementations with fewer training-data (e.g. branch and bound in the clustering-solver).
-
 
 = Prior Work and Summary of Results <section-problems-definitions>
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
@@ -859,7 +859,7 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
 
 Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter `length` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding the provided `length` by returning a score of $0$, and we may mathematically analyse the asymptotic behaviour of the function for large `length` after the fact. To make generalisation across different values of `length` more likely, we could also evaluate the function on multiple different values and take a weighted average.
 
-== Tuning the FunSearch-Output <sec-funsearch-tuning-introduction>
+== Tuning FunSearch-Output <sec-funsearch-tuning-introduction>
 
 We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmetrical (see @evolution-clustering, where we replaced `np.linspace`, which produces a sequence of evenly-spaced numbers, with `np.ones`, which produces a sequence of identical numbers), and checking after every step whether the program's score decreased noticeably.
 
