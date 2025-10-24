@@ -1601,7 +1601,7 @@ Lastly, we also show traces in phase-space (like in @example-cookies-phase-space
   )
 }
 
-== Empirical Data <sec-empirical-data-gasoline>
+=== Empirical Data <sec-empirical-data-gasoline>
 While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances is computationally prohibitive. If these linear relationships held true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
@@ -1731,6 +1731,31 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
 
 This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all $I_α$, and $I_1=#gasoline-weak$ being best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
 
+== Problems we did not make progress on
+In the previous sections, we only presented the results for problems where we applied FunSearch successfully. A-priori, we did not know what problems lent themselves to FunSearch, so we used trial-and-error across several problems, and we briefly talk about said errors here.
+- Best-Fit Bin-Packing: Instead of the _absolute_ random-order-ratio
+  $
+    "RR"_BestFit quad=quad sup_(I∈ℐ) 𝔼_(π∈S_(|I|))[𝒜(π(I))/Opt(I)],
+  $
+  there is a different measure that only concerns itself with instances that require a "large" number of bins to pack all items, the *asymptotic random-order-ratio*:
+  $
+    "RR"^∞_BestFit quad=quad limsup_(M→∞) (sup_(I∈ℐ, Opt(I)≥M) 𝔼_(π∈S_(|I|))[𝒜(π(I))/Opt(I)]),
+  $
+  The instance $I$ presented in @sec-results-bin-packing is no longer viable for this measure, as $Opt(I)=2$. In fact, a recent work by @breakingAsymptoticBestFit[p:] showed that $"RR"^∞_BestFit ≤ 1.5-ε$ for a small $ε>0$.
+
+  - We attempted to find instances, by adding a parameter `min_sum` to the `get_items`-function, and rejecting any instance whose sum of items was lower than `min_sum`. We then evaluated instances for large values of `min_sum`. This was not successful. #TODO[Provide links to failed runs, and a bit more commentary on _why_ they failed. Failed to generalise? Failed to be more than pseudo-random? Failed to have any kind of good score whatsoever?]
+  - A different approach involves, instead of finding lists of items, finding _distributions_ of weights, and sampling a random instance by sampling each item iid. from that distribution. This was not successful, either.
+- Clustering: We were successful in proving a new result for the Price of Hierarchical $k$-median clustering, $PoH_(k"-median") ≥ (1+√5)/2$.
+  - We also tried finding better lower bounds on the Price of Hierarchy for other objectives, none of which performed better than local search:
+    - $k$-means
+    - $k$-median, but using the $L_2$ norm instead of the $L_1$ norm
+    - $k$-median, but using the squared $L_2$ norm instead of the $L_1$ norm
+  - We also tried finding lower bounds on the approximation-factor of the hierarchy found by agglomerative clustering, for the following objectives, but were unsuccessful:
+    - $k$-means
+    - $k$-median
+    - $k$-median, but using the squared $L_2$ norm instead of the $L_1$ norm.
+- Gasoline: Though we did find $2$-dimensional instances where $IterRound(I) / Opt(I)$ was greater than $2$, we were unable to find any $1$-dimensional instances with that property.
+- In the page-replacement-problem, we must make decisions which memory pages to keep in working memory. When a page being requested is currently not loaded (a _page-miss_), we must decide which of the currently-loaded pages to swap out, which is a relatively expensive operation. The objective then is to minimise the number of page-misses, by making smart choices about which pages to keep in working memory. A good heuristic for this is LRU, which discards the page that was Least Recently Used. Using a benchmark-instance of real-world data, we attempted to find better heuristics than this, but were unsuccessful.
 
 #TODO[Grammar-/ Spell Checker]
 
