@@ -1449,7 +1449,7 @@ The following example is the instance found by @Lorieau[p:]:
       ```py
       def gasoline(n: int) -> tuple[list[np.ndarray], list[np.ndarray]]:
           """Return a new gasoline-problem, specified by the two lists of 2d-non-negative-integer-points.
-          Both lists must have length at most n and consist only of points in N^2.
+          Both lists must have length at most n and consist only of points in ℕ^2.
           """
           k = int(math.log2(n + 2)) - 1
           xs, ys = [], []
@@ -1722,7 +1722,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
         data.map(x => float(x.at(0))),
         data.map(x => float(x.at(1))),
         mark: ",",
-        color: (data.map(x => if x.at(2) == "True" { blue } else { black })),
+        color: (data.map(x => if x.at(2) == "True" { blue } else { purple })),
       ),
     ),
     caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity (for the shown $α$, this happens iff $α≤1.0$).],
