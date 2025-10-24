@@ -1746,16 +1746,18 @@ In the previous sections, we only presented the results for problems where we ap
   - We attempted to find instances, by adding a parameter `min_sum` to the `get_items`-function, and rejecting any instance whose sum of items was lower than `min_sum`. We then evaluated instances for large values of `min_sum`. This was not successful. #TODO[Provide links to failed runs, and a bit more commentary on _why_ they failed. Failed to generalise? Failed to be more than pseudo-random? Failed to have any kind of good score whatsoever?]
   - A different approach involves, instead of finding lists of items, finding _distributions_ of weights, and sampling a random instance by sampling each item iid. from that distribution. This was not successful, either.
 - Clustering: We were successful in proving a new result for the Price of Hierarchical $k$-median clustering, $PoH_(k"-median") ≥ (1+√5)/2$.
-  - We also tried finding better lower bounds on the Price of Hierarchy for other objectives, none of which performed better than local search:
+  - We also tried finding better lower bounds on the Price of Hierarchy for the following objectives, for none of which FunSearch outperformed local search:
     - $k$-means
     - $k$-median, but using the $L_2$ norm instead of the $L_1$ norm
     - $k$-median, but using the squared $L_2$ norm instead of the $L_1$ norm
-  - We also tried finding lower bounds on the approximation-factor of the hierarchy found by agglomerative clustering, for the following objectives, but were unsuccessful:
+  - We also tried finding lower bounds on the approximation-factor of the hierarchy found by agglomerative clustering, for the following objectives, but were unsuccessful as well:
     - $k$-means
     - $k$-median
     - $k$-median, but using the squared $L_2$ norm instead of the $L_1$ norm.
 - Gasoline: Though we did find $2$-dimensional instances where $IterRound(I) / Opt(I)$ was greater than $2$, we were unable to find any $1$-dimensional instances with that property.
 - In the page-replacement-problem, we must make decisions which memory pages to keep in working memory. When a page being requested is currently not loaded (a _page-miss_), we must decide which of the currently-loaded pages to swap out, which is a relatively expensive operation. The objective then is to minimise the number of page-misses, by making smart choices about which pages to keep in working memory. A good heuristic for this is LRU, which discards the page that was Least Recently Used. Using a benchmark-instance of real-world data, we attempted to find better heuristics than this, but were unsuccessful.
+
+Even after working on many of these problems, I personally do not feel like I have a good understanding of which problems lend themselves well to FunSearch, other than the obvious "Prefer problems that are more likely to have low-hanging research-fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of a bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
 
 #TODO[Grammar-/ Spell Checker]
 
