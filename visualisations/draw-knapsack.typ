@@ -13,7 +13,7 @@
 #let dominates = (a, b) => a.at(0) <= b.at(0) and a.at(1) >= b.at(1) and (a.at(0) < b.at(0) or a.at(1) > b.at(1))
 #let xsys = items => (items.map(wp => wp.at(0)), items.map(wp => wp.at(1)))
 
-#let draw = (items, subset-ix, color-full, color-partial) => {
+#let draw = (items, subset-ix, color-full, color-partial, ..args) => {
   let p-full = powerset(items)
   let dominated-full = p-full.filter(wp => p-full.any(x => dominates(x, wp)))
   let undominated-full = p-full.filter(wp => p-full.all(x => not dominates(x, wp)))
@@ -21,7 +21,8 @@
   let p-partial = powerset(items.slice(0, subset-ix))
   let dominated-partial = p-partial.filter(wp => p-partial.any(x => dominates(x, wp)))
   let undominated-partial = p-partial.filter(wp => p-partial.all(x => not dominates(x, wp)))
-  let marker-size = 32
+  let mark-size = args.at("mark-size", default: 32)
+
 
   return (
     (
@@ -29,30 +30,30 @@
         ..xsys(undominated-partial),
         color: color-partial,
         stroke: none,
-        size: range(undominated-partial.len()).map(x => marker-size),
+        size: range(undominated-partial.len()).map(x => mark-size),
         mark: lq.marks.at("star"),
       ),
       lq.scatter(
         ..xsys(dominated-partial),
         stroke: none,
         color: color-partial,
-        size: range(dominated-partial.len()).map(x => marker-size),
+        size: range(dominated-partial.len()).map(x => mark-size),
         mark: lq.marks.at("."),
       ),
     ),
     (
       lq.scatter(
         ..xsys(undominated-full),
-        color: color-full,
+        color: args.at("undominated-color", default: color-full),
         stroke: none,
-        size: range(undominated-full.len()).map(x => marker-size),
+        size: range(undominated-full.len()).map(x => mark-size),
         mark: lq.marks.at("star"),
       ),
       lq.scatter(
         ..xsys(dominated-full),
-        color: color-full,
+        color: args.at("dominated-color", default: color-full),
         stroke: none,
-        size: range(dominated-full.len()).map(x => marker-size),
+        size: range(dominated-full.len()).map(x => mark-size),
         mark: lq.marks.at("."),
       ),
     ),

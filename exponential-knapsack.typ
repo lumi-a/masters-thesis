@@ -1,5 +1,7 @@
 #import "preamble.typ": *; #show: preamble
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
+#import "visualisations/draw-knapsack.typ"
+#import "@preview/lilaq:0.5.0" as lq
 #let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 0)
 #let corollary = thmbox("corollary", "Corollary", fill: purple.lighten(75%), breakable: true, base_level: 0)
 #let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true)
@@ -23,6 +25,54 @@ $
   A ⊕ [vec(norm(A)⋅w, norm(A)⋅p) med mid(|)med vec(w, p) ∈ B].
 $
 Here, $norm(A)$ is a large scalar to make the elements from $B$ more relevant than the elements from $A$.
+
+#example[
+  Let $I ≔ [vec(1, 2), vec(2, 1), vec(3, 3)]$. Here, $norm(I) = 7$.
+  #{
+    let base-items = ((1, 2), (2, 1), (3, 3))
+    let norm = 7
+    let max = 2
+    figure(
+      (
+        h(1fr)
+          + range(max)
+            .map(i => {
+              let items = ()
+              for exponent in range(max, max - i - 1, step: -1) {
+                items += base-items.map(xy => (xy.at(0) * calc.pow(norm, exponent), xy.at(1) * calc.pow(norm, exponent)))
+              }
+
+              let diagram = draw-knapsack.draw(items, 0, blue, green, mark-size: 16, undominated-color: blue, dominated-color: red).at(1)
+              let diagram-args = (xaxis: (lim: (auto, calc.pow(norm, max + 1) * 1.1), exponent: none), yaxis: (lim: (auto, calc.pow(norm, max + 1) * 1.1), exponent: none), width: 200pt, height: 200pt)
+              lq.diagram(..diagram, ..diagram-args)
+            })
+            .join(h(3fr))
+          + h(1fr)
+      ),
+      caption: [Plotting $(Weight, Profit)$ for all solutions of $7 I$ (left), and $I ⊕ 7I$ (right).\ There are $6$ (left) and $6^2$ (right) Pareto-optimal solutions, they are marked with a #Blue(sym.star.filled).],
+    )
+  }
+  #{
+    let base-items = ((1, 2), (2, 1), (3, 3))
+    let norm = 7
+    let max = 3
+    figure(
+      {
+        let items = ()
+        for exponent in range(max, 0, step: -1) {
+          items += base-items.map(xy => (xy.at(0) * calc.pow(norm, exponent), xy.at(1) * calc.pow(norm, exponent)))
+        }
+
+        let diagram = draw-knapsack.draw(items, 0, blue, green, mark-size: 16, undominated-color: blue, dominated-color: red).at(1)
+        let diagram-args = (xaxis: (lim: (auto, calc.pow(norm, 1 + max) * 1.1), exponent: none), yaxis: (lim: (auto, calc.pow(norm, 1 + max) * 1.1), exponent: none), width: 400pt, height: 400pt)
+        lq.diagram(..diagram, ..diagram-args)
+      },
+      caption: [Plotting $(Weight, Profit)$ for all solutions of $I ⊕ 7 I ⊕ 7^2 I$.\ There are $6^3$ Pareto-optimal solutions, they are marked with a #Blue(sym.star.filled).],
+    )
+  }
+  Notice the fractal-like structure.
+]<example-exponential-knapsack-fractal>
+
 #lemma[
   For all $M∈ℝ_(>0)$: $abs(A⊕ M B) = abs(A)+abs(B)$.
 ] <size-lemma>
@@ -46,6 +96,7 @@ For some instance $I$, let $P(I)$ be its pareto-set.
   ]
   In other words, $P(A ⊕ M B) = lr(size: #150%, [S_A ⊕ M S_B med mid(|)med S_A ∈ P(A), S_B ∈ P(B)])$.
 ] <pareto-product-lemma>
+See @example-exponential-knapsack-fractal for an example.
 #proof[
   - $¬(2) ⇒ ¬(1)$: If (2) is false, one of the following must hold:
     - There is a sub-list $D_A⊆A$ such that $D_A$ dominates $L_A$. Then $D_A ⊕ M L_B$ dominates $L$.
@@ -85,6 +136,7 @@ $
   I^k & ≔ I ⊕ M^1I ⊕ M^2I ⊕ … ⊕ M^k I \
   J^k & ≔ J ⊕ M^1J ⊕ M^2J ⊕ … ⊕ M^k J
 $
+See @example-exponential-knapsack-fractal for an example.
 - @size-lemma implies $abs(I^k) = abs(I)⋅k$.
 - @subinstance-lemma implies that $J^k$ is a subinstance of $I^k$.
 - The corollary implies that $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k)) = abs(P(J))^k$.
