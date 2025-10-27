@@ -886,7 +886,7 @@ We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_
 
 The score assigned to $I$ was $op("Avg")\/Opt(I)$.
 
-=== Scoring Knapsack
+=== Scoring Knapsack <sec-implementation-details-knapsack>
 For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the Pareto-Set when solutions with the same total weight and total profit are treated as identical. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
 
 For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann and keep track of the largest Pareto-Set $P_"largest"$ and the running maximum of $abs(P_"largest") \/ abs(P_i)$ over time. The final score is this maximum. That is, the assigned score is:
@@ -1051,7 +1051,83 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem <sec-results-knapsack>
-#TODO[Knapsack-Code output]
+As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and obtained the following result.
+
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: (1fr, 1fr),
+    kind: raw,
+    figure(caption: [Initial program.\ Bugged score $= 1.25$, Actual score $= 1.0$.])[
+      ```py
+      def get_instance() -> list[tuple[int, int]]:
+          """Return an instance, specified by the list of (weight, profit) pairs.
+
+          Weights and profits must be non-negative integers.
+          """
+          return [(1, 2)] * 2 + [(4, 4), (2, 2), (1, 3)]
+      ```
+    ],
+    figure(caption: [Step in tuning @code-knapsack-funsearch-output by hand.\ Bugged score $=$ Actual score $≈12.64$.])[
+      ```py
+      def get_instance() -> list[tuple[int, int]]:
+          items = []
+          n = 7
+          items += [(1, 1)] * n
+          items += [(4, 9)] * n
+          items += [(2, 5), (3, 7)]
+          return items
+      ```
+    ],
+    <code-knapsack-post-tuning>,
+    grid.cell(
+      colspan: 2,
+    )[
+      #figure(caption: [A program found by FunSearch after $10$ trials of $500$ samples each.\ Bugged score $=$ Actual score $≈5.766$.])[```py
+      def get_instance() -> list[tuple[int, int]]:
+          """Create a variant with more diverse item types and weights to potentially influence Pareto set size."""
+          items = []
+          # Repeated very light, low profit items
+          items += [(1, 1)] * 8
+          # Mix of moderate weight and profit items with some unique entries
+          items += [(4, 9), (4, 9), (5, 10)]
+          # High-profit, lightweight items with more profit variation
+          items += [(2, 16), (2, 14), (3, 15)]
+          # Heavier items with varied weights and higher profits to increase trade-offs
+          items += [(9, 20), (12, 30), (15, 40)]
+          # Small, low to moderate profit items
+          items += [(1, 3), (2, 5), (3, 7), (3, 8)]
+          # Very heavy, high-profit rare items with similar weights
+          items += [(20, 35), (21, 36), (22, 38)]
+          # Larger weight, moderate profit item to diversify options
+          items += [(18, 28)]
+          # Additional medium-weight high-profit items to increase complexity
+          items += [(10, 25), (11, 27)]
+          return items
+      ```]<code-knapsack-funsearch-output>
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating knapsack-instances using a bugged scoring-function, with model gpt-4.1-nano and a temperature of $1.0$..],
+    label: <evolution-knapsack>,
+  )
+]
+
+Both the FunSearch-output's, our tuned code's, and the following instances' scores were unaffected by the bug. After simplifying the output into @code-knapsack-post-tuning, we scaled all items' weights up by
+a factor of $2$ (which does not affect Pareto-optimality), decreased some
+profits by $1$, and changed the last item to obtain the following tidier
+instance, which achieves slightly higher scores for the same $n$:
+$ [ underbrace(vec(8, 8) \, . . . \, vec(8, 8), n upright(" times")) \, med med underbrace(vec(2, 1) \, . . . \, vec(2, 1), n upright(" times")) \, med med vec(4, 4) \, vec(2, 2) ] . $
+From here, we attempted to prove results about the instance. After a
+first draft, we found it more natural to replace the first $n$ items by
+$n$ powers of $2$, and saw that stronger results are possible by
+replacing the last two items by $k$ powers of $2$:
+$ [ vec(2^(2 k), 2^(2 k)) \, vec(2^(2 k + 1), 2^(2 k + 1)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med underbrace(vec(2^k, 2^k - 1) \, . . . \, vec(2^k, 2^k - 1), n upright(" times")) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, vec(2^(2 k - 2), 2^(2 k - 2)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] . $
+Finally, to apply our result not only to the size of the Pareto sets but
+also to the runtime of the Nemhauser-Ullmann algorithm#TODO[Insert reference to why that makes a difference], we appended the factors
+$x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$ to the $n$ center items:
+#math.equation(block: true, numbering: "(1)")[$"Items" = [ vec(2^(2 k), 2^(2 k)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med vec(x_1 dot.op 2^k, x_1 dot.op (2^k - 1)) \, . . . \, vec(x_n dot.op 2^k, x_n dot.op (2^k - 1)) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] .$]<knapsack-instance>
 
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
 To analyze the sizes of the instance's and subinstances' Pareto-sets, we define the two segments
@@ -1135,8 +1211,8 @@ $
   𝕀_1 & colon.eq [I_(2 k, med 2 k + n), med J_(k, n)], \
   𝕀_2 & colon.eq [𝕀_1, med vec(2^(k + 1), 2^(k + 1)), vec(2^(k + 2), 2^(k + 2)), …, vec(2^(2 k - 1), 2^(2 k - 1))] .
 $
-$𝕀_1$ is a sub-instance of $𝕀_2$. $𝕀_2$ (which is exactly
-the instance #TODO[Insert reference.]) contains the same items as
+$𝕀_1$ is a sub-instance of $𝕀_2$. The instance $𝕀_2$ (which is exactly
+the instance in @knapsack-instance) contains the same items as
 $[I_(k + 1, thin 2 k + n), med J_(k, n)]$. The sizes of their
 Pareto-sets can be bounded by:
 $
