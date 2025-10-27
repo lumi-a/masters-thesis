@@ -1051,7 +1051,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem <sec-results-knapsack>
-As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and obtained the following result.
+As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and nevertheless obtained the following result. #TODO[Talk about FunSearch with _unbugged_ scoring function.]
 
 #[
   #show raw: set text(size: 0.75em)
@@ -1109,12 +1109,14 @@ As mentioned in @sec-implementation-details-knapsack, our scoring-function initi
       ```]<code-knapsack-funsearch-output>
     ],
     gap: 1em,
-    caption: [The evolution of programs generating knapsack-instances using a bugged scoring-function, with model gpt-4.1-nano and a temperature of $1.0$..],
+    caption: [The evolution of programs generating knapsack-instances using a bugged scoring-function, with model gpt-4.1-nano and a temperature of $1.0$.],
     label: <evolution-knapsack>,
   )
 ]
 
-Both the FunSearch-output's, our tuned code's, and the following instances' scores were unaffected by the bug. After simplifying the output into @code-knapsack-post-tuning, we scaled all items' weights up by
+The score of FunSearch's final output, our tuned code, and the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance.
+
+After simplifying the output into @code-knapsack-post-tuning, we scaled all items' weights up by
 a factor of $2$ (which does not affect Pareto-optimality), decreased some
 profits by $1$, and changed the last item to obtain the following tidier
 instance, which achieves slightly higher scores for the same $n$:
@@ -1286,6 +1288,64 @@ for the runtime of the Nemhauser-Ullmann algorithm.
     $2^d - 1 ≥ 1$.
 ]
 
+
+=== FunSearch with Corrected Scoring-Function
+After finding and eliminating the bug in our scoring-function, we re-ran FunSearch. This time, the result had a score exceeding $600$, _before_ being tuned by hand. This was done after we had already proven the above result.
+
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: (1fr, 1fr),
+    kind: raw,
+    figure(caption: [Initial program, score $= 1.25$.])[
+      ```py
+      def get_instance() -> list[tuple[int, int]]:
+          """Return an instance, specified by the list of (weight, profit) pairs.
+
+          Weights and profits must be non-negative integers.
+          """
+          return [(1, 2)] * 2 + [(4, 4), (2, 2), (1, 3)]
+      ```
+    ],
+    figure(caption: [After tuning @code-knapsack-fixed-funsearch-output, score $≈74 med 612 med 418$.])[
+      ```py
+      def get_instance() -> list[tuple[int, int]]:
+          items = [(x, x + 25) for x in list(range(25, 60))] * 3
+          items += [(1 + 2 * i, 1 + 3 * i) for i in range(1, 8)]
+          return items
+      ```
+    ],
+    <code-knapsack-fixed-post-tuning>,
+    grid.cell(
+      colspan: 2,
+    )[
+      #figure(caption: [A program found by FunSearch after $30$ trials of $1000$ samples each, score $≈646$.])[```py
+      def get_instance_0() -> list[tuple[int, int]]:
+          """New instance designed to highlight a larger Pareto-set in a subinstance."""
+          items = [
+              (60, 85), (57, 82), (54, 79), (51, 76), (48, 73),
+              (45, 70), (42, 67), (39, 64), (36, 61), (33, 58),
+              (56, 81), (53, 78), (50, 75), (47, 72), (44, 69),
+              (41, 66), (38, 63), (35, 60), (32, 57), (29, 54),
+              (55, 80), (52, 77), (49, 74), (46, 71),
+              (43, 68), (40, 65),  # Weight adjustments for more trade-offs
+              (27, 42), (22, 37),  # Front-loaded higher profit high-weight items
+              (11, 18),  # Small diverse item
+              (14, 24), (17, 28),
+              (12, 19), (16, 25), (20, 32),
+              (8, 14), (7, 10), (13, 17)
+          ] + [(15, 21), (18, 27), (21, 33)]
+          return items
+      ```]<code-knapsack-fixed-funsearch-output>
+    ],
+    gap: 1em,
+    caption: [The evolution of programs generating knapsack-instances using a correct scoring-function, with model gpt-4.1-nano and a temperature of $1.2$.],
+    label: <evolution-knapsack-fixed>,
+  )
+]
+While this instance is concise, its structure is still messy. We neither saw a way of turning @code-knapsack-fixed-post-tuning into the instance in @knapsack-instance, nor did we see how we could use @code-knapsack-fixed-post-tuning to obtain a result similar to the above theorem.
 
 == $k$-median Clustering <sec-results-clustering>
 
@@ -1833,7 +1893,7 @@ In the previous sections, we only presented the results for problems where we ap
 - Gasoline: Though we did find $2$-dimensional instances where $IterRound(I) / Opt(I)$ was greater than $2$, we were unable to find any $1$-dimensional instances with that property.
 - In the page-replacement-problem, we must make decisions which memory pages to keep in working memory. When a page being requested is currently not loaded (a _page-miss_), we must decide which of the currently-loaded pages to swap out, which is a relatively expensive operation. The objective then is to minimise the number of page-misses, by making smart choices about which pages to keep in working memory. A good heuristic for this is LRU, which discards the page that was Least Recently Used. Using a benchmark-instance of real-world data, we attempted to find better heuristics than this, but were unsuccessful.
 
-For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ of which ($≈29%$) led to new results. Even now, I do not feel like I have a good understanding of what problems lend themselves well to FunSearch, other than the obvious "Prefer problems that are more likely to have low-hanging research-fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of a bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
+For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ of which ($≈29%$) led to new results. Even now, I do not feel like I have a good understanding of what problems lend themselves well to FunSearch, other than the obvious "Prefer research-questions that are more likely to have low-hanging fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of some bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
 
 #TODO[Grammar-/ Spell Checker]
 
