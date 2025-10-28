@@ -908,7 +908,7 @@ We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_
 The score assigned to $I$ was $op("Avg")\/Opt(I)$.
 
 === Scoring Knapsack <sec-implementation-details-knapsack>
-For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the Pareto-Set when solutions with the same total weight and total profit are treated as identical. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
+For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the deduplicated Pareto-Sets. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
 
 For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann and keep track of the largest Pareto-Set $P_"largest"$ and the running maximum of $abs(P_"largest") \/ abs(P_i)$ over time. The final score is this maximum. That is, the assigned score is:
 $
@@ -932,9 +932,6 @@ Written in rust, it is available on crates.io#footnote(link("https://crates.io/c
 === Scoring Gasoline
 An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`.
 
-
-#TODO[Describe the tuning of the instances more]
-#TODO[The score is kinda relevant to the result-section, too. Maybe move the problem-specific implementation-details to the respective sections below?]
 
 = Results
 == Bin-Packing <sec-results-bin-packing>
@@ -1072,7 +1069,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem <sec-results-knapsack>
-As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and nevertheless obtained the following result. #TODO[Talk about FunSearch with _unbugged_ scoring function.]
+As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and nevertheless obtained the following result.
 
 #[
   #show raw: set text(size: 0.75em)
@@ -1135,7 +1132,7 @@ As mentioned in @sec-implementation-details-knapsack, our scoring-function initi
   )
 ]
 
-The score of FunSearch's final output, our tuned code, and the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance.
+The scores of FunSearch's final output, our tuned code, and the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance, see @funsearch-with-corrected-scoring-function for details.
 
 After simplifying the output into @code-knapsack-post-tuning, we scaled all items' weights up by
 a factor of $2$ (which does not affect Pareto-optimality), decreased some
@@ -1147,16 +1144,13 @@ first draft, we found it more natural to replace the first $n$ items by
 $n$ powers of $2$, and saw that stronger results are possible by
 replacing the last two items by $k$ powers of $2$:
 $ [ vec(2^(2 k), 2^(2 k)) \, vec(2^(2 k + 1), 2^(2 k + 1)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med underbrace(vec(2^k, 2^k - 1) \, . . . \, vec(2^k, 2^k - 1), n upright(" times")) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, vec(2^(2 k - 2), 2^(2 k - 2)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] . $
-Finally, to apply our result not only to the size of the Pareto sets but
-also to the runtime of the Nemhauser-Ullmann algorithm#TODO[Insert reference to why that makes a difference], we appended the factors
-$x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$ to the $n$ center items:
+Finally, we appended the factors $x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$ to the $n$ center items, which ensured that $P_"dedup" (I_(1:i)) = P(I_i)$ for all $i$.
 #math.equation(block: true, numbering: "(1)")[$"Items" = [ vec(2^(2 k), 2^(2 k)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med vec(x_1 dot.op 2^k, x_1 dot.op (2^k - 1)) \, . . . \, vec(x_n dot.op 2^k, x_n dot.op (2^k - 1)) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] .$]<knapsack-instance>
 
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
-To analyze the sizes of the instance's and subinstances' Pareto-sets, we define the two segments
+We will now analyze the sizes of the instance's and subinstances' Pareto-sets. To that end, define the two segments
 of the instance: For $a, b, d, n in bb(Z)_(≥ 1)$ with
-$d < a ≤ b$, define $x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$, and
-two lists:
+$d < a ≤ b$, consider two lists:
 $
   I_(a, b) ≔ [vec(2^a, 2^a), vec(2^(a + 1), 2^(a + 1)), …, vec(2^b, 2^b)], #h(2em)
   J_(d, n) ≔ [ vec(x_1 ⋅ 2^d, x_1 ⋅ (2^d - 1)), …, vec(x_n ⋅ 2^d, x_n ⋅ (2^d - 1)) ].
@@ -1222,7 +1216,7 @@ On the other hand, all other packings are Pareto-optimal:
   contradiction.
 ]
 
-Hence, we can describe the Pareto-set exactly:
+Hence, we can describe the Pareto-set exactly (written here with set-notation rather than lists):
 $
   P ([I_(a, b), J_(d, n)]) quad=quad
   { A ∪ B mid(|) A subset.neq I_(a, b),med med B subset.eq J_(d, n),med med lr(|B|) < 2^(a - d) } quad dot(union)quad { I_(a, b) union B mid(|) B subset.eq J_(d, n) }.
@@ -1267,18 +1261,9 @@ in an actual lower bound of $O ( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
   $
 ]<nemhauser-ullmann-theorem>
 
-In implementations of the Nemhauser-Ullmann algorithm, two
-Pareto-optimal packings can be treated as equivalent if they have the
-same total weight and total profit. Hence, the runtime can be
-upper-bounded not only by the sum of the sizes of the Pareto-sets
-$lr(|P (I_(1 : 1))|) + . . . + lr(|P (I_(1 : n))|)$, but even the sizes
-of the Pareto-sets when two packings with the same total weight and
-total profit are treated as identical. The only purpose of the leading
-factors
-$x_i = ( 1 + frac(2^(-i), 2^d - 1) )$
-in $J_(d, n)$ is to prevent two Pareto-optimal packings from having
-the same total profit. As a consequence, we also obtain the same bound
-for the runtime of the Nemhauser-Ullmann algorithm.
+The only purpose of the leading
+factors $x_i = ( 1 + frac(2^(-i), 2^d - 1) )$ in $J_(d, n)$ is to prevent two Pareto-optimal packings from having
+the same total profit:
 
 #lemma[If
   $A, B subset.eq [I_(a, b), J_(d, n)]$ are two distinct Pareto
@@ -1308,9 +1293,10 @@ for the runtime of the Nemhauser-Ullmann algorithm.
     $2^(- 1), . . ., 2^(- n)$ is always smaller than $1$, whereas
     $2^d - 1 ≥ 1$.
 ]
+Thus, the deduplicated Pareto-Sets and Pareto-Sets of $𝕀_2$ coincide, meaning @nemhauser-ullmann-theorem applies to $P_"dedup"$ as well, which disproves that @alg-nemhauser-ullmann runs in polynomial time.
 
 
-=== FunSearch with Corrected Scoring-Function
+=== FunSearch with Corrected Scoring-Function <funsearch-with-corrected-scoring-function>
 After finding and eliminating the bug in our scoring-function, we re-ran FunSearch. This time, the result had a score exceeding $600$, _before_ being tuned by hand. This was done after we had already proven the above result.
 
 #[
