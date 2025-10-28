@@ -402,7 +402,7 @@ Naturally, different objectives can yield different optimal clusterings, as seen
   ]
 }
 
-There are also weighted versions of the $k$-median and $k$-means objectives, where each point $p$ has an associated non-negative weight $w(p)$, and the distance between $p$ and the centre $μ$ is multiplied by $w(p)$. For $k$-means, the optimal choice for $μ$ then is simply the weighted average of all points. The weighted and unweighted problems are mostly equivalent: If we restrict ourselves to integral weights, an equivalent unweighted instance has $w(p)$-many unweighted copies of $p$, for each $p$. If we restrict ourselves to rational weights, we can multiply by the product of the denominators to achieve integral weights again. For irrational weights, we can find an approximate rationally-weighted instance with the same optimal $k$-clusterings. #TODO[Citation needed, maybe?]
+There are also weighted versions of the $k$-median and $k$-means objectives, where each point $p$ has an associated non-negative weight $w(p)$, and the distance between $p$ and the centre $μ$ is multiplied by $w(p)$. For $k$-means, the optimal choice for $μ$ then is simply the weighted average of all points. The weighted and unweighted problems are mostly equivalent: If we restrict ourselves to integral weights, an equivalent unweighted instance has $w(p)$-many unweighted copies of $p$, for each $p$. If we restrict ourselves to rational weights, we can multiply by the product of the denominators to achieve integral weights again.
 
 When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering:
 
@@ -524,7 +524,7 @@ For the above cost-functions, the following bounds on the Price of Hierarchy are
 
 No non-trivial lower bounds on $PoH_(k"-median")$ are known. Using FunSearch, we obtained a sequence of instances that shows $PoH_(k"-median") ≥ (1+√5)/2 ≈ 1.618$. See @sec-results-clustering for details.
 
-We also made similar attempts for other objectives, and for the approximation-ratio of agglomerative-clustering, but to no success. #TODO[Either move this, or insert a reference to, a later section on failed experiments.]
+We also made similar attempts for other objectives, and for the approximation-ratio of agglomerative-clustering, but to no success. We briefly discuss this in @sec-funsearch-failures.
 
 == Generalised Gasoline-Problem
 
@@ -1874,7 +1874,7 @@ As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diago
 
 This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all $I_α$, and $I_1=#gasoline-weak$ being best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
 
-== Problems we did not make progress on
+== Problems we did not make progress on <sec-funsearch-failures>
 In the previous sections, we only presented the results for problems where we applied FunSearch successfully. A-priori, we did not know what problems lent themselves to FunSearch, so we used trial-and-error across several problems, and we briefly talk about said errors here.
 - Best-Fit Bin-Packing: Instead of the _absolute_ random-order-ratio
   $
@@ -1902,6 +1902,7 @@ In the previous sections, we only presented the results for problems where we ap
 
 For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ of which ($≈29%$) led to new results. Even now, I do not feel like I have a good understanding of what problems lend themselves well to FunSearch, other than the obvious "Prefer research-questions that are more likely to have low-hanging fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of some bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
 
+#TODO[Introduction, Conclusion]
 #TODO[Grammar-/ Spell Checker]
 
 #bibliography("bibliography.bib", style: "chicago-author-date")
