@@ -169,7 +169,7 @@ Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
 
-A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. #TODO[Maybe just use bit-vectors.] For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
@@ -243,11 +243,17 @@ All of these cases can be covered simultaneously: We can narrow down the space b
     quad "and" quad
     Profit(A) ≥ Profit(B),
   $
-  and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the set of all solutions that are not dominated by any other solution.
-
-  #TODO[Not really a set. Maybe do use index-vectors.]
+  and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the list of all solutions that are not dominated by any other solution.
 ]
-See @fig-example-knapsack for an exmaple. There, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, so one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and, for a given tradeoff-function $u$, finding a solution in $P(I)$ that maximizes $u$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
+See @fig-example-knapsack for an example. In the above definition, we say that $P(I)$ is a _list of solutions_, rather than a set. This is unfortunately necessary, consider the following instance:
+$
+  I ≔ [vec(1, 1), vec(1, 1)]
+  quad⟹quad
+  P(I) = [[], [vec(1, 1)], [vec(1, 1)], [vec(1, 1), vec(1, 1)]].
+$
+Had we defined $P(I)$ as a _set of solutions_, the above $P(I)$ would only have $3$ elements. Some authors mitigate this confusion by denoting solutions not as sub-lists of $I$, but as $0$-$1$ vectors in ${0,1}^I$.
+
+In @fig-example-knapsack, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, so one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and, for a given tradeoff-function $u$, finding a solution in $P(I)$ that maximizes $u$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
 Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ullmann algorithm_ @NU69 @RoeglinBookChapter, which incrementally computes the Pareto-sets $P_i ≔ P(I_(1:i))$ for $i=1,…,n$, where "$I_(1:i)$" denotes the instance containing the first $i$ items of $I$. It works as follows:
 #figure(
@@ -262,14 +268,29 @@ Let $n≔|I|$. The standard algorithm for computing $P(I)$ is the _Nemhauser-Ull
   ],
 )<alg-nemhauser-ullmann>
 
-This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_1| + … + |P_n|)$ @RoeglinBookChapter. #TODO[Somewhere around here, a note would be useful discussing the difference between Pareto-Size and "Pareto-Size but we treat same total weight and total profit as identical"] Intuitively, one might think that $P_(i-1)$ is always smaller than $P_i$, which would imply a runtime of $O(n⋅abs(P_n))$. However, this need not be the case:
+This algorithm works correctly because $P_i$ is always a subset of $Q_i$. We need the following definition for stating the runtime of @alg-nemhauser-ullmann.
+
+#definition[
+  Consider the equivalence-relation $∼$ between solutions $A,B$ of some instance $I$ defined by: $A∼B$ iff [$Weight(A)=Weight(B)$ and $Profit(A)=Profit(B)$].
+
+  The *deduplicated Pareto-Set* $P_"dedup" (I)$ is the quotient $P(I)\/∼$. In other words, it is the Pareto-Set, but two solutions are treated as identical iff they have the same total weight and the same total profit.
+]
+
+With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_"dedup" (I_(1:1))| + … + |P_"dedup" (I_(1:n))|)$ @RoeglinBookChapter. A weaker bound is $O(|P_1| + … |P_n|)$, because it always holds that $|P_"dedup"(J)| ≤ |P(J)|$ for all instances $J$.
+
+Intuitively, one might think that:
+- $P_(i-1)$ is always smaller than $P_i$, which would imply a runtime of $O(n⋅abs(P_n))$.
+- $P_"dedup" (I_(1:i-1))$ is always smaller than $P_"dedup" (I_(1:i))$, which would imply a runtime of $O(n⋅abs(P_"dedup" (I)))$.
+
+However, neither statement is true in general:
 
 #example[
   Consider the items:
   $
     I ≔ [vec(4, 4),quad vec(4, 4),quad vec(2, 1),quad vec(1, 2),quad vec(2, 2)].
   $
-  Here, $P_4$ has size $12$, while $P_5 = P(I)$ has size $10$.
+  - $P_4$ has size $12$, while $P_5 = P(I)$ has size $10$.
+  - $P_"dedup" (I_(1:4))$ has size $9$, while $P_"dedup" (I)$ has size $8$.
   #let items = ((4, 4), (4, 4), (2, 1), (1, 2), (2, 2))
   #let diagrams = draw-knapsack.draw(items, items.len() - 1, blue, green)
   #let diagram-args = (xaxis: (lim: (auto, 14)), yaxis: (lim: (auto, 14)), width: 180pt)
@@ -287,7 +308,7 @@ This algorithm works correctly because $P_i$ is always a subset of $Q_i$. With s
         )
         + h(1fr)
     ),
-    caption: [The solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by #sym.star.filled. For $I_(1:4)$ (respectively $I_(1:5)$), the number of visible solutions is smaller than $2^4$ (respectively $2^5$), and the number of visible pareto-optimal solutions is smaller than $12$ (respectively $10$), because some pairs of different solutions have the same total weight and total profit. If treating Pareto-optimal solutions with the same weight and profit as identical, $I_(1:4)$ has $9$, whereas $I$ only has $8$.],
+    caption: [The solution-space for $I_(1:4)$ (left) and $I_(1:5)=I$ (right) respectively, plotting $(Weight(A), Profit(A))$ for every solution $A$, with Pareto-optimal solutions marked by #sym.star.filled.\ Because solutions with the same total weight and total profit are plotted at the same point,\ only the deduplicated Pareto-Sets are visible.],
   )
 ]<example-shrinking-pareto-set>
 Let $n ≔ |I|$ again. It had been unknown whether $|P_i|$ can be bounded by some $O(|P_n|)$, i.e. it had been unknown whether
@@ -298,7 +319,7 @@ $
 $
 can always be bounded by some constant not depending on $I$. For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
 
-So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. This disproves that @alg-nemhauser-ullmann runs in output-polynomial time. See @sec-results-knapsack for details.
+So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. Furthermore, the instances had the property that $P_"dedup" (I_(1:i)) = P(I_(1:i))$, so this bound can also be applied to the runtime of @alg-nemhauser-ullmann. See @sec-results-knapsack for details.
 
 == $k$-median Clustering
 In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. Clustering is a useful tool for data-analysis. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
