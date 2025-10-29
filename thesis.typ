@@ -245,11 +245,11 @@ All of these cases can be covered simultaneously: We can narrow down the space b
   $
   and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the multiset of all solutions that are not dominated by any other solution.
 ]
-See @fig-example-knapsack for an example. In the above definition, we say that $P(I)$ is a multiset, rather than a set. This is unfortunately necessary, consider the following instance:
+See @fig-example-knapsack for an example. In the above definition, we say that $P(I)$ is a _multiset_, rather than a set. This is unfortunately necessary, consider the following instance:
 $
   I ≔ [vec(1, 1), vec(1, 1)]
-  quad⟹quad
-  P(I) = {[], [vec(1, 1)], [vec(1, 1)], [vec(1, 1), vec(1, 1)]}.
+  wide ⟹ wide
+  P(I) = {[],quad [vec(1, 1)],quad [vec(1, 1)],quad [vec(1, 1), vec(1, 1)]}.
 $
 Had we defined $P(I)$ as a _set of solutions_, the above $P(I)$ would only have $3$ elements. Some authors mitigate this confusion by denoting solutions not as sub-lists of $I$, but as $0$-$1$ vectors in ${0,1}^I$. That way, all solutions are unique.
 
