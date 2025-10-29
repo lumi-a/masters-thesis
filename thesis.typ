@@ -393,8 +393,8 @@ Naturally, different objectives can yield different optimal clusterings, as seen
 
   [#subpar.grid(
       columns: (1fr, 1fr),
-      context figure(draw-clustering.draw-clustering(points, kmedian-agglomerative, page.width * 0.3, 0.02, green), caption: [A sub-optimal $k$-median clustering/* (objective $5.104$)*/, obtained via agglomerative clustering.]), context figure(draw-clustering.draw-clustering(points, kmeans-agglomerative, page.width * 0.3, 0.02, cyan), caption: [A sub-optimal $k$-means clustering/* (objective $5.083$)*/, obtained via agglomerative clustering.]),
-      context figure(draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, red), caption: [An optimal $k$-median clustering/* (objective $4.467$)*/.]), context figure(draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, blue), caption: [An optimal $k$-means clustering/* (objective $4.555$)*/.]),
+      context figure(draw-clustering.draw-clustering(points, kmedian-agglomerative, page.width * 0.3, 0.02, apx-color.lighten(25%)), caption: [A sub-optimal $k$-median clustering/* (objective $5.104$)*/, obtained via agglomerative clustering.]), context figure(draw-clustering.draw-clustering(points, kmeans-agglomerative, page.width * 0.3, 0.02, apx-color.darken(25%)), caption: [A sub-optimal $k$-means clustering/* (objective $5.083$)*/, obtained via agglomerative clustering.]),
+      context figure(draw-clustering.draw-clustering(points, kmedian, page.width * 0.3, 0.02, opt-color.lighten(25%)), caption: [An optimal $k$-median clustering/* (objective $4.467$)*/.]), context figure(draw-clustering.draw-clustering(points, kmeans, page.width * 0.3, 0.02, opt-color.darken(25%)), caption: [An optimal $k$-means clustering/* (objective $4.555$)*/.]),
       gap: 1em,
       caption: [Four different $k"="3$-clusterings for the same $20$ points in $ℝ^2$.],
       label: <clustering-example>,
