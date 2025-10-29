@@ -243,15 +243,15 @@ All of these cases can be covered simultaneously: We can narrow down the space b
     quad "and" quad
     Profit(A) ≥ Profit(B),
   $
-  and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the list of all solutions that are not dominated by any other solution.
+  and at least one of those inequalities is strict. The *Pareto-set* $P(I)$ is the multiset of all solutions that are not dominated by any other solution.
 ]
-See @fig-example-knapsack for an example. In the above definition, we say that $P(I)$ is a _list of solutions_, rather than a set. This is unfortunately necessary, consider the following instance:
+See @fig-example-knapsack for an example. In the above definition, we say that $P(I)$ is a multiset, rather than a set. This is unfortunately necessary, consider the following instance:
 $
   I ≔ [vec(1, 1), vec(1, 1)]
   quad⟹quad
-  P(I) = [[], [vec(1, 1)], [vec(1, 1)], [vec(1, 1), vec(1, 1)]].
+  P(I) = {[], [vec(1, 1)], [vec(1, 1)], [vec(1, 1), vec(1, 1)]}.
 $
-Had we defined $P(I)$ as a _set of solutions_, the above $P(I)$ would only have $3$ elements. Some authors mitigate this confusion by denoting solutions not as sub-lists of $I$, but as $0$-$1$ vectors in ${0,1}^I$.
+Had we defined $P(I)$ as a _set of solutions_, the above $P(I)$ would only have $3$ elements. Some authors mitigate this confusion by denoting solutions not as sub-lists of $I$, but as $0$-$1$ vectors in ${0,1}^I$. That way, all solutions are unique.
 
 In @fig-example-knapsack, the Pareto-set has size $15$, which is much smaller than the size of the entire solution-space, $2^6 = 64$. In fact, the Pareto-set is usually small in practice @moitraSmoothed @RoeglinBookChapter, so one approach to finding an optimal solution is to compute the Pareto-Set $P(I)$ and, for a given tradeoff-function $u$, finding a solution in $P(I)$ that maximizes $u$. If $P(I)$ has already been computed, a simple linear search yields an optimal solution in time $O(|P(I)|)$.
 
@@ -880,7 +880,7 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
 
 Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter `length` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding the provided `length` by returning a score of $0$, and we may mathematically analyse the asymptotic behaviour of the function for large `length` after the fact. To make generalisation across different values of `length` more likely, we could also evaluate the function on multiple different values and take a weighted average.
 
-== Tuning FunSearch-Output <sec-funsearch-tuning-introduction>
+== Tuning FunSearch's Output <sec-funsearch-tuning-introduction>
 
 We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmetrical (see @evolution-clustering, where we replaced `np.linspace`, which produces a sequence of evenly-spaced numbers, with `np.ones`, which produces a sequence of identical numbers), and checking after every step whether the program's score decreased noticeably.
 
@@ -903,12 +903,12 @@ When a query returns a program, it is evaluated by assigning it a score (higher 
 === Scoring Bin-Packing
 For a bin-packing instance $I$, we calculated the optimal (smallest) number of bins $Opt(I)$ by calling the existing solver `packingsolver`#footnote(link("https://github.com/fontanf/packingsolver")) @fontan, which is based on column-generation.
 
-We did not calculate the expected number of bins used by Best-Fit $𝔼_(π∈S_(|I|))[BestFit(π(I))]$ exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Avg"$ as an estimate.
+We did not calculate the expected number of bins used by Best-Fit ($𝔼_(π∈S_(|I|))[BestFit(π(I))]$) exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Avg"$ as an estimate.
 
 The score assigned to $I$ was $op("Avg")\/Opt(I)$.
 
 === Scoring Knapsack <sec-implementation-details-knapsack>
-For this, we implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the deduplicated Pareto-Sets. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
+We implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the deduplicated Pareto-Sets. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
 
 For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann and keep track of the largest Pareto-Set $P_"largest"$ and the running maximum of $abs(P_"largest") \/ abs(P_i)$ over time. The final score is this maximum. That is, the assigned score is:
 $
@@ -930,13 +930,13 @@ To speed up the search, we used memoization for computing costs of individual cl
 Written in rust, it is available on crates.io#footnote(link("https://crates.io/crates/exact-clustering")) with documentation on docs.rs #footnote(link("https://docs.rs/exact-clustering")), the repository is on GitHub #footnote(link("https://github.com/lumi-a/exact-clustering")). We also provide python-bindings (on PyPi#footnote(link("https://pypi.org/project/exact-clustering")), GitHub#footnote(link("https://github.com/lumi-a/py-exact-clustering"))) via #link("https://www.maturin.rs")[Maturin]. The code is heavily benchmarked, tested, and documented, so that other researchers may easily use it.
 
 === Scoring Gasoline
-An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`.
+An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`. This solver calls Gurobi @gurobi to calculate an optimal permutation.
 
 
 = Results
 == Bin-Packing <sec-results-bin-packing>
 
-Here, we started with a trivial hardcoded instance (score $1.0$), and FunSearch soon found an instance with score $1.49815$. The theoretical upper bound is $1.5$, and the instance had an extremely simple structure.
+We started with a trivial hardcoded instance (score $1.0$), and FunSearch soon found an instance with score $1.49815$. The theoretical upper bound is $1.5$, and the instance had an extremely simple structure.
 
 #[
   #show raw: set text(size: 0.75em)
@@ -985,7 +985,7 @@ Here, we started with a trivial hardcoded instance (score $1.0$), and FunSearch 
   )
 ]
 
-Further experimentation with the instance in @code-bin-packing-post-tuning indicated that, for the instance to have a high score, the constants `a` and `b` should be large and coprime. This is easily achieved as follows. For fixed $m in ℕ$, consider the instance:
+Further experimentation with the instance in @code-bin-packing-post-tuning indicated that, for the instance to have a high score, the constants `a` and `b` should be large and coprime. For instance, for fixed $m in ℕ$, consider the instance:
 
 $
   I ≔ [underbrace(m + 1\,#h(0.5em) …\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) … \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m ⋅ (m + 1).
@@ -1011,15 +1011,15 @@ to their maximum capacity.
     lesser-packing(((6, 6, 6, 7, 6, 6), (7, 7, 6, 7, 6, 7), (7,))), lesser-packing(((6, 7, 6, 6, 7, 6), (7, 7, 7, 7, 6, 6), (6,))), lesser-packing(((7, 6, 7, 6, 7, 6), (7, 7, 6, 6, 6, 6), (7,))),
   ),
   gap: 0em,
-  caption: [Nine different packings produced by randomised Best-Fit.],
+  caption: [Nine different packings produced by randomised Best-Fit. These were not cherry-picked.],
 )
 
 It turns out that this is the _only_ optimal packing (up to re-labeling the two bins):
 #lemma[
-  An optimal packing can not have a bin containing both an item of weight $m$ and an item of weight $m+1$.
+  An optimal packing can not have a bin that contains both an item of weight $m$ and an item of weight $m+1$.
 ]
 #proof[
-  Every optimal packing must fill both bins exactly to their full capacity $c$. Assume, for contradiction, a bin contains $0<i<m$ items of weight $m$ and $0<j<m$ items of weight $m+1$:
+  Every optimal packing must fill both bins exactly to their full capacity $c$, because the sum of all items is $2c$. Assume, for contradiction, a bin contains $0<i<m$ items of weight $m$ and $0<j<m$ items of weight $m+1$:
   $
     (m+1) ⋅ m quad=quad
     c quad=quad
@@ -1132,9 +1132,9 @@ As mentioned in @sec-implementation-details-knapsack, our scoring-function initi
   )
 ]
 
-The scores of FunSearch's final output, our tuned code, and the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance, see @funsearch-with-corrected-scoring-function for details.
+The scores of the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance, see @funsearch-with-corrected-scoring-function for details.
 
-After simplifying the output into @code-knapsack-post-tuning, we scaled all items' weights up by
+After simplifying the output into @code-knapsack-post-tuning, we continued tuning and scaled all items' weights up by
 a factor of $2$ (which does not affect Pareto-optimality), decreased some
 profits by $1$, and changed the last item to obtain the following tidier
 instance, which achieves slightly higher scores for the same $n$:
@@ -1216,7 +1216,7 @@ On the other hand, all other packings are Pareto-optimal:
   contradiction.
 ]
 
-Hence, we can describe the Pareto-set exactly (written here with set-notation rather than lists):
+Hence, we can describe the Pareto-set exactly:
 $
   P ([I_(a, b), J_(d, n)]) quad=quad
   { A ∪ B mid(|) A subset.neq I_(a, b),med med B subset.eq J_(d, n),med med lr(|B|) < 2^(a - d) } quad dot(union)quad { I_(a, b) union B mid(|) B subset.eq J_(d, n) }.
