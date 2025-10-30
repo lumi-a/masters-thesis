@@ -964,6 +964,7 @@ Written in rust, it is available on crates.io#footnote(link("https://crates.io/c
 An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`. This solver calls Gurobi @gurobi to calculate an optimal permutation.
 
 == Ablations #TODO[Decide whether to move this elsewhere (above the implementation-details?), and mention this in the introduction]
+
 #let ablation-plot = (trials, name, max-t, color) => {
   let mean = arr => arr.sum() / arr.len()
   let current-state-to-standard-error = state => {
@@ -991,8 +992,8 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
   relevant-times.push(max-t)
   standard-errors.push(standard-errors.last())
   averages.push(averages.last())
-  let standard-errors-plot = lq.fill-between(relevant-times, averages.zip(standard-errors).map(m-s => m-s.at(0) - m-s.at(1)), y2: averages.zip(standard-errors).map(m-s => m-s.at(0) + m-s.at(1)), fill: color.transparentize(75%))
-  let means-plot = lq.plot(relevant-times, averages, stroke: color + 0.125em, mark: none, label: text(0.75em)[#name])
+  let standard-errors-plot = lq.fill-between(relevant-times, averages.zip(standard-errors).map(m-s => m-s.at(0) - m-s.at(1)), y2: averages.zip(standard-errors).map(m-s => m-s.at(0) + m-s.at(1)), fill: color.transparentize(75%), step: start)
+  let means-plot = lq.plot(relevant-times, averages, stroke: stroke(paint: color, thickness: 0.125em, join: "round"), mark: none, label: text(0.75em)[#name], step: start)
   (standard-errors: standard-errors-plot, means: means-plot)
 }
 #for ablation in ("models", "startpoints", "temperatures") {
