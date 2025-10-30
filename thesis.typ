@@ -963,6 +963,61 @@ Written in rust, it is available on crates.io#footnote(link("https://crates.io/c
 === Scoring Gasoline
 An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`. This solver calls Gurobi @gurobi to calculate an optimal permutation.
 
+== Ablations #TODO[Decide whether to move this elsewhere (above the implementation-details?), and mention this in the introduction]
+#let ablation-plot = (trials, name, max-t, color) => {
+  let mean = arr => arr.sum() / arr.len()
+  let current-state-to-standard-error = state => {
+    let state-mean = mean(state)
+    calc.sqrt(mean(state.map(x => calc.pow(x - state-mean, 2))))
+  }
+  let current-state = (trials.map(trial => trial.at("0")),)
+  let standard-errors = (current-state-to-standard-error(current-state.last()),)
+  let averages = (mean(current-state.last()),)
+  let relevant-times = (0,)
+  for t in range(max-t) {
+    if trials.any(trial => str(t) in trial) {
+      current-state.push(trials
+        .enumerate()
+        .map(ix-trial => {
+          let ix = ix-trial.at(0)
+          let trial = ix-trial.at(1)
+          trial.at(str(t), default: current-state.last().at(ix))
+        }))
+      relevant-times.push(t)
+      standard-errors.push(current-state-to-standard-error(current-state.last()))
+      averages.push(mean(current-state.last()))
+    }
+  }
+  relevant-times.push(max-t)
+  standard-errors.push(standard-errors.last())
+  averages.push(averages.last())
+  let standard-errors-plot = lq.fill-between(relevant-times, averages.zip(standard-errors).map(m-s => m-s.at(0) - m-s.at(1)), y2: averages.zip(standard-errors).map(m-s => m-s.at(0) + m-s.at(1)), fill: color.transparentize(75%))
+  let means-plot = lq.plot(relevant-times, averages, stroke: color + 0.125em, mark: none, label: text(0.75em)[#name])
+  (standard-errors: standard-errors-plot, means: means-plot)
+}
+#for ablation in ("models", "startpoints", "temperatures") {
+  let data = json("data/ablations/binpacking-" + ablation + ".json")
+  let max-t = calc.max(..data.values().map(trials => calc.max(..trials.map(trial => calc.max(..trial.keys().map(int))))))
+  let plot-tuples = data
+    .pairs()
+    .enumerate()
+    .map(ix-name-trials => {
+      let ix = ix-name-trials.at(0)
+      let name = ix-name-trials.at(1).at(0)
+      let trials = ix-name-trials.at(1).at(1)
+      ablation-plot(trials, name, max-t, (green, blue, red, purple).at(ix))
+    })
+  show lq.selector(lq.legend): set grid(columns: if data.len() > 3 { 4 } else { 2 })
+  lq.diagram(
+    legend: (position: bottom + right),
+    width: 180pt,
+    ylim: (1.0, 1.5),
+    xlim: (0, 500),
+    xaxis: (exponent: none),
+    ..plot-tuples.map(plot-tuple => plot-tuple.at("standard-errors")), // Move standard-errors below all means plots
+    ..plot-tuples.map(plot-tuple => plot-tuple.at("means")),
+  )
+}
 
 = Results <section-results>
 == Bin-Packing <sec-results-bin-packing>
