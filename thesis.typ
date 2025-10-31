@@ -969,7 +969,8 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
   let mean = arr => arr.sum() / arr.len()
   let current-state-to-standard-error = state => {
     let state-mean = mean(state)
-    calc.sqrt(mean(state.map(x => calc.pow(x - state-mean, 2))))
+    let standard-deviation = calc.sqrt(mean(state.map(x => calc.pow(x - state-mean, 2))))
+    standard-deviation / calc.sqrt(state.len())
   }
   let current-state = (trials.map(trial => trial.at("0")),)
   let standard-errors = (current-state-to-standard-error(current-state.last()),)
