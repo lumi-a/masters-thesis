@@ -90,10 +90,10 @@ We attempted using FunSearch for several other problems as well, but were unsucc
 
 For each problem, we first used FunSearch to find an instance the algorithm performed badly on. Afterwards, we analyzed and tuned the found programs by hand, until we ended up with an instance that was simple and symmetrical enough to lend itself to theoretical analysis, leading to the results in @table-results.
 
-== Structure of This Thesis
+== Structure of this Thesis
 In @section-problems-definitions, we introduce the four optimisation-problems, the specific questions we want to make progress on, and the prior results on these questions. The four subsections are independent of each other, they can be read in any order.
 
-In @section-funsearch, we introduce local-search, motivate FunSearch, and give implementation-details for each of the four problems: Both local-search and FunSearch require evaluating $f(v)$ many times, which usually requires calculating the optimal-solution to some NP-hard problem.
+In @section-funsearch, we introduce local-search, motivate FunSearch, present ablations for different hyper-parameters, and give implementation-details for each of the four problems: Both local-search and FunSearch require evaluating $f(v)$ many times, which usually requires calculating the optimal-solution to some NP-hard problem.
 
 In @section-results, we show the instances found by FunSearch, how we tuned them into ones that lend themselves to mathematical analysation, and then conduct that mathematical analysation by giving proofs for the above results. For the gasoline-problem, we did not manage to find a proof, but provide empirical evidence instead. These four subsections can also be read in any order. We finally list the problems that we failed to make progress on.
 
@@ -917,6 +917,84 @@ We used FunSearch to find "bad" instances for the four problems listed above. Af
 
 Not all programs found by FunSearch lend themselves to this. Some programs just produced pseudo-random numbers, e.g. using trigonometric functions. If tuning was successfull, though, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
 
+== Ablations
+When using FunSearch, one must make decisions about certain hyper-parameters, including:
+- The large lanugage model (LLM).
+- The LLM's temperature-parameter $T$. In local-search, one must decide how to choose a random neighbour $v'$ of $v$, e.g. $v'$ arises from adding normally-distributed vector to $v$. The temperature-parameter in FunSearch is similar to the standard-deviation of local-search's normal distribution, i.e. low temperatures will lead to the distribution of LLM-responses to be highly concentrated, and high temperatures spread out the distribution.
+- The initial program to start with. This is usually either some trivial hardcoded instance, a hardcoded instance with additional program-structure (like for-loops), or the state of the art.
+
+We ran ablations across these hyper-parameters on the bin-packing problem by measuring the average maximum scores across different trials. This is not a great measure, because we do not actually care about getting a high average score. We care about finding structured, generalizable instances, but we found no good way of measuring that, so we use the high average score as a proxy.
+#[
+  #let ablation-plots = (trials, name, max-t, color) => {
+    let mean = arr => arr.sum() / arr.len()
+    let current-state-to-standard-error = state => {
+      let state-mean = mean(state)
+      let standard-deviation = calc.sqrt(mean(state.map(x => calc.pow(x - state-mean, 2))))
+      standard-deviation / calc.sqrt(state.len())
+    }
+    let current-state = (trials.map(trial => trial.at("0")),)
+    let standard-errors = (current-state-to-standard-error(current-state.last()),)
+    let averages = (mean(current-state.last()),)
+    let relevant-times = (0,)
+    for t in range(max-t) {
+      if trials.any(trial => str(t) in trial) {
+        current-state.push(trials
+          .enumerate()
+          .map(ix-trial => {
+            let ix = ix-trial.at(0)
+            let trial = ix-trial.at(1)
+            trial.at(str(t), default: current-state.last().at(ix))
+          }))
+        relevant-times.push(t)
+        standard-errors.push(current-state-to-standard-error(current-state.last()))
+        averages.push(mean(current-state.last()))
+      }
+    }
+    relevant-times.push(max-t)
+    standard-errors.push(standard-errors.last())
+    averages.push(averages.last())
+    let standard-errors-plot = lq.fill-between(relevant-times, averages.zip(standard-errors).map(m-s => m-s.at(0) - m-s.at(1)), y2: averages.zip(standard-errors).map(m-s => m-s.at(0) + m-s.at(1)), fill: color.transparentize(75%), step: start)
+    let means-plot = lq.plot(relevant-times, averages, stroke: stroke(paint: color, thickness: 0.125em, join: "round"), mark: none, label: text(0.75em)[#name], step: start)
+    (standard-errors: standard-errors-plot, means: means-plot)
+  }
+  #let ablation-plot = filename => {
+    let data = json("data/ablations/binpacking-" + filename + ".json")
+    let max-t = calc.max(..data.values().map(trials => calc.max(..trials.map(trial => calc.max(..trial.keys().map(int))))))
+    let plot-tuples = data
+      .pairs()
+      .enumerate()
+      .map(ix-name-trials => {
+        let ix = ix-name-trials.at(0)
+        let name = ix-name-trials.at(1).at(0)
+        let trials = ix-name-trials.at(1).at(1)
+        ablation-plots(trials, name, max-t, (green, blue, red, purple).at(ix))
+      })
+    show lq.selector(lq.legend): set grid(columns: if data.len() > 3 { 4 } else { 2 }, gutter: 0pt)
+    lq.diagram(
+      legend: (position: bottom + right),
+      width: 220pt,
+      ylim: (1.0, 1.5),
+      xlim: (0, 500),
+      xaxis: (exponent: none),
+      ..plot-tuples.map(plot-tuple => plot-tuple.at("standard-errors")), // Move standard-errors below all means plots
+      ..plot-tuples.map(plot-tuple => plot-tuple.at("means")),
+    )
+  }
+  #subpar.grid(
+    columns: (1fr, 1fr),
+    figure(ablation-plot("models"), caption: [Variations across LLMs, each with $T=1.0$ and starting with a hardcoded instance.]), figure(ablation-plot("startpoints"), caption: [Variations across initial programs, each with gpt-4.1-mini and $T=1.0$.]),
+    grid.cell(
+      colspan: 2,
+      figure(ablation-plot("temperatures"), caption: [Variations across temperatures for gpt-4.1-mini,\ starting with a hard-coded instance.]),
+    ),
+    caption: [Ablations for different hyper-parameters on the bin-packing problem. For each choice, we ran $25$ trials of FunSearch, tracking the running maximum score for each trial. We then plot the average of these running maxima, together with their standard error, across time (number of LLM-samples).],
+  )
+]
+- gpt-4.1-mini seems to outperform gpt-4.1-nano (a smaller model) and open-mistral-nemo.
+- When starting with the state-of-the-art instance by @binPackingRevisited[p:Lemma 4.3], the score starts off at $1.3$, and improves slightly over time. Starting with trivial instances performs slightly worse. Encouraging structure in the initial instance by using for-loops leads to better long-term performance. When just starting with a hardcoded list of numbers without structure, FunSearch would frequently stick to just changing the numbers instead of introducing more structure.
+- Higher temperatures seem to be better.
+
+
 == Implementation Details <sec-implementation-details>
 Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
 
@@ -962,64 +1040,6 @@ Written in rust, it is available on crates.io#footnote(link("https://crates.io/c
 
 === Scoring Gasoline
 An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`. This solver calls Gurobi @gurobi to calculate an optimal permutation.
-
-== Ablations #TODO[Decide whether to move this elsewhere (above the implementation-details?), and mention this in the introduction]
-
-#let ablation-plot = (trials, name, max-t, color) => {
-  let mean = arr => arr.sum() / arr.len()
-  let current-state-to-standard-error = state => {
-    let state-mean = mean(state)
-    let standard-deviation = calc.sqrt(mean(state.map(x => calc.pow(x - state-mean, 2))))
-    standard-deviation / calc.sqrt(state.len())
-  }
-  let current-state = (trials.map(trial => trial.at("0")),)
-  let standard-errors = (current-state-to-standard-error(current-state.last()),)
-  let averages = (mean(current-state.last()),)
-  let relevant-times = (0,)
-  for t in range(max-t) {
-    if trials.any(trial => str(t) in trial) {
-      current-state.push(trials
-        .enumerate()
-        .map(ix-trial => {
-          let ix = ix-trial.at(0)
-          let trial = ix-trial.at(1)
-          trial.at(str(t), default: current-state.last().at(ix))
-        }))
-      relevant-times.push(t)
-      standard-errors.push(current-state-to-standard-error(current-state.last()))
-      averages.push(mean(current-state.last()))
-    }
-  }
-  relevant-times.push(max-t)
-  standard-errors.push(standard-errors.last())
-  averages.push(averages.last())
-  let standard-errors-plot = lq.fill-between(relevant-times, averages.zip(standard-errors).map(m-s => m-s.at(0) - m-s.at(1)), y2: averages.zip(standard-errors).map(m-s => m-s.at(0) + m-s.at(1)), fill: color.transparentize(75%), step: start)
-  let means-plot = lq.plot(relevant-times, averages, stroke: stroke(paint: color, thickness: 0.125em, join: "round"), mark: none, label: text(0.75em)[#name], step: start)
-  (standard-errors: standard-errors-plot, means: means-plot)
-}
-#for ablation in ("models", "startpoints", "temperatures") {
-  let data = json("data/ablations/binpacking-" + ablation + ".json")
-  let max-t = calc.max(..data.values().map(trials => calc.max(..trials.map(trial => calc.max(..trial.keys().map(int))))))
-  let plot-tuples = data
-    .pairs()
-    .enumerate()
-    .map(ix-name-trials => {
-      let ix = ix-name-trials.at(0)
-      let name = ix-name-trials.at(1).at(0)
-      let trials = ix-name-trials.at(1).at(1)
-      ablation-plot(trials, name, max-t, (green, blue, red, purple).at(ix))
-    })
-  show lq.selector(lq.legend): set grid(columns: if data.len() > 3 { 4 } else { 2 })
-  lq.diagram(
-    legend: (position: bottom + right),
-    width: 180pt,
-    ylim: (1.0, 1.5),
-    xlim: (0, 500),
-    xaxis: (exponent: none),
-    ..plot-tuples.map(plot-tuple => plot-tuple.at("standard-errors")), // Move standard-errors below all means plots
-    ..plot-tuples.map(plot-tuple => plot-tuple.at("means")),
-  )
-}
 
 = Results <section-results>
 == Bin-Packing <sec-results-bin-packing>
