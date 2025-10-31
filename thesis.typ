@@ -9,10 +9,11 @@
 
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
-#let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true)
-#let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true)
-#let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true)
-#let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true)
+#let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 2)
+#let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true, base_level: 2)
+#let corollary = thmbox("corollary", "Corollary", fill: purple.lighten(50%), breakable: true, base_level: 2)
+#let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true, base_level: 2)
+#let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true, base_level: 2)
 #let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
 
 // #set figure(gap: 1em)
@@ -1464,6 +1465,98 @@ After finding and eliminating the bug in our scoring-function, we re-ran FunSear
   )
 ]
 While this instance is concise, its structure is still messy. We neither saw a way of turning @code-knapsack-fixed-post-tuning into the instance in @knapsack-instance, nor did we see how we could use @code-knapsack-fixed-post-tuning to obtain a result similar to the above theorem.
+
+=== An Exponential Bound
+After finishing the above work, we came up with a simpler construction. Although we were working on FunSearch during that time, this construction was not found by a FunSearch trial. Let $I$ again be a list of items, given as weight-profit tuples.
+- Let $⊕$ denote list-concatenation, $[1,2] ⊕ [3,4] = [1,2,3,4]$. This is associative but not commutative.
+- For some scalar $α∈ℝ_(>0)$, let $α I ≔ [vec(α ⋅w, α⋅ p) mid(|) vec(w, p) ∈ I]$.
+- Let $norm(I) ≔ norm(scripts(∑)_(x∈I)x)_∞ +1$.
+- Call $I$ *integral* iff the weights and profits of all its items are integral.
+
+#example[
+  Let $I ≔ [vec(1, 2), vec(2, 1), vec(3, 3)]$. Here, $norm(I) = 7$.
+  #{
+    let base-items = ((1, 2), (2, 1), (3, 3))
+    let norm = 7
+    let max = 2
+    figure(
+      (
+        h(1fr)
+          + range(max)
+            .map(i => {
+              let items = ()
+              for exponent in range(max, max - i - 1, step: -1) {
+                items += base-items.map(xy => (xy.at(0) * calc.pow(norm, exponent), xy.at(1) * calc.pow(norm, exponent)))
+              }
+
+              let diagram = draw-knapsack.draw(items, 0, opt-color, apx-color, mark-size: 32, undominated-color: opt-color, dominated-color: apx-color).at(1)
+              let diagram-args = (xaxis: (lim: (auto, calc.pow(norm, max + 1) * 1.1), exponent: none), yaxis: (lim: (auto, calc.pow(norm, max + 1) * 1.1), exponent: none), width: 200pt, height: 200pt)
+              lq.diagram(..diagram, ..diagram-args)
+            })
+            .join(h(3fr))
+          + h(1fr)
+      ),
+      caption: [Plotting $(Weight, Profit)$ for all solutions of $7 I$ (left), and $I ⊕ 7I$ (right).\ There are $6$ (left) and $6^2$ (right) Pareto-optimal solutions, they are marked with a #text(opt-color, sym.star.filled).],
+    )
+  }
+  #{
+    let base-items = ((1, 2), (2, 1), (3, 3))
+    let norm = 7
+    let max = 3
+    figure(
+      {
+        let items = ()
+        for exponent in range(max, 0, step: -1) {
+          items += base-items.map(xy => (xy.at(0) * calc.pow(norm, exponent), xy.at(1) * calc.pow(norm, exponent)))
+        }
+
+        let diagram = draw-knapsack.draw(items, 0, opt-color, apx-color, mark-size: 16, undominated-color: opt-color, dominated-color: apx-color).at(1)
+        let diagram-args = (xaxis: (lim: (auto, calc.pow(norm, 1 + max) * 1.1), exponent: none), yaxis: (lim: (auto, calc.pow(norm, 1 + max) * 1.1), exponent: none), width: 400pt, height: 400pt)
+        lq.diagram(..diagram, ..diagram-args)
+      },
+      caption: [Plotting $(Weight, Profit)$ for all solutions of $I ⊕ (7 I) ⊕ (7^2 I)$.\ There are $6^3$ Pareto-optimal solutions, they are marked with a #text(opt-color, sym.star.filled).],
+    )
+  }
+  Notice the fractal-like structure.
+]<example-exponential-knapsack-fractal>
+
+This example illustrates how the size of $I⊕norm(I)I$ is twice the size of $I$, but $abs(P(I⊕norm(I)I)) = abs(P(I))^2$. Indeed, this holds more generally:
+
+#lemma[
+  Let $A$ and $B$ be instances of the Knapsack-problem, let $B$ be integral, and $α ≥ norm(A)$. Let $L ≔ L_A ⊕ α L_B$ be a sublist of $A ⊕ α B$, where $L_A$ is a sublist of $A$ and $L_B$ is a sublist of $B$. The following are equivalent:
+  #[
+    #set enum(numbering: "(1)")
+    + $L ∈ P(A ⊕ α B)$,
+    + $L_A ∈ P(A)$ and $L_B ∈ P(B)$.
+  ]
+  In other words, $P(A ⊕ α B) = lr(size: #150%, [S_A ⊕ α S_B med mid(|)med S_A ∈ P(A), S_B ∈ P(B)])$.
+] <pareto-product-lemma>
+#proof[
+  - $¬(2) ⇒ ¬(1)$: If (2) is false, one of the following must hold:
+    - There is a sub-list $D_A⊆A$ such that $D_A$ dominates $L_A$. Then $D_A ⊕ α L_B$ dominates $L$.
+    - There is a sub-list $D_B⊆B$ such that $D_B$ dominates $L_B$. Then $L_A ⊕ α D_B$ dominates $L$.
+  - $¬(1) ⇒ ¬(2)$: If (1) is false, there exist sublists $D_A ⊆ A$ and $D_B ⊆ B$ such that $D ≔ D_A ⊕ α D_B$ dominates $L$. We only consider the case "$Weight(L) > Weight(D)$ and $Profit(L) ≤ Profit(D)$", the other case is analogous. It follows that:
+    $
+      Weight(L_A) + α⋅Weight(L_B) quad & >quad Weight(D_A) + α⋅Weight(D_B) \
+      Profit(L_A) + α⋅Profit(L_B) quad & ≤quad Profit(D_A) + α⋅Profit(D_B) \
+    $
+    From this, it follows that $Weight(L_B) ≥ Weight(D_B)$. Otherwise, $1 ≤ Weight(D_B) - Weight(L_B)$, because we assumed $B$ to be integral, and thus $Weight(L_A) - Weight(D_A) ≥ α ≥ norm(A)$, which is impossible due to the definition of $norm(A)$.\
+    The same argument can be used to show $Profit(L_B) ≤ Profit(D_B)$.
+
+    Now, distinguish two cases:
+    - If $Weight(L_B) > Weight(D_B)$ or $Profit(L_B) < Profit(D_B)$, then $D_B$ dominates $L_B$, so $L_B∉P(B)$.
+    - If $Weight(L_B) = Weight(D_B)$ and $Profit(L_B) = Profit(D_B)$, the above inequalities imply:
+      $
+        Weight(L_A) quad & >quad Weight(D_A) \
+        Profit(L_A) quad & ≤quad Profit(D_A), \
+      $
+      so $D_A$ dominates $L_A$, hence $L_A ∉P(A)$.
+]
+#corollary(numbering: none)[
+  If $I$ is an integral Knapsack-instance, then $abs(P(I ⊕ norm(I) I)) = abs(P(I))^2$.
+]
+
+
 
 == $k$-median Clustering <sec-results-clustering>
 
