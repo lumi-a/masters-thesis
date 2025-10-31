@@ -9,11 +9,11 @@
 
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
-#let lemma = thmbox("lemma", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 2)
+#let lemma = thmbox("theorem", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 2)
 #let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true, base_level: 2)
-#let corollary = thmbox("corollary", "Corollary", fill: purple.lighten(50%), breakable: true, base_level: 2)
-#let definition = thmbox("definition", "Definition", fill: red.lighten(90%), breakable: true, base_level: 2)
-#let example = thmbox("example", "Example", fill: green.lighten(90%), breakable: true, base_level: 2)
+#let corollary = thmbox("theorem", "Corollary", fill: purple.lighten(50%), breakable: true, base_level: 2)
+#let definition = thmbox("theorem", "Definition", fill: red.lighten(90%), breakable: true, base_level: 2)
+#let example = thmbox("theorem", "Example", fill: green.lighten(90%), breakable: true, base_level: 2)
 #let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
 
 // #set figure(gap: 1em)
@@ -1552,7 +1552,7 @@ This example illustrates how the size of $I⊕norm(I)I$ is twice the size of $I$
       $
       so $D_A$ dominates $L_A$, hence $L_A ∉P(A)$.
 ]
-#corollary(numbering: none)[
+#corollary[
   If $I$ is an integral Knapsack-instance, then $abs(P(I ⊕ norm(I) I)) = abs(P(I))^2$.
 ]
 
