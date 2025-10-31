@@ -11,7 +11,7 @@
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let lemma = thmbox("theorem", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 2)
 #let theorem = thmbox("theorem", "Theorem", fill: cyan.lighten(50%), breakable: true, base_level: 2)
-#let corollary = thmbox("theorem", "Corollary", fill: purple.lighten(50%), breakable: true, base_level: 2)
+#let corollary = thmbox("theorem", "Corollary", fill: purple.lighten(90%), breakable: true, base_level: 2)
 #let definition = thmbox("theorem", "Definition", fill: red.lighten(90%), breakable: true, base_level: 2)
 #let example = thmbox("theorem", "Example", fill: green.lighten(90%), breakable: true, base_level: 2)
 #let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
@@ -1552,9 +1552,34 @@ This example illustrates how the size of $I⊕norm(I)I$ is twice the size of $I$
       $
       so $D_A$ dominates $L_A$, hence $L_A ∉P(A)$.
 ]
-#corollary[
-  If $I$ is an integral Knapsack-instance, then $abs(P(I ⊕ norm(I) I)) = abs(P(I))^2$.
+In particular, under the assumptions of the Lemma, $abs(P(A ⊕ α B)) = abs(P(A))⋅abs(P(B))$.
+
+Recall that $Score(I) ≔ (max_(1≤i≤n) |P(I_(1:i))|) / (|P(I)|)$. Let $I$ be some integral instance with $Score(I)>1$, and $J ≔ op("arg max")_(1≤i≤n) |P(I_(1:i))|$. For instance, the score of the integral instance from @example-shrinking-pareto-set is $1.2$. Put $α ≔ norm(I)$. For some $k∈ℕ$, consider the following two instances:
+$
+  I^k & ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^k I), \
+  J^k & ≔ J ⊕ (α^1J) ⊕ (α^2J) ⊕ … ⊕ (α^k J).
+$
+Putting $A ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-1) I)$ and $B ≔ α^k I$, we verify the assumptions of @pareto-product-lemma:
+$
+  norm(A)
+  quad=quad 1 + (α-1) + α^1 (α-1) + … + α^(k-1) (α-1)
+  quad=quad α^(k)
+$
+By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k))$ and $abs(P(J))^k$, hence $Score(I^k) ≥ abs(P(I))^k / abs(P(J))^k = Score(I)^k$. However, the length of $I^k$ is $k⋅|I|$.
+
+In @example-shrinking-pareto-set, the length of $I$ is $5$ and $Score(I)=1.2$, hence:
+
+#theorem[
+  There exists a sequence of knapsack-instances $(I_j)_(j∈ℕ)$ such that:
+  $
+    Score(I_j)
+    quad ≥ quad
+    1.2^(j\/5)
+    ≈ 1.037^abs(I_j).
+  $
 ]
+
+
 
 
 
