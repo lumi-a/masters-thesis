@@ -1554,7 +1554,7 @@ This example illustrates how the size of $I⊕norm(I)I$ is twice the size of $I$
 ]
 In particular, under the assumptions of the Lemma, $abs(P(A ⊕ α B)) = abs(P(A))⋅abs(P(B))$.
 
-Recall that $Score(I) ≔ (max_(1≤i≤n) |P(I_(1:i))|) / (|P(I)|)$. Let $I$ be some integral instance with $Score(I)>1$, and $J ≔ op("arg max")_(1≤i≤n) |P(I_(1:i))|$. For instance, the score of the integral instance from @example-shrinking-pareto-set is $1.2$. Put $α ≔ norm(I)$. For some $k∈ℕ$, consider the following two instances:
+Recall that $Score(I) ≔ (max_(1≤i≤n) |P(I_(1:i))|) / (|P(I)|)$. Let $I$ be some integral instance, and $J ≔ op("arg max")_(1≤i≤n) |P(I_(1:i))|$. For some $k∈ℕ$, consider the following two instances:
 $
   I^k & ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^k I), \
   J^k & ≔ J ⊕ (α^1J) ⊕ (α^2J) ⊕ … ⊕ (α^k J).
@@ -1565,20 +1565,22 @@ $
   quad=quad 1 + (α-1) + α^1 (α-1) + … + α^(k-1) (α-1)
   quad=quad α^(k)
 $
-By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k))$ and $abs(P(J))^k$, hence $Score(I^k) ≥ abs(P(I))^k / abs(P(J))^k = Score(I)^k$. However, the length of $I^k$ is $k⋅|I|$.
-
-In @example-shrinking-pareto-set, the length of $I$ is $5$ and $Score(I)=1.2$, hence:
+By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k))$ and $abs(P(J))^k$, hence $Score(I^k) ≥ abs(P(I))^k / abs(P(J))^k = Score(I)^k$, which grows exponentially. However, the length of $I^k$ is $k⋅|I|$, growing linearly.
 
 #theorem[
-  There exists a sequence of knapsack-instances $(I_j)_(j∈ℕ)$ such that:
+  For any integral instance $I$:
   $
-    Score(I_j)
+    Score(I^k)
     quad ≥ quad
-    1.2^(j\/5)
-    ≈ 1.037^abs(I_j).
+    Score(I)^k
+    quad = quad
+    (Score(I)^(1\/abs(I)))^(abs(I^k)).
   $
 ]
-
+For instance, for the instance in @example-shrinking-pareto-set, $Score(I) = 1.2$ and $abs(I) = 5$, so:
+$
+  Score(I^k) ≥ (root(5, 1.2))^(abs(I^k)) ≈ 1.0371^(abs(I^k)).
+$
 
 
 
