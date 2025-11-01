@@ -308,10 +308,10 @@ This algorithm works correctly because $P_i$ is always a subset of $Q_i$. We nee
   The *deduplicated Pareto-Set* $P_"dedup" (I)$ is the quotient $P(I)\/∼$. In other words, it is the Pareto-Set, but two solutions are treated as identical iff they have the same total weight and the same total profit.
 ]
 
-With some work, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_"dedup" (I_(1:1))| + … + |P_"dedup" (I_(1:n))|)$ @RoeglinBookChapter. A weaker bound is $O(|P_1| + … |P_n|)$, because it always holds that $|P_"dedup"(J)| ≤ |P(J)|$ for all instances $J$.
+With some work, and if one is only interested in computing $P_"dedup" (I)$, @alg-nemhauser-ullmann can be implemented to run in time $O(|P_"dedup" (I_(1:1))| + … + |P_"dedup" (I_(1:n))|)$ @RoeglinBookChapter.
 
 Intuitively, one might think that:
-- $P_(i-1)$ is always smaller than $P_i$, which would imply a runtime of $O(n⋅abs(P_n))$.
+- $P_(i-1)$ is always smaller than $P_i$, which would imply a runtime of $O(n⋅abs(P_n))$, because $abs(P_"dedup" (J)) ≤ abs(P(J))$.
 - $P_"dedup" (I_(1:i-1))$ is always smaller than $P_"dedup" (I_(1:i))$, which would imply a runtime of $O(n⋅abs(P_"dedup" (I)))$.
 
 However, neither statement is true in general:
@@ -1574,15 +1574,213 @@ By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k))$ and $abs(P(J
     quad ≥ quad
     Score(I)^k
     quad = quad
-    (Score(I)^(1\/abs(I)))^(abs(I^k)).
+    (Score(I)^(1\/abs(I)))^(|I^k|).
+  $
+]<theorem-exponential-knapsack>
+For example, for the instance in @example-shrinking-pareto-set, $Score(I) = 1.2$ and $abs(I) = 5$, so:
+$
+  Score(I^k) ≥ (root(5, 1.2))^(|I^k|) ≈ 1.0371^(|I^k|).
+$
+If we found instances $J$ where $Score(I)^(1\/abs(I))$ were larger than $1.0371$, we would obtain an even higher base. As mentioned before, the pareto-set $P(J)$ always has size at most $2^(abs(J))$, hence $2$ is an upper bound on this base.
+
+The statement of @pareto-product-lemma also applies to the deduplicated Pareto-sets. We only formulate it in terms of cardinalities, because equivalence-classes cause troubles otherwise (what's the concatenation "$⊕$" of two $A,B ∈ P_"dedup" (J)$?).
+#lemma[
+  If $A$ and $B$ are instances of the Knapsack-problem, $B$ integral, and $α ≥ norm(A)$, then:
+  $
+    abs(P_"dedup" (A ⊕ α B))
+    quad=quad
+    abs(P_"dedup" (A)) ⋅ abs(P_"dedup" (B)).
   $
 ]
-For instance, for the instance in @example-shrinking-pareto-set, $Score(I) = 1.2$ and $abs(I) = 5$, so:
-$
-  Score(I^k) ≥ (root(5, 1.2))^(abs(I^k)) ≈ 1.0371^(abs(I^k)).
-$
+#proof[
+  Let $L ≔ L_A ⊕ α L_B$ and $L̃ ≔ L̃_A ⊕ α L̃_B$ be two solutions. If $Weight(L) = Weight(L̃)$, then $Weight(L_A) = Weight(L̃_A)$ and $Weight(L_B) = Weight(L̃_B)$, because $α$ is so large. The same applies to the profits. Now, we can apply @pareto-product-lemma.
+]
 
+To get the same result for the runtime of @alg-nemhauser-ullmann, define:
+$
+  Score_"dedup" (I) ≔ (max_(1≤i≤n) |P_"dedup" (I_(1:i))|) / (|P_"dedup" (I)|)
+$
+By the same reasoning as for @theorem-exponential-knapsack, we get:
+#theorem[
+  For any integral instance $I$:
+  $
+    Score_"dedup" (I^k)
+    quad ≥ quad
+    Score_"dedup" (I)^k
+    quad = quad
+    (Score_"dedup" (I)^(1\/abs(I)))^(|I^k|).
+  $
+]<theorem-exponential-knapsack-dedup>
+For example, for the instance in @example-shrinking-pareto-set, $Score_"dedup" (I) = 1.125$ and $abs(I) = 5$, so:
+$
+  Score_"dedup" (I^k) ≥ (root(5, 1.125))^(|I^k|) ≈ 1.0238^(|I^k|).
+$
+As before, finding instances $J$ with $Score(I)^(1\/abs(I)) ≥ 1.0238$ would yield even higher bases, and the base is upper-bounded by $2$.
 
+=== Finding better bases
+Naturally, we set out to find such instances via FunSearch. We used the scoring-function:
+$
+  overline(Score)(I)
+  =
+  max_(i = 1,…,abs(I))
+  (max_(1≤j≤i) abs(P_j) / abs(P_i))^#Blue[$1\/i$]
+  quad "instead of the former"quad
+  Score(I)
+  =
+  max_(i = 1,…,abs(I))
+  (max_(1≤j≤i) abs(P_j) / abs(P_i))
+  quad #[from @sec-implementation-details-knapsack.]
+$
+This time, we used a recursive approach: We started with a trivial instance $I^((0))$, ran FunSearch to obtain some instance $F^((0))$, tuned it into an instance $T^((0))$, and then used $T^((0)) ≕ I^((1))$ as the starting-point of another FunSearch trial, producing $F^((1))$, and so on, up to $T^((2))$. When giving values of scores here, we round them down.
+
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: 1fr,
+    kind: raw,
+    figure(caption: [$I^((0)), overline(Score)(I^((0))) ≈ 1.037$])[
+      ```py
+      items = [(4, 4)] * 2 + [(2, 1), (1, 2)] + [(2, 2)]
+      ```
+    ],
+    figure(caption: [$F^((0)), overline(Score)(F^((0))) ≈ 1.334$])[
+      ```py
+      # Mix of items with near-identical profit-to-weight ratios to introduce a complex Pareto front
+      items = [
+          (50, 100), (49, 99), (48, 98), (47, 97), (46, 96),
+          (45, 95), (44, 94), (43, 93), (42, 92), (41, 91),
+          (40, 90), (39, 89), (38, 88), (37, 87), (36, 86)
+      ] * 2
+
+      # Include smaller items with similar ratios
+      items += [(7, 14), (6, 12), (5, 10)]
+      # Add some mid-weight, mid-value items likely excluded in larger sets
+      items += [(20, 40), (18, 36), (16, 32)]
+      # Slightly improve some items to create overlapping efficiency
+      items += [(22, 44), (19, 38)]
+      ```
+    ],
+    //
+    //
+    figure(caption: [$T^((0)) = I^((1)), overline(Score)(T^((0))) ≈ 1.357$])[
+      ```py
+      items = [(42 + i, 92 + i) for i in range(15)] * 2
+
+      items += [(5 + i, 10 + 2 * i) for i in range(3)]
+      items += [(16 + 2 * i, 32 + 4 * i) for i in range(3)]
+      ```
+    ],
+    figure(caption: [$F^((1)), overline(Score)(F^((1))) ≈ 1.389$])[
+      ```py
+      items = [(50 + i, 100 + i) for i in range(12)] * 3  # Created a different range and multipliers
+
+      items += [(3 + i, 6 + 2 * i) for i in range(4)]     # Fewer items, different pattern
+      items += [(20 + 3 * i, 40 + 5 * i) for i in range(4)]  # Larger weights and profits
+      ```
+    ],
+    //
+    //
+    figure(caption: [$T^((1)) = I^((2)), overline(Score)(T^((1))) ≈ 1.415$])[
+      ```py
+      items = [(50 + i, 100 + i) for i in range(12)] * 4
+      items += [(3 + i, 6 + 2 * i) for i in range(4)]
+      items += [(20 + 3 * i, 40 + 5 * i) for i in range(4)]
+      ```
+    ],
+    figure(caption: [$F^((2)), overline(Score)(F^((2))) ≈ 1.456$])[
+      ```py
+      items = [(60 + i, 110 + i) for i in range(12)] * 4
+      items += [(5 + i, 8 + 2 * i) for i in range(4)]
+      items += [(25 + 3 * i, 45 + 4 * i) for i in range(4)]
+      ```
+    ],
+    figure(caption: [$T^((2)), overline(Score)(T^((2))) ≈ 1.480$])[
+      ```py
+      items = [(61 + i, 110 + i) for i in range(11)] * 5
+      items += [(5 + i, 8 + 2 * i) for i in range(5)]
+      items += [(25 + 3 * i, 44 + 4 * i) for i in range(3)]
+      ```
+    ],
+    caption: [Incrementally tuning instances via FunSearch and by hand.]
+  )
+]
+Finally, we also ran local search on instanec $T^((2))$, trying to improve the score even further, and obtained:
+#[
+  #show raw: set text(size: 0.6em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+  #figure(
+    ```py
+    [(62, 111), (62, 111), (64, 113), (64, 113), (65, 114), (66, 115), (67, 116), (68, 117), (69, 118), (70, 119), (71, 120), (61, 110), (64, 113), (63, 112), (66, 115), (65, 114), (66, 115), (67, 116), (66, 115), (69, 118), (70, 119), (69, 118), (64, 113), (63, 112), (63, 112), (65, 114), (65, 114), (66, 115), (67, 116), (68, 117), (68, 117), (70, 119), (71, 120), (62, 111), (62, 111), (63, 112), (65, 114), (67, 116), (66, 115), (67, 116), (68, 117), (68, 117), (70, 119), (69, 118), (61, 110), (63, 112), (64, 113), (64, 113), (65, 114), (66, 115), (67, 116), (68, 117), (69, 118), (70, 119), (71, 120), (4, 7), (5, 9), (7, 12), (9, 15), (7, 13), (26, 45), (29, 50), (31, 52)]
+    ```,
+    caption: [The result of running local search on $T^((2))$ for $2200$ generations.\ The $overline(Score)$ of this instance is $≈1.509$.],
+  )
+]
+
+Combined with @theorem-exponential-knapsack, we get:
+
+#corollary[
+  For every $n∈ℕ$, there exists an instance $I$ of length $≥ n$ such that:
+  $
+    Score(I)
+    quad=quad
+    (max_(1≤i≤n) |P(I_(1:i))|) / (|P(I)|)
+    quad≥quad
+    1.509^n.
+  $
+]
+This is the best bound we found. As the base is upper-bounded by $2$, it would be interesting to know what the best-possible base is.
+
+We did the same for $Score_"dedup"$, and mark instances with tildes here, to prevent confusion.
+
+#[
+  #show raw: set text(size: 0.75em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+
+  #subpar.grid(
+    columns: 1fr,
+    kind: raw,
+    figure(caption: [$Ĩ^((0)), overline(Score)_"dedup" (Ĩ^((0))) ≈ 1.024$])[
+      ```py
+      items = [(4, 4)] * 2 + [(2, 1), (1, 2)] + [(2, 2)]
+      ```
+    ],
+    figure(caption: [$F̃^((0)), overline(Score)_"dedup" (F̃^((0))) ≈ 1.046$])[
+      ```py
+      # Introduce a different combination to potentially reduce the pareto set size
+      items = [(9, 10)] * 4 + [(3, 8), (2, 7), (1, 6)] + [(6, 6)]
+      ```
+    ]
+  )
+]
+
+We were unable to tune $F̃^((0))$ in a meaningful way, but local search was a lot more efficient for such a short instance.
+
+#[
+  #show raw: set text(size: 0.6em)
+  #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
+  #figure(
+    ```py
+    [(14, 11), (9, 10), (9, 10), (9, 10), (6, 2), (2, 7), (1, 6), (4, 6)]
+    ```,
+    caption: [The result of running local search on $F̃^((0))$ for $660000$ generations.\ The $overline(Score)_"dedup"$ of this instance is $≈1.060$.],
+  )
+]
+
+Combined with @theorem-exponential-knapsack-dedup, we obtain::
+
+#corollary[
+  For every $n∈ℕ$, there exists an instance $I$ of length $≥ n$ such that:
+  $
+    Score_"dedup" (I)
+    quad=quad
+    (max_(1≤i≤n) |P_"dedup" (I_(1:i))|) / (|P_"dedup" (I)|)
+    quad≥quad
+    1.06^n.
+  $
+  In particular, the worst-case runtime of the Nemhauser-Ullmann algorithm on an input of length $n$ is lower-bounded by $Ω(1.06^n)$.
+]
 
 
 == $k$-median Clustering <sec-results-clustering>
