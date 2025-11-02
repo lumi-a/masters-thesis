@@ -108,7 +108,7 @@ Except where explicitly noted otherwise, no part of this thesis was written by a
 
 = Prior Work <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
-In the bin-packing problem, we are given a bin-capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its contained items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @binPackingRevisited.
+In the bin-packing problem, we are given a bin-capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its contained items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @gareyJohnson.
 
 #example[
   We have to assign the following five items to bins with capacity $c=10$:
@@ -201,7 +201,7 @@ Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
 
-A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$.
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$ for all solutions $A$.
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
