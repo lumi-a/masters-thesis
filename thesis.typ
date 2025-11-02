@@ -376,7 +376,7 @@ In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n �
 
 - In $k$-center clustering, the cost of the cluster $C$ is the _radius_ of that cluster:
   $
-    Cost(C) = min_(μ ∈ ℝ^d) (max_(x∈C) ‖x-μ‖_2)
+    Cost(C) = min_(μ ∈ C) (max_(x∈C) ‖x-μ‖_2)
   $
   The cost of a clustering is the _maximum_ of the costs of its clusters.
 - In $k$-diameter clustering, the cost of the cluster $C$ is the _diameter_ of that cluster:
