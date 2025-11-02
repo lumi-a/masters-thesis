@@ -439,7 +439,7 @@ Naturally, different objectives can yield different optimal clusterings, as seen
 
 There are also weighted versions of the $k$-median and $k$-means objectives, where each point $p$ has an associated non-negative weight $w(p)$, and the distance between $p$ and the centre $μ$ is multiplied by $w(p)$. For $k$-means, the optimal choice for $μ$ then is simply the weighted average of all points. The weighted and unweighted problems are mostly equivalent: If we restrict ourselves to integral weights, an equivalent unweighted instance has $w(p)$-many unweighted copies of $p$, for each $p$. If we restrict ourselves to rational weights, we can multiply by the product of the denominators to achieve integral weights again.
 
-When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @priceOfHierarchicalClustering:
+When trying to cluster unlabeled data, we usually are not given a number $k$ of clusters to use. In such a scenario, we could use heuristics to determine a good choice of $k$ (see e.g. @stopUsingElbow[p:]). Alternatively, we could compute a _Hierarchical Clustering_, which is a sequence of nested $k$-clusterings for every choice of $k$ @earlyHierarchicalClustering:
 
 #definition[
   A *hierarchical clustering* on $n$ points is a sequence $(H_1, …, H_n)$ of clusterings such that:
