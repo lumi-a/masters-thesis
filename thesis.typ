@@ -14,6 +14,7 @@
 #let corollary = thmbox("theorem", "Corollary", fill: purple.lighten(90%), breakable: true, base_level: 2)
 #let definition = thmbox("theorem", "Definition", fill: red.lighten(90%), breakable: true, base_level: 2)
 #let example = thmbox("theorem", "Example", fill: green.lighten(90%), breakable: true, base_level: 2)
+#let conjecture = thmbox("conjecture", "Conjecture", fill: yellow.lighten(75%), breakable: true, base_level: 0)
 #let proof = thmproof("proof", "Proof", breakable: true, outset: (left: -0.5em), radius: 0em, stroke: (left: 0.1em + gray))
 
 // #set figure(gap: 1em)
@@ -2303,12 +2304,22 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   caption: [Optimal values and $IterRound$-values on #gasoline-weak for different choices of $d$ and $k$  (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ d+1$.]
 )
 
+#conjecture[
+  For all $d≥2: lim_(k→∞) IterRound(#gasoline-weak""(d,k))/Opt(#gasoline-weak""(d,k)) ≥ d+1$.
+]
+
 #subpar.grid(
   columns: (1fr, 1fr),
   ..gasoline-plots("data/gasoline-empirical-values-strong.json"),
   gap: 1.5em,
   caption: [Optimal values and $IterRound$-values on #gasoline-strong for different choices of $d$ and $k$ (starting at $k=2$) plotted against the length $n≔|X|$, along with linear extrapolations. The asymptotic bounds empirically follow a pattern of $ρ_IterRound^((d)) ≥ 2d$.]
 )
+
+#conjecture[
+  For all $d≥2: lim_(k→∞) IterRound(#gasoline-strong""(d,k))/Opt(#gasoline-strong""(d,k)) ≥ 2d$.
+]
+
+
 
 As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ were required to be integral in the problem-statement).
 
