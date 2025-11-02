@@ -1053,7 +1053,7 @@ We did not calculate the expected number of bins used by Best-Fit ($𝔼_(π∈S
 The score assigned to $I$ was $op("Avg")\/Opt(I)$.
 
 === Scoring Knapsack <sec-implementation-details-knapsack>
-We implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the deduplicated Pareto-Sets. Unfortunately, our implementation proved troublesome, containing several bugs we had to fix along the way.
+We implemented @alg-nemhauser-ullmann in the way described in @RoeglinBookChapter[p:Theorem 5], but using multi-sets for the sets $op("val")(P_i)$ in order to accurately track the true size of the Pareto-Set, and not just the size of the deduplicated Pareto-Sets.
 
 For a knapsack-instance $I$, we run this implementation of @alg-nemhauser-ullmann and keep track of the largest Pareto-Set $P_"largest"$ and the running maximum of $abs(P_"largest") \/ abs(P_i)$ over time. The final score is this maximum. That is, the assigned score is:
 $
@@ -1213,7 +1213,7 @@ For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper 
 ]
 
 == Knapsack Problem <sec-results-knapsack>
-As mentioned in @sec-implementation-details-knapsack, our scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and nevertheless obtained the following result.
+Our implementation of the scoring-function initially contained a bug, which under-estimated the size of some Pareto-sets. Unaware of this, we still let FunSearch run its course, and nevertheless obtained the following result.
 
 #[
   #show raw: set text(size: 0.75em)
