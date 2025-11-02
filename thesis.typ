@@ -758,9 +758,14 @@ Note that $Score_≈$ is only an approximation of the actual $Score(I) = 𝔼_(�
 
 Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the noise's variance in $Mutation$, or stochastically allowing to replace $I$ with $I'$ even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
+#let get-best-fit-local-search = index => {
+  let history = read("data/randomised-best-fit-local-search/" + str(index) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (int(split.at(0)), float(split.at(1))))
+  history.push((10000, history.last().at(1)))
+  history
+}
 #figure(
   {
-    let trajectories = range(10).map(i => read("data/randomised-best-fit-local-search/" + str(i) + ".log", encoding: "utf8").split("\n").map(line => line.split("\t")).filter(split => split.len() >= 2).map(split => (split.at(0), split.at(1)))).map(history => history + ((10000, history.last().at(1)),))
+    let trajectories = range(10).map(get-best-fit-local-search)
     trajectories.push(trajectories.remove(0)) // For cycling colors, the default ones put an illegible one at the top.
     context (
       lq.diagram(
@@ -770,7 +775,7 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
         width: page.width * 0.6,
         xlabel: [#text(font: font-math)[Iteration]],
         ylabel: [#text(font: font-math)[Best Score]],
-        ..trajectories.map(iteration-score => lq.plot(step: start, mark: none, stroke: 0.1em, iteration-score.map(x => int(x.at(0))), iteration-score.map(x => float(x.at(1))))),
+        ..trajectories.map(iteration-score => lq.plot(step: start, mark: none, stroke: 0.1em, iteration-score.map(x => x.at(0)), iteration-score.map(x => x.at(1)))),
       )
     )
   },
@@ -991,6 +996,33 @@ We ran ablations across these hyper-parameters on the bin-packing problem by mea
       colspan: 2,
       figure(ablation-plot("temperatures"), caption: [Variations across temperatures for gpt-4.1-mini,\ starting with a hard-coded instance.]),
     ),
+    /*
+    {
+      let funsearch-trials = json("data/ablations/binpacking-models.json").at("gpt-4.1-mini")
+      let funsearch-max-t = calc.max(..funsearch-trials.map(trial => calc.max(..trial.keys().map(int))))
+      let funsearch-plots = ablation-plots(funsearch-trials, "gpt-4.1-mini, T=1.0, hardcoded", funsearch-max-t, blue)
+
+      let localsearch-trials = range(10).map(ix => {
+        let trial = get-best-fit-local-search(ix).map(key-value => (str(key-value.at(0)), key-value.at(1))).to-dict()
+        trial.insert("0", 1.0)
+        trial
+      })
+      let localsearch-max-t = calc.max(..localsearch-trials.map(trial => calc.max(..trial.keys().map(int))))
+      let localsearch-plots = ablation-plots(localsearch-trials, "Local-Search", localsearch-max-t, yellow)
+
+      // show lq.selector(lq.legend): set grid(columns: if data.len() > 3 { 4 } else { 2 }, gutter: 0pt)
+      lq.diagram(
+        legend: (position: bottom + right),
+        width: 220pt,
+        ylim: (1.0, 1.5),
+        xlim: (0, localsearch-max-t),
+        xaxis: (exponent: none),
+        funsearch-plots.at("standard-errors"),
+        localsearch-plots.at("standard-errors"),
+        funsearch-plots.at("means"),
+        localsearch-plots.at("means"),
+      )
+    },*/
     caption: [Ablations for different hyper-parameters on the bin-packing problem. For each choice, we ran $25$ trials of FunSearch, tracking the running maximum score for each trial. We then plot the average of these running maxima, together with their standard error, across time (number of LLM-samples).],
   )
 ]
