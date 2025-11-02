@@ -351,8 +351,7 @@ $
 $
 can always be bounded by some constant not depending on $I$. For the specific $I$ in @example-shrinking-pareto-set, $Score(I) = 12/10 = 1.2$. Note that, for any instance, $Score(I) ≤ 2^n$, because every $|P_i|$ is at most $2^n$.
 
-#TODO[Grep all occurences of `O\(` and check if they should be replaced with `Ω(`]
-So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(O(√n))$, or more precisely $Score(I_j) ≥ O((n\/2)^((sqrt(n\/2)-3)\/2))$. These instances had the property that $P_"dedup" (I_(1:i)) = P(I_(1:i))$, so this bound can also be applied to the runtime of @alg-nemhauser-ullmann.
+So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $646$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(Ω(√n))$, or more precisely $Score(I_j) ≥ Ω((n\/2)^((sqrt(n\/2)-3)\/2))$. These instances had the property that $P_"dedup" (I_(1:i)) = P(I_(1:i))$, so this bound can also be applied to the runtime of @alg-nemhauser-ullmann.
 
 Afterwards, we found an unrelated construction without FunSearch that achieved a score around $Ω(1.037^n)$, making the previous result obsolete. We still include the previous result and its proof. Using FunSearch, we could improve this to $Ω(1.456^n)$ for the above scoring-function, and to $Ω(1.0519^n)$ for the runtime of the Nemhauser-Ullmann algorithm, i.e. $(max_(1≤i≤n) |P_"dedup" (I_(1:i))|) / (|P_"dedup" (I)|) ≥ Ω(1.0519^n)$. See @sec-results-knapsack for details.
 
@@ -692,7 +691,7 @@ In this work, we are interested in finding lower bounds on the approximation-rat
 
 The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding on that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. @Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
-@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ O(d)$, see @sec-results-gasoline for details.
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ Ω(d)$, see @sec-results-gasoline for details.
 
 
 
@@ -1396,12 +1395,12 @@ $
 
 The length of the instance
 $𝕀_2$ is not $n$ but $m colon.eq lr(|𝕀_2|) = 2 n + k$, resulting
-in an actual lower bound of $O ( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
+in an actual lower bound of $Ω( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
 
 #theorem[
   There exist instances $I$ such that:
   $
-    Score(I) quad=quad (max_(j=1,…,|I|) abs(P(I_(1:j))))/(abs(P(I))) quad≥quad O ( (abs(I)/ 2)^((sqrt(abs(I) \/ 2) - 3) \/ 2) ).
+    Score(I) quad=quad (max_(j=1,…,|I|) abs(P(I_(1:j))))/(abs(P(I))) quad≥quad Ω( (abs(I)/ 2)^((sqrt(abs(I) \/ 2) - 3) \/ 2) ).
   $
 ]<nemhauser-ullmann-theorem>
 
