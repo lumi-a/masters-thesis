@@ -1588,16 +1588,16 @@ In particular, under the assumptions of the Lemma, $abs(P(A ⊕ α B)) = abs(P(A
 
 Recall that $Score(I) ≔ (max_(1≤i≤n) |P(I_(1:i))|) / (|P(I)|)$. Let $I$ be some integral instance, and $J ≔ op("arg max")_(1≤i≤n) |P(I_(1:i))|$. For some $k∈ℕ$, consider the following two instances:
 $
-  I^k & ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^k I), \
-  J^k & ≔ J ⊕ (α^1J) ⊕ (α^2J) ⊕ … ⊕ (α^k J).
+  I^k & ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-1) I), \
+  J^k & ≔ J ⊕ (α^1J) ⊕ (α^2J) ⊕ … ⊕ (α^(k-1) J).
 $
-Putting $A ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-1) I)$ and $B ≔ α^k I$, we verify the assumptions of @pareto-product-lemma:
+Putting $A ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-2) I)$ and $B ≔ α^(k-1) I$, we verify the assumptions of @pareto-product-lemma:
 $
   norm(A)
-  quad=quad 1 + (α-1) + α^1 (α-1) + … + α^(k-1) (α-1)
-  quad=quad α^(k)
+  quad=quad 1 + (α-1) + α^1 (α-1) + … + α^(k-2) (α-1)
+  quad=quad α^(k-1)
 $
-By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k))$ and $abs(P(J))^k$, hence $Score(I^k) ≥ abs(P(I))^k / abs(P(J))^k = Score(I)^k$, which grows exponentially. However, the length of $I^k$ is $k⋅|I|$, growing linearly.
+By induction, we have $abs(P(I^k)) = abs(P(I))^k$ and $abs(P(J^k)) = abs(P(J))^k$, hence $Score(I^k) ≥ abs(P(I))^k / abs(P(J))^k = Score(I)^k$, which grows exponentially. However, the length of $I^k$ is $k⋅|I|$, growing linearly.
 
 #theorem[
   For any integral instance $I$:
