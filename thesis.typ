@@ -2380,14 +2380,17 @@ For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ o
 Using FunSearch with manual tuning, we obtained new results for different problems:
 - We proved that the absolute random-order-ratio of Best-Fit bin-packing is exactly $1.5$. Future research may apply similar techniques to improve the bounds on its asymptotic random-order-ratio, which we only know to be between $1.144$ and $1.5-ε$ @breakingAsymptoticBestFit.
 - Using a sequence of instances of the knapsack-problem, we showed that the size of Pareto-sets of sub-instances can be exponentially larger than the size of the final Pareto-set, with the base of this exponential growth being between $1.509$ and $2.0$. It would be interesting to identify the largest possible base of this exponential growth.
-- An instance found using FunSearch gave a lower bound on The Price of Hierarchy of $k$-median clustering of $(1+√5)/2 ≈ 1.618$, but the best-known upper-bound is $16$ @dai2014.
+- An instance found using FunSearch gave a lower bound on the Price of Hierarchy of $k$-median clustering of $(1+√5)/2 ≈ 1.618$, but the best-known upper-bound is $16$ @dai2014.
 - FunSearch yielded a sequence of instances where the iterative-rounding-algorith has an approximation-factor larger than $2$, and we conjecture that the approximation-factor on this sequence is linear in the dimension.
 
-The method of FunSearch itself offers many avenues of research: Applying it to novel circumstances, extending it (see e.g. @novikov2025alphaevolve[p:]), running large-scale ablations on parameters like LLM-choice, temperature, prompt, and sample-size across different problems, or using LLMs and proof-assistants like Lean @lean for automated proofs during the search. FunSearch also seems more promising in areas that local search _can not_ be applied to, for instance finding novel heuristics for existing problems, in the form of python-programs. As LLMs grow more competent and inference faster and less expensive over time, FunSearch becomes an increasingly useful tool for mathematical research.
+The method of FunSearch itself offers many avenues for future research: Applying it to novel circumstances, extending it (see e.g. @novikov2025alphaevolve[p:]), running large-scale ablations on parameters like LLM-choice, temperature, prompt, and sample-size across different problems, or using LLMs and proof-assistants like Lean @lean for automated proofs during the search. FunSearch also seems more promising in areas that local search _can not_ be applied to, for instance finding novel heuristics for existing problems, in the form of python-programs.
+
+As LLMs grow more competent and inference becomes faster and less expensive over time, FunSearch becomes an increasingly useful tool for mathematical research. At the same time, the moral status of LLMs is subject of an ongoing debate @aiwelfare, and if their wellbeing turns out to be worth contemplating, we would have to consider the effects of FunSearch's queries on their welfare.
 
 #pagebreak()
 #[
-  #set text(size: 0.75em)
-  #show heading: set text(size: 1em * 1 / 0.75)
+  //#set text(size: 0.8em)
+  // #show heading: set text(size: 1em * 1 / 0.75)
+  //#set par(leading: 0.7em, spacing: 0.85em)
   #bibliography("bibliography.bib", style: "chicago-author-date")
 ]
