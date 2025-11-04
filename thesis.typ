@@ -566,13 +566,13 @@ We also made similar attempts for other objectives, and for the approximation-ra
 
 == Generalised Gasoline-Problem
 
-As a motivating example for the gasoline-problem (similar to @Lorieau[p:]), we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, each Monday, we are asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 4)$ for our cookie-production, whereas each Tuesday, we must produce more and sweeter cookies, having to use $y_2 = vec(2, 8)$ amounts of flour and sugar.
+As a motivating example (similar to @Lorieau[p:]) for the generalised gasoline-problem, we are in charge of a factory that produces cookies every day of the week. In doing so, it consumes exactly two ingredients: Flour and sugar. Each day of the week, both the amount of cookies and their sugar-content must follow a certain schedule. For instance, each Monday, we are asked to use $vec("Flour", "Sugar")$-amounts equal to $y_1 = vec(3, 4)$ for our cookie-production, whereas each Tuesday, we must produce more and sweeter cookies, having to use $y_2 = vec(2, 8)$ amounts of flour and sugar.
 
 We get flour and sugar delivered to our factory overnight, but we must pick these amounts from a list of seven possible delivery-trucks that are the same every week. We can choose on which day of the week we would like to receive each truck. For instance, we can choose to have $x_1 = vec(5, 3)$ flour and sugar delivered to our factory on Monday, or $x_2 = vec(3, 10)$. Within a week, we must receive each of the seven delivery-trucks exactly once, and we can only accept one delivery-truck per night because our driveway is too narrow. It's unlikely that we will be fortunate enough to have, for every demand-vector $y_i$, a matching delivery-vector $x_i$ (in which case we would just order exactly the ingredients overnight that we would need on the next day), so we must resort to storing leftover ingredients overnight in our yet-to-be-built warehouse.
 
-Corporate has been kind enough to ensure that $y_1 + … + y_7 = x_1 + … + x_7$, meaning that, at the end of every week, we will have exactly the same amount of ingredients in our warehouse as at the beginning of the week. However, storing ingredients takes costly space, so we would like to minimise the total amount of warehouse we need to build, while the only free variable under our control is the permutation of the delivery-trucks across the week. If we are not clever in choosing this permutation, we might end up ordering some large trucks on some days with low production, which would waste a lot of warehouse space.
+Corporate has been kind enough to ensure that $y_1 + … + y_7 = x_1 + … + x_7$, meaning that, at the end of every week, we will have exactly the same amount of ingredients in our warehouse as at the beginning of the week. However, storing ingredients takes costly space, so we would like to minimise the total amount of warehouse we need to build, while the only free variable under our control is the permutation of the delivery-trucks across the week. If we are not clever in choosing this permutation, we might end up ordering some large trucks on some days with low production, and end up needing more warehouse space than would be necessary otherwise.
 
-Let $S_n$ be the set of permutations on $n$ elements. Mathematically, our task is:
+Let $S_n$ be the set of permutations on $n$ elements. Mathematically, our task is to find a permutation $π$:
 $
   min_(π in S_7) & quad ‖α-β‖_1 \
    "where"quad α & =min_(1≤k≤7)(sum_(i=1)^k x_(π(i)) - ∑_(i=1)^k y_i)quad #box(width: 14em, baseline: 50%)["In the evening, we must have at least $α$ ingredients left over."] \
@@ -663,7 +663,7 @@ For $d=1$, an algorithm with approximation-ratio $2$ exists @Gasoline2018. For g
   $,
   caption: [The integer linear program for the generalised gasoline-problem.],
 )<ilp-gasoline>
-The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β ≥ α$, so this is indeed a linear objective.
+Because $β ≥ α$, the objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$", so this is indeed a linear objective.
 
 #let UnfixedRows = math.op("UnfixedRows")
 #let ColumnIndex = math.op("ColumnIndex")
@@ -687,7 +687,7 @@ The objective "$‖α-β‖_1$" is the same as "$𝟙^T (β-α)$" because $β �
           + $BestRowIndex ≔ RowIndex$ and $BestRowValue ≔ RowValue$.
       + Permanently add the constraint "$Z_(BestRowIndex,ColumnIndex) = 1$" to $LP$.
       + Remove $BestRowIndex$ from $UnfixedRows$.
-    + $UnfixedRows$ is empty and $Z$ is fixed entirely.
+    + $UnfixedRows$ is empty and $Z$ is fixed entirely. Return the permutation described by $Z$.
   ],
 ) <alg-iterative-rounding>
 
@@ -695,7 +695,7 @@ In this work, we are interested in finding lower bounds on the approximation-rat
 
 The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterative-rounding on that instance. There, $IterRound(I) = 24$, whereas $Opt(I) = 20$, which shows $ρ^((2))_IterRound ≥ 1.2$. @Lorieau[p:] constructed a sequence of instances in $I_1, I_2, … ⊆ ℐ_1$ for which $IterRound(I_j)\/Opt(I_j)$ converged to a value of at least $2$, proving that $ρ^((1))_IterRound ≥ 2$.
 
-@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ Ω(d)$, see @sec-results-gasoline for details.
+@rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ Ω(d)$. see @sec-results-gasoline for details.
 
 
 #pagebreak()
