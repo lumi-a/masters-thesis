@@ -815,7 +815,7 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
 We could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
 #example[
-  An instance in the lower-bound construction by @bestFitAbsoluteRatio[p:] can be expressed via hardcoded numbers:
+  An instance in the lower-bound construction given by @bestFitAbsoluteRatio[p:] to prove that Best-Fit has approximation-ratio $1.7$, can be expressed via these hardcoded numbers:
   #figure(
     text(0.5em, box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
     items = [
@@ -824,7 +824,7 @@ We could --instead of searching for lists of numbers-- search for _short descrip
     ```]),
     caption: [The lower-bound instance in @bestFitAbsoluteRatio[p:] for $k=3$.],
   )<hardcoded-best-fit>
-  However, they actually defined these items more like this:
+  However, they actually defined the instance more like this:
   #figure(
     box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 0.5em)[```py
     k = 3
@@ -846,9 +846,11 @@ We could --instead of searching for lists of numbers-- search for _short descrip
   For larger $k$, @hardcoded-best-fit grows even longer, while @structured-best-fit remains short and interpretable.
 ]
 
-However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining the $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
+However, if we now tried to implement @algorithm-local-search-bin-packing by searching on the space of python-code instead of the space $ℝ^10$, we will have trouble defining a $Mutation$-function, which is meant to return a mutated variant of our current solution. Defining $Mutation$ by throwing noise onto the python-code (e.g. randomly change or swap characters) like we did for $ℝ^10$ would lead to most mutated programs failing to compile. One can try circumventing this by not interpreting python-code as a sequence of characters, but as a composition-tree of basic computational functions, an approach known as _Genetic Programming_ @genetic0 @genetic2 @genetic1.
 
 Instead of Genetic Programming, we will follow the approach of @romera2024mathematical[p:] called *FunSearch*. Instead of mutating python-code by randomly changing characters, it mutates python-code by querying a large language model (LLM). An example for such a query is shown in @example-prompt, and an example-response in @example-response. The advantage of this method is that we retain both interpretable structure, and python-code that compiles most of the time.
+
+Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter `length` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding the provided `length` by returning a score of $0$, and we may mathematically analyse the asymptotic behaviour of the function for large `length` after the fact. To make generalisation across different values of `length` more likely, we could also evaluate the function on multiple different values and take a weighted average.
 
 #figure(
   align(left, box(stroke: 0.1em + gray, radius: 0.5em, inset: 1em, fill: white.darken(1%), text(font: font-monospace, size: 0.75em)[I'm trying to find instances of the bin-packing problem where, if the input is shuffled, the best-fit online-heuristic performs poorly in expectation. All bins have capacity 1.0.
@@ -919,11 +921,9 @@ Instead of Genetic Programming, we will follow the approach of @romera2024mathem
   caption: [A response to the prompt in @example-prompt. The responding LLM was `gpt-4.1-nano` with a temperature-parameter of $1.2$.],
 ) <example-response>
 
-Furthermore (though this was not done in the shown examples), the python-code can be generalised on some sets of parameters. For instance, the `get_items` functions could accept an integer-parameter `length` that tells the function the maximum allowed size of the list. Our evaluation-function $Score$ then rejects lists exceeding the provided `length` by returning a score of $0$, and we may mathematically analyse the asymptotic behaviour of the function for large `length` after the fact. To make generalisation across different values of `length` more likely, we could also evaluate the function on multiple different values and take a weighted average.
-
 == Tuning FunSearch's Output <sec-funsearch-tuning-introduction>
 
-We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmetrical (see @evolution-clustering, where we replaced `np.linspace`, which produces a sequence of evenly-spaced numbers, with `np.ones`, which produces a sequence of identical numbers), and checking after every step whether the program's score decreased noticeably.
+We used FunSearch to find "bad" instances for the four problems listed above. After FunSearch concluded, we manually searched through its output for promising code. We then manipulated the code, for instance by removing redundant items (see e.g. @evolution-bin-packing and @evolution-clustering) or making the instance more symmetrical (see @evolution-clustering, where we replaced `np.linspace`, which produces a sequence of evenly-spaced numbers, with `np.ones`, which produces a sequence of identical numbers), and checking after every step that the program's score didn't decrease noticeably.
 
 Not all programs found by FunSearch lend themselves to this. Some programs just produced pseudo-random numbers, e.g. using trigonometric functions. If tuning was successfull, though, we ended up with a concise, interpretable, symmetric instance that we could use to try and prove new results.
 
@@ -933,7 +933,6 @@ When using FunSearch, one must make decisions about certain hyper-parameters, in
 - The LLM's temperature-parameter $T$. In local-search, one must decide how to choose a random neighbour $v'$ of $v$, e.g. $v'$ arises from adding normally-distributed vector to $v$. The temperature-parameter in FunSearch is similar to the standard-deviation of local-search's normal distribution, i.e. low temperatures will lead to the distribution of LLM-responses to be highly concentrated, and high temperatures spread out the distribution.
 - The initial program to start with. This is usually either some trivial hardcoded instance, a hardcoded instance with additional program-structure (like for-loops), or the state of the art.
 
-We ran ablations across these hyper-parameters on the bin-packing problem by measuring the average maximum scores across different trials. This is not a great measure, because we do not actually care about getting a high average score. We care about finding structured, generalizable instances, but we found no good way of measuring that, so we use the high average score as a proxy.
 #[
   #let ablation-plots = (trials, name, max-t, color) => {
     let mean = arr => arr.sum() / arr.len()
@@ -983,6 +982,7 @@ We ran ablations across these hyper-parameters on the bin-packing problem by mea
     lq.diagram(
       legend: (position: bottom + right),
       width: 220pt,
+      height: 100pt,
       ylim: (1.0, 1.5),
       xlim: (0, 500),
       xaxis: (exponent: none),
@@ -1025,8 +1025,11 @@ We ran ablations across these hyper-parameters on the bin-packing problem by mea
       )
     },*/
     caption: [Ablations for different hyper-parameters on the bin-packing problem. For each choice, we ran $25$ trials of FunSearch, tracking the running maximum score for each trial. We then plot the average of these running maxima, together with their standard error, across time (number of LLM-samples).],
+    label: <ablations>
   )
 ]
+We ran ablations (@ablations) across these hyper-parameters on the bin-packing problem by measuring the average maximum scores across different trials. This is not a great measure, because we do not actually care about getting a high average score. We care about finding structured, generalizable instances, but we found no good way of measuring that, so the high average score serves as a proxy.
+
 - gpt-4.1-mini seems to outperform gpt-4.1-nano (a smaller model) and open-mistral-nemo.
 - When starting with the state-of-the-art instance by @binPackingRevisited[p:Lemma 4.3], the score starts off at $1.3$, and improves slightly over time. Starting with trivial instances performs slightly worse. Encouraging structure in the initial instance by using for-loops leads to better long-term performance. When just starting with a hardcoded list of numbers without structure, FunSearch would frequently stick to just changing the numbers instead of introducing more structure.
 - Higher temperatures seem to be better.
@@ -1034,20 +1037,19 @@ We ran ablations across these hyper-parameters on the bin-packing problem by mea
 
 == Implementation Details <sec-implementation-details>
 Our implementation#footnote(link("https://github.com/lumi-a/funsearch")) is a fork of Johannes Aalto's implementation#footnote(link("https://github.com/jonppe/funsearch")), which is a fork of Google DeepMind's repository#footnote(link("https://github.com/google-deepmind/funsearch")).
-
 We replaced the single-threaded evaluation-loop (query the LLM to get one new program, evaluate the program, repeat) with a multi-threaded producer-consumer pattern, where multiple queries are made in parallel, and evaluated asynchronously across different threads. Furthermore, each query is batched, producing several new programs (default: $4$) instead of just one, which is more cost-effective as the input-tokens are only billed once per batch.
 
 We also created an interface to display results about FunSearch runs in the form of a website#footnote(link("https://lumi-a.github.io/funsearch")). This helped with collaboration, analysing the outcomes and benchmarking different choices of parameters.
 
 #figure(
-  block(stroke: 0.1em + gray, width: 90%, image("assets/website.png")),
+  block(stroke: 0.1em + gray, width: 95%, image("assets/website.png")),
   caption: [The #link("https://lumi-a.github.io/funsearch")[website] showing outcomes of FunSearch runs.],
 ) <website>
 
 When a query returns a program, it is evaluated by assigning it a score (higher being better). These scores were problem-specific.
 
 === Scoring Bin-Packing
-For a bin-packing instance $I$, we calculated the optimal (smallest) number of bins $Opt(I)$ by calling the existing solver `packingsolver`#footnote(link("https://github.com/fontanf/packingsolver")) @fontan, which is based on column-generation.
+For a bin-packing instance $I$, we calculated the optimal (smallest) number of bins $Opt(I)$ by calling an existing solver `packingsolver`#footnote(link("https://github.com/fontanf/packingsolver")) @fontan, which is based on column-generation.
 
 We did not calculate the expected number of bins used by Best-Fit ($𝔼_(π∈S_(|I|))[BestFit(π(I))]$) exactly, but instead ran $10000$ trials of Best-Fit under random permutations, and used the mean number of bins $"Avg"$ as an estimate.
 
@@ -1131,7 +1133,7 @@ We started with a trivial hardcoded instance (score $1.0$), and FunSearch soon f
   )
 ]
 
-Further experimentation with the instance in @code-bin-packing-post-tuning indicated that, for the instance to have a high score, the constants `a` and `b` should be large and coprime. For instance, for fixed $m in ℕ$, consider the instance:
+Further experimentation with the instance in @code-bin-packing-post-tuning indicated that, for the instance to have a high score, the constants `a` and `b` should be large and coprime. So for fixed $m in ℕ$, consider the instance:
 
 $
   I ≔ [underbrace(m + 1\,#h(0.5em) …\,#h(0.5em) m + 1, m upright(" times")),#h(1em) underbrace(m \,#h(0.5em) … \,#h(0.5em) m, m + 1 upright(" times"))] \, #h(2em) upright("maximum bin capacity ") c colon.eq m ⋅ (m + 1).
