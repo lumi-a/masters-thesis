@@ -86,9 +86,9 @@ We attempted using FunSearch for several other problems as well, but were unsucc
     table.hline(stroke: gray + 0.05em),
     [Local Search], [1.478], [1.93], [1.36], [2.11],
     [FunSearch without Hand-Tuning], [1.497], [646.93], [1.538], [3.05],
-    [FunSearch with Hand-Tuning], [1.5], [$Ω(1.415^n)$], [1.618], [4.65],
+    [FunSearch with Hand-Tuning], [1.5], [$1.415^n$], [1.618], [4.65],
     table.hline(stroke: gray + 0.05em),
-    [Known Upper Bound], [1.5], [$O (2^n)$], [16.0], [None],
+    [Known Upper Bound], [1.5], [$2.0^n$#h(0.91em)], [16.0], [None],
   )
 ] <table-results>
 
