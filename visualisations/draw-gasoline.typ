@@ -60,7 +60,7 @@
     timeline = timeline.map(warehouse => sub(warehouse, minhouse))
     lq.diagram(
       width: 100%,
-      height: args.at("diagram-height", default: 128pt),
+      height: args.at("diagram-height", default: 110pt),
       yaxis: (lim: (auto, args.at("y-axis-lim", default: auto))),
       xaxis: (ticks: none, lim: (-3, timeline.len() + 2)),
       ..range(timeline.at(0).len()).map(d => lq.plot(
@@ -135,7 +135,7 @@
 #let typeset-permutation = (pi, deliveries) => [$[#pi.map(x => $vec(#[#deliveries.at(x).at(0)], #[#deliveries.at(x).at(1)])$).join(",")]$]
 
 #let permutation-matrix = (pi, color) => {
-  let cellwidth = 0.15em
+  let cellwidth = 0.115em
   // We don't use a table here, way too many cells. We just colour the cells we care about⎵⎵.⎵⎵
-  box(stroke: 0.1em + gray, outset: 0.05em, width: pi.len() * cellwidth, height: pi.len() * cellwidth, pi.enumerate().map(ix-x => place(dx: ix-x.at(0) * cellwidth, dy: ix-x.at(1) * cellwidth, square(fill: color, stroke: none, width: cellwidth))).sum())
+  box(stroke: cellwidth / 2 + gray, outset: 0.05em, width: pi.len() * cellwidth, height: pi.len() * cellwidth, pi.enumerate().map(ix-x => place(dx: ix-x.at(0) * cellwidth, dy: ix-x.at(1) * cellwidth, square(fill: color, stroke: none, width: cellwidth))).sum())
 }

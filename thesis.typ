@@ -205,7 +205,7 @@ Using FunSearch, we found a sequence of instances $I_1, I_2, …$ for which $�
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ at our disposal, and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
 
-A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions --including those that exceed the maximum weight capacity-- by plotting the tuple $(Weight(A), Profit(A))$ for all $2^(abs(I))$solutions $A$.
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions ---including those that exceed the maximum weight capacity--- by plotting the tuple $(Weight(A), Profit(A))$ for all $2^(abs(I))$solutions $A$.
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
@@ -812,7 +812,7 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
 
 == FunSearch: Local Search on Code Instead of Vectors <sec-funsearch-introduction>
 
-We could --instead of searching for lists of numbers-- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
+We could ---instead of searching for lists of numbers--- search for _short descriptions_ of lists of numbers, i.e. we search for short _python-code_ generating a list of numbers. While plain lists of numbers encode symmetric and structured instances just the same way as any other instances, python-code almost always produces symmetric and structured instances, assuming we avoid #raw(block: false, lang: "py", "import random") and hard-coding lists of numbers.
 
 #example[
   An instance in the lower-bound construction given by @bestFitAbsoluteRatio[p:] to prove that Best-Fit has approximation-ratio $1.7$, can be expressed via these hardcoded numbers:
@@ -1210,7 +1210,7 @@ $
   quad≥quad 1/2 ⋅ [2 ⋅ 2/(m+2) + 3⋅m/(m+2)]
   quad=quad 3/2 - 1/(m+2).
 $
-For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$ which, combined with the upper bound of $"RR"_BestFit ≤ 1.5$ by @bestFitKenyon[p:], proves:
+For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$, and the upper bound $"RR"_BestFit ≤ 1.5$ by @bestFitKenyon[p:] implies:
 
 #theorem[
   The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is exactly $1.5$.
@@ -1280,9 +1280,9 @@ Our implementation of the scoring-function initially contained a bug, which unde
   )
 ]
 
-The scores of the following instances were unaffected by the bug. We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance, see @funsearch-with-corrected-scoring-function for details.
+We also re-ran FunSearch with the fixed scoring-function, but did not manage to recover the same instance, see @funsearch-with-corrected-scoring-function for details.
 
-After simplifying the output into @code-knapsack-post-tuning, we continued tuning and scaled all items' weights up by
+The scores of the following instances were unaffected by the bug. After simplifying the output into @code-knapsack-post-tuning, we continued tuning and scaled all items' weights up by
 a factor of $2$ (which does not affect Pareto-optimality), decreased some
 profits by $1$, and changed the last item to obtain the following tidier
 instance, which achieves slightly higher scores for the same $n$:
@@ -1292,8 +1292,8 @@ first draft, we found it more natural to replace the first $n$ items by
 $n$ powers of $2$, and saw that stronger results are possible by
 replacing the last two items by $k$ powers of $2$:
 $ [ vec(2^(2 k), 2^(2 k)) \, vec(2^(2 k + 1), 2^(2 k + 1)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med underbrace(vec(2^k, 2^k - 1) \, . . . \, vec(2^k, 2^k - 1), n upright(" times")) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, vec(2^(2 k - 2), 2^(2 k - 2)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] . $
-Finally, we appended the factors $x_i colon.eq (1 + frac(2^(- i), 2^d - 1))$ to the $n$ center items, which ensured that $P_"dedup" (I_(1:i)) = P(I_i)$ for all $i$.
-#math.equation(block: true, numbering: "(1)")[$"Items" = [ vec(2^(2 k), 2^(2 k)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med vec(x_1 dot.op 2^k, x_1 dot.op (2^k - 1)) \, . . . \, vec(x_n dot.op 2^k, x_n dot.op (2^k - 1)) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] .$]<knapsack-instance>
+Finally, we appended the factors $x_(i,k) colon.eq (1 + frac(2^(- i), 2^k - 1))$ to the $n$ center items, which ensured that $P_"dedup" (I_(1:i)) = P(I_i)$ for all $i$.
+#math.equation(block: true, numbering: "(1)")[$"Items" = [ vec(2^(2 k), 2^(2 k)) \, . . . \, vec(2^(2 k + n), 2^(2 k + n)) \, med med vec(x_(1,k) dot.op 2^k, x_(1,k) dot.op (2^k - 1)) \, . . . \, vec(x_(n,k) dot.op 2^k, x_(n,k) dot.op (2^k - 1)) \, med med vec(2^(2 k - 1), 2^(2 k - 1)) \, . . . \, vec(2^(k + 1), 2^(k + 1)) ] .$]<knapsack-instance>
 
 // Sadly, any non-trivial instantiation of our instance is too large to draw.
 We will now analyze the sizes of the instance's and subinstances' Pareto-sets. To that end, define the two segments
@@ -1301,7 +1301,7 @@ of the instance: For $a, b, d, n in bb(Z)_(≥ 1)$ with
 $d < a ≤ b$, consider two lists:
 $
   I_(a, b) ≔ [vec(2^a, 2^a), vec(2^(a + 1), 2^(a + 1)), …, vec(2^b, 2^b)], #h(2em)
-  J_(d, n) ≔ [ vec(x_1 ⋅ 2^d, x_1 ⋅ (2^d - 1)), …, vec(x_n ⋅ 2^d, x_n ⋅ (2^d - 1)) ].
+  J_(d, n) ≔ [ vec(x_(1,d) ⋅ 2^d, x_(1,d) ⋅ (2^d - 1)), …, vec(x_(n,d) ⋅ 2^d, x_(n,d) ⋅ (2^d - 1)) ].
 $
 
 #lemma[
@@ -1371,7 +1371,7 @@ $
 $
 Its size is exactly (using notation for binomial coefficients, not vectors):
 $ lr(|P ([I_(a, b), J_(d, n)])|) = (2^(b - a + 1) - 1) ⋅ [ sum_(i = 0)^(min (n,med 2^(a - d) - 1)) binom(n, i) ] + 2^n . $
-For $k, n in bb(N)$ with $2^k ≤ n \/ 2$, consider two instances:
+For $k, n in bb(N)$ with $2^k ≤ n \/ 2$, consider two instances (back to vectors, instead of binomial coefficients):
 $
   𝕀_1 & colon.eq [I_(2 k, med 2 k + n), med J_(k, n)], \
   𝕀_2 & colon.eq [𝕀_1, med vec(2^(k + 1), 2^(k + 1)), vec(2^(k + 2), 2^(k + 2)), …, vec(2^(2 k - 1), 2^(2 k - 1))] .
@@ -1410,7 +1410,7 @@ in an actual lower bound of $Ω( (m\/ 2)^((sqrt(m \/ 2) - 3) \/ 2) )$.
 ]<nemhauser-ullmann-theorem>
 
 The only purpose of the leading
-factors $x_i = ( 1 + frac(2^(-i), 2^d - 1) )$ in $J_(d, n)$ is to prevent two Pareto-optimal packings from having
+factors $x_(i,d) = ( 1 + frac(2^(-i), 2^d - 1) )$ in $J_(d, n)$ is to prevent two Pareto-optimal packings from having
 the same total profit:
 
 #lemma[If
@@ -1510,7 +1510,7 @@ After finishing the above work, we came up with a simpler construction. Although
 - Call $I$ *integral* iff the weights and profits of all its items are integral.
 
 #example[
-  Let $I ≔ [vec(1, 2), vec(2, 1), vec(3, 3)]$. Here, $norm(I) = 7$.
+  Let $I ≔ [vec(1, 2), vec(2, 1), vec(3, 3)]$. Here, $norm(I) = 7$. Note the fractal-like structure of the following plots.
   #{
     let base-items = ((1, 2), (2, 1), (3, 3))
     let norm = 7
@@ -1553,7 +1553,6 @@ After finishing the above work, we came up with a simpler construction. Although
       caption: [Plotting $(Weight, Profit)$ for all solutions of $I ⊕ (7 I) ⊕ (7^2 I)$.\ There are $6^3$ Pareto-optimal solutions, they are marked with a #text(opt-color, sym.star.filled).],
     )
   }
-  Notice the fractal-like structure.
 ]<example-exponential-knapsack-fractal>
 
 This example illustrates how the size of $I⊕norm(I)I$ is twice the size of $I$, but $abs(P(I⊕norm(I)I)) = abs(P(I))^2$. Indeed, this holds more generally:
@@ -1595,7 +1594,7 @@ $
   I^k & ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-1) I), \
   J^k & ≔ J ⊕ (α^1J) ⊕ (α^2J) ⊕ … ⊕ (α^(k-1) J).
 $
-Putting $A ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-2) I)$ and $B ≔ α^(k-1) I$, we verify the assumptions of @pareto-product-lemma:
+With $A ≔ I ⊕ (α^1I) ⊕ (α^2I) ⊕ … ⊕ (α^(k-2) I)$ and $B ≔ α^(k-1) I$, briefly verify the assumptions of @pareto-product-lemma:
 $
   norm(A)
   quad=quad 1 + (α-1) + α^1 (α-1) + … + α^(k-2) (α-1)
@@ -1617,9 +1616,9 @@ For example, for the instance in @example-shrinking-pareto-set, $Score(I) = 1.2$
 $
   Score(I^k) ≥ (root(5, 1.2))^(|I^k|) ≈ 1.0371^(|I^k|).
 $
-If we found instances $J$ where $Score(I)^(1\/abs(I))$ were larger than $1.0371$, we would obtain an even higher base. As mentioned before, the pareto-set $P(J)$ always has size at most $2^(abs(J))$, hence $2$ is an upper bound on this base.
+This bound is exponential, obsoleting @nemhauser-ullmann-theorem. If we found instances $J$ where $Score(I)^(1\/abs(I))$ were larger than $1.0371$, we would obtain an even higher base. As mentioned before, the pareto-set $P(J)$ always has size at most $2^(abs(J))$, hence $2$ is an upper bound on this base.
 
-The statement of @pareto-product-lemma also applies to the deduplicated Pareto-sets. We only formulate it in terms of cardinalities, because equivalence-classes cause troubles otherwise (what's the concatenation "$⊕$" of two $A,B ∈ P_"dedup" (J)$?).
+The statement of @pareto-product-lemma also applies to the deduplicated Pareto-sets. We only formulate the statement in terms of cardinalities, because equivalence-classes cause troubles otherwise (what's the concatenation "$⊕$" of two equivalence-classes $A,B ∈ P_"dedup" (J)$?).
 #lemma[
   If $A$ and $B$ are instances of the Knapsack-problem, $B$ integral, and $α ≥ norm(A)$, then:
   $
@@ -1629,7 +1628,7 @@ The statement of @pareto-product-lemma also applies to the deduplicated Pareto-s
   $
 ]
 #proof[
-  Let $L ≔ L_A ⊕ α L_B$ and $L̃ ≔ L̃_A ⊕ α L̃_B$ be two solutions. If $Weight(L) = Weight(L̃)$, then $Weight(L_A) = Weight(L̃_A)$ and $Weight(L_B) = Weight(L̃_B)$, because $α$ is so large. The same applies to the profits. Now, we can apply @pareto-product-lemma.
+  Let $L ≔ L_A ⊕ α L_B$ and $L̃ ≔ L̃_A ⊕ α L̃_B$ be two solutions. If $Weight(L) = Weight(L̃)$, then $Weight(L_A) = Weight(L̃_A)$ and $Weight(L_B) = Weight(L̃_B)$, because $α$ is so large. The same applies to the profits. Now, apply @pareto-product-lemma.
 ]
 
 To get the same result for the runtime of @alg-nemhauser-ullmann, define:
@@ -1670,7 +1669,7 @@ $
 This time, we used a recursive approach: We started with a trivial instance $I^((0))$, ran FunSearch to obtain some instance $F^((0))$, tuned it into an instance $T^((0))$, and then used $T^((0)) ≕ I^((1))$ as the starting-point of another FunSearch trial, producing $F^((1))$, and so on, up to $T^((2))$. When giving values of scores here, we round them down.
 
 #[
-  #show raw: set text(size: 0.75em)
+  #show raw: set text(size: 0.74em)
   #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
 
   #subpar.grid(
@@ -1791,7 +1790,7 @@ We did the same for $Score_"dedup"$, and mark instances with tildes here, to pre
   )
 ]
 
-We were unable to tune $F̃^((0))$ in a meaningful way, but local search was a lot more efficient for such a short instance.
+We were unable to tune $F̃^((0))$ in a meaningful way. Local search was a lot faster for such a short instance, but did not improve the score significantly more.
 
 #[
   #show raw: set text(size: 0.6em)
@@ -1820,7 +1819,7 @@ Combined with @theorem-exponential-knapsack-dedup, we obtain::
 
 
 == $k$-median Clustering <sec-results-clustering>
-
+We evaluated weighted instances, as unweighted trials usually ended up putting many points in the same places, and evaluating corresponding weighted instances instead would be much more efficient. Going from @code-clustering-funsearch-output to @code-clustering-funsearch-output-post-tuning, we replaced `np.linspace` with `np.ones`, which yields a more symmetric instance.
 #[
   #show raw: set text(size: 0.75em)
   #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
@@ -1847,6 +1846,7 @@ Combined with @theorem-exponential-knapsack-dedup, we obtain::
           ]
       ```
     ],
+    <code-clustering-funsearch-output-post-tuning>,
     grid.cell(
       colspan: 2,
     )[
@@ -1872,17 +1872,6 @@ Combined with @theorem-exponential-knapsack-dedup, we obtain::
     label: <evolution-clustering>,
   )
 ]
-
-Fix the dimension $d ≥ 4$. Put
-$c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
-the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d ≥ 4$, we
-know that $5 d^2 - 6 d ≥ 4 d^2$, hence:
-$ c = frac(sqrt(4 d^2 + (d - 3)^2) + d - 3, 2) > frac(2 d + d - 3, 2) > d . $
-Let $e_i$ be the $i$th $d$-dimensional standard basis vector. Consider
-the following weighted instance of $d + 2$ points:
-$ (1, …, 1), quad (0, …, 0), quad - c e_1, med …, med - c e_d, $
-where the point $(1, …, 1)$ has weight $oo$ and all other
-points have weight $1$.
 
 #{
   let c = 2.57
@@ -1930,6 +1919,17 @@ points have weight $1$.
     )
   }
 }
+
+Fix the dimension $d ≥ 4$. Put
+$c colon.eq frac(sqrt(4 d^2 + (3 - d)^2) + d - 3, 2)$, which is one of
+the two roots of $0 = c^2 - c (d - 3) - d^2$. Because $d ≥ 4$, we
+know that $5 d^2 - 6 d ≥ 4 d^2$, hence:
+$ c = frac(sqrt(4 d^2 + (d - 3)^2) + d - 3, 2) > frac(2 d + d - 3, 2) > d . $
+Let $e_i$ be the $i$th $d$-dimensional standard basis vector. Consider
+the following weighted instance of $d + 2$ points:
+$ (1, …, 1), quad (0, …, 0), quad - c e_1, med …, med - c e_d, $
+where the point $(1, …, 1)$ has weight $oo$ and all other
+points have weight $1$.
 
 #lemma[
   For $k$-median clustering, this instance's
@@ -2034,12 +2034,12 @@ The following example is the instance found by @Lorieau[p:]:
   ) <best-row-value-progression-lucas>
   Plotting bar-charts with annotations about which elements got added / removed from our "warehouse" (like in @example-gasoline-cookies) makes for too wide a plot, so we drop the annotations (they can be inferred from the permutations, if necessary) and instead use a regular line-chart. This instance here is $1$-dimensional, so only the stock of one "ingredient" needs to be tracked over time.
   #figure(
-    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64, diagram-height: 120pt),
+    draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
     caption: [Visualising the "warehouse" for $π_IterRound$ over time. The maximum capacity is $62$.],
   )
   #figure(
-    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64, diagram-height: 120pt),
+    draw-gasoline.draw-permutation(opt-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
     caption: [Visualising the "warehouse" for $π_Opt$ over time. The maximum capacity is $32$.],
   )
@@ -2051,7 +2051,7 @@ The following example is the instance found by @Lorieau[p:]:
   #show raw.where(block: true): body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
 
   #subpar.grid(
-    columns: 1fr,
+    columns: (1fr,),
     kind: raw,
     figure(caption: [Initial program. This is @example-plot-gasoline-lucas embedded into $ℝ^2$ via $x ↦ (x,0)$.])[
       ```py
@@ -2122,7 +2122,7 @@ $
           #h(2em) #text(font: font-text, weight: "regular")[#gasoline-strong-label]
 $<eq-gasoline-strong>
 #let gasoline-strong = link(<eq-gasoline-strong>, gasoline-strong-label)
-The two instances only differ in three places, in the constant scalars preceding the $e_j$. Specifically, #gasoline-strong is just #gasoline-weak multiplied by the diagonal matrix $op("diag")(1,2,…,2)$. Compared to the values $u_i$ preceding the $e_1$, these constant scalars are quite small.
+The two instances only differ in three places, namely in the constant scalars preceding the $e_j$. Specifically, #gasoline-strong is just #gasoline-weak multiplied by the diagonal matrix $op("diag")(1,2,…,2)$. Compared to the values $u_i$ preceding the $e_1$, these constant scalars are quite small.
 
 While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems better suited for proving asymptotic bounds, because the outputs of @alg-iterative-rounding have more structure there (compare e.g. @permutation-matrices-weak to @permutation-matrices-strong, and @best-row-value-progression-weak to @best-row-value-progression-strong below). That said, we did not manage to prove any asymptotic bounds for either instance and only note scores for specific parameters, and patterns we spotted in those scores.
 
@@ -2137,7 +2137,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   )<permutation-matrices-weak>
   #let best-row-values = (34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 125, 125, 125)
   #figure(
-    lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
+    lq.diagram(width: 400pt, height: 125pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(best-row-values.len()), best-row-values), xlabel: $ColumnIndex$, ylabel: $BestRowValue$),
     caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.],
   ) <best-row-value-progression-weak>
   The first component is shown in #Blue[blue], the second in #Purple[purple], and the third one in #Yellow[yellow].
@@ -2154,7 +2154,7 @@ While #gasoline-strong seems to achieve higher scores, #gasoline-weak seems bett
   Here, $IterRound(I)/Opt(I) = 125/36 ≈ 3.47$. This shows $ρ_IterRound^((3)) ≥ 3.46$, disproving one the conjecture of @rajkovic[p:] that $ρ_IterRound^((d))=2$ for $d>2$.
 ]<example-plot-gasoline-funsearch-weak>
 
-As described in @Lorieau[p:Section 2.3.3], using local search to disprove this conjecture turns out to be ineffective. In our experiments with local search, we were also unable to find instances with $IterRound(I)/Opt(I) > 2$ when starting from a _random instance_. However, when starting local search from the instance in @example-plot-gasoline-lucas instead --- $k=4$, embedded into $ℝ^2$ via $x ↦ (x, 0)$ --- we _did_ find instances with $IterRound(I)/Opt(I) = 2.1$. We were unable to generalise these instances to higher dimensions, nor could we spot any patterns.
+As described in @Lorieau[p:Section 2.3.3], attempts at using local search to disprove this conjecture turn out to be ineffective. In our experiments with local search, we were also unable to find instances with $IterRound(I)/Opt(I) > 2$ when starting from a _random instance_. However, when starting local search from the instance in @example-plot-gasoline-lucas instead ($k=4$, embedded into $ℝ^2$ via $x ↦ (x, 0)$) we _did_ find instances with $IterRound(I)/Opt(I) = 2.1$. We were unable to generalise these instances to higher dimensions, nor could we spot any patterns.
 
 #example[
   We plot solutions for #gasoline-strong with $d=3$ and $k=5$ in the same way as @example-plot-gasoline-funsearch-weak.
@@ -2168,7 +2168,7 @@ As described in @Lorieau[p:Section 2.3.3], using local search to disprove this c
     caption: [The permutation-matrices for $π_IterRound$ (left) and some $π_Opt$ (right).],
   )<permutation-matrices-strong>
   #let iterround-values = (36, 38, 40, 42, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 184, 186, 186, 186)
-  #figure(lq.diagram(width: 400pt, height: 150pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(iterround-values.len()), iterround-values)), caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.]) <best-row-value-progression-strong>
+  #figure(lq.diagram(width: 400pt, height: 125pt, yaxis: (lim: (0, auto)), lq.plot(color: apx-color, range(iterround-values.len()), iterround-values)), caption: [The progression of $BestRowValue$ during @alg-iterative-rounding for this instance.]) <best-row-value-progression-strong>
   #figure(
     draw-gasoline.draw-permutation(iterround-permut, deliveries, production, lq: true, y-axis-lim: 64),
     gap: 1em,
@@ -2210,6 +2210,30 @@ Lastly, we also show traces in phase-space (like in @example-cookies-phase-space
 }
 
 === Empirical Data <sec-empirical-data-gasoline>
+As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ were required to be integral in the problem-statement).
+
+#{
+  let data = csv("data/gasoline-α-d=3-k=3.csv")
+  figure(
+    lq.diagram(
+      width: 100%,
+      height: 150pt,
+      yaxis: (lim: (1, auto)),
+      ylabel: $IterRound(I_α)\/Opt(I_α)$,
+      xlabel: $α$,
+      lq.scatter(
+        data.map(x => float(x.at(0))),
+        data.map(x => float(x.at(1))),
+        mark: ",",
+        color: (data.map(x => if x.at(2) == "True" { blue } else { purple })),
+      ),
+    ),
+    caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity (for the shown $α$, this happens iff $α≤1.0$).],
+  )
+}
+
+This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all $I_α$, and $I_1=#gasoline-weak$ being best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
+
 While we could not _prove_ asymptotic results, plotting the values $Opt$ and $IterRound$ against the _size of the instances_ showed perfectly straight lines, except for $d=5$, where the case $k=2$ broke linearity for $IterRound$, the actual values being $20$ and $24$, respectively. Calculating $IterRound$ and $Opt$ for larger instances is computationally prohibitive. If these linear relationships held true asymptotically, we would obtain respective bounds on $ρ_IterRound^((d))$, as noted below.
 
 #let gasoline-plots = file => {
@@ -2323,32 +2347,6 @@ While we could not _prove_ asymptotic results, plotting the values $Opt$ and $It
   For all $d≥2: lim_(k→∞) IterRound(#gasoline-strong""(d,k))/Opt(#gasoline-strong""(d,k)) ≥ 2d$.
 ]
 
-
-
-As mentioned, #gasoline-strong is the same as #gasoline-weak scaled by the diagonal-matrix $op("diag")(1,2,…,2)$, which raises the question: What is the behaviour for diagonal values other than $2$? For some rational $p\/q≕α∈Q_(≥0)$, define $I_α$ as #gasoline-weak scaled by $op("diag")(q,p,…,p)$ (scaling by $op("diag")(1,α,…,α)$ would lead to an equivalent instance, but $X$ and $Y$ were required to be integral in the problem-statement).
-
-#{
-  let data = csv("data/gasoline-α-d=3-k=3.csv")
-  figure(
-    lq.diagram(
-      width: 100%,
-      height: 150pt,
-      yaxis: (lim: (1, auto)),
-      ylabel: $IterRound(I_α)\/Opt(I_α)$,
-      xlabel: $α$,
-      lq.scatter(
-        data.map(x => float(x.at(0))),
-        data.map(x => float(x.at(1))),
-        mark: ",",
-        color: (data.map(x => if x.at(2) == "True" { blue } else { purple })),
-      ),
-    ),
-    caption: [Scores of $I_α$ for different choices of $α ∈ {z/100 mid(|) z∈ℤ}$, with $d=k=3$. A point is coloured #Blue[blue] iff the permutation $π_IterRound$ found by @alg-iterative-rounding is the identity (for the shown $α$, this happens iff $α≤1.0$).],
-  )
-}
-
-This is weak evidence for $I_2 = #gasoline-strong$ being best-possible among all $I_α$, and $I_1=#gasoline-weak$ being best-possible among those $I_α$ where the output of @alg-iterative-rounding has simple structure.
-
 == Problems we did not make progress on <sec-funsearch-failures>
 In the previous sections, we only presented the results for problems where we applied FunSearch successfully. A-priori, we did not know what problems lent themselves to FunSearch, so we used trial-and-error across several problems, and we briefly talk about said errors here.
 - Best-Fit Bin-Packing: Instead of the _absolute_ random-order-ratio
@@ -2364,7 +2362,7 @@ In the previous sections, we only presented the results for problems where we ap
   - We attempted to find instances, by adding a parameter `min_sum` to the `get_items`-function, and rejecting any instance whose sum of items was lower than `min_sum`. We then evaluated instances for large values of `min_sum`. This was not successful.
   - A different approach involves, instead of finding lists of items, finding _distributions_ of weights, and sampling a random instance by sampling each item iid. from that distribution. This was not successful either.
 - Clustering: We were successful in proving a new result for the Price of Hierarchical $k$-median clustering, $PoH_(k"-median") ≥ (1+√5)/2$.
-  - We also tried finding better lower bounds on the Price of Hierarchy for the following objectives, for none of which FunSearch outperformed local search:
+  - We also tried finding better lower bounds on the Price of Hierarchy for the following objectives, none of which FunSearch outperformed local search on:
     - $k$-means
     - $k$-median, but using the $L_2$ norm instead of the $L_1$ norm
     - $k$-median, but using the squared $L_2$ norm instead of the $L_1$ norm
