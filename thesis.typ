@@ -700,7 +700,7 @@ The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterativ
 
 #pagebreak()
 = FunSearch <section-funsearch>
-Making progress on the different problems introduced it @section-problems-definitions involves a similar task for all of them: We would like to find instances that have some problem-specific undesirable quality:
+Making progress on the different problems introduced in @section-problems-definitions involves a similar task for all of them: We would like to find instances that have some problem-specific undesirable quality:
 - For bin-packing, we would like to find an instance $I$ where, if $I$ is shuffled randomly, the Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution:
   $
     Score(I)
@@ -728,9 +728,6 @@ Making progress on the different problems introduced it @section-problems-defini
     IterRound(I) / Opt(I)
   $
 
-
-== Local Search <sec-local-search>
-Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]) is to employ some search-algorithm that searches for an instance of a high $Score$ across the space of all instances. For bin-packing with capacity $c=1$, such an an algorithm might look as follows:
 #figure(
   kind: "algorithm",
   supplement: [Algorithm],
@@ -756,6 +753,9 @@ Even without having intuition for or experience with the different problems, we 
         + Keep $I$ unchanged.
   ],
 ) <algorithm-local-search-bin-packing>
+
+== Local Search <sec-local-search>
+Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]) is to employ some search-algorithm that searches for an instance of a high $Score$ across the space of all instances. For bin-packing with capacity $c=1$, @algorithm-local-search-bin-packing is such an algorithm.
 
 Note that $Score_≈$ is only an approximation of the actual $Score(I) = 𝔼_(π∈S_(|I|))[BestFit(π(I))/Opt(I)]$, which can be intractable to compute due to the size of the symmetric group. It is also a (pseudo-)random variable, though this can be avoided by using a fixed seed for the evaluation. In our experiments, a number of $10000$ trials was large enough to lead to accurate estimates, while still being small enough to compute quickly.
 
