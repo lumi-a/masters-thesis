@@ -102,7 +102,7 @@ In @section-funsearch, we introduce local-search, motivate FunSearch, present ab
 In @section-results, we show the instances found by FunSearch, how we tuned them into ones that lend themselves to mathematical analysation, and then conduct that mathematical analysation by giving proofs for the above results. For the gasoline-problem, we did not manage to find a proof, but provide empirical evidence instead. These four subsections can also be read in any order. We finally list the problems that we failed to make progress on.
 
 == Academic Integrity
-#TODO[Note that we also wrote a paper together (once it's on arxiv), and how you only copied things from there that you wrote yourself.]
+This work was the result of a collaboration between Ankit Anand from Google Deepmind, Heiko Röglin, Anurag Murty Naredla, and myself. I am deeply grateful for their support and our productive discussions. The result of this collaboration is the paper #text(weight: 500)[#cite(<paper>, form: "full")], which is currently under review. From this paper, I only copied the bibliography-file containing citation-data and parts that I wrote myself.
 
 Except where explicitly noted otherwise, no part of this thesis was written by a Large Language Model (LLM). I _did_ use generative AI in the following ways:
 - LLMs are an integral component of FunSearch, the search-algorithm we used (see @sec-funsearch-introduction).
@@ -2359,7 +2359,7 @@ In the previous sections, we only presented the results for problems where we ap
   $
   The instance $I$ presented in @sec-results-bin-packing is no longer viable for this measure, as $Opt(I)=2$. In fact, a recent work by @breakingAsymptoticBestFit[p:] showed that $"RR"^∞_BestFit ≤ 1.5-ε$ for a small $ε>0$.
 
-  - We attempted to find instances, by adding a parameter `min_sum` to the `get_items`-function, and rejecting any instance whose sum of items was lower than `min_sum`. We then evaluated instances for large values of `min_sum`. This was not successful. #TODO[Provide links to failed runs, and a bit more commentary on _why_ they failed. Failed to generalise? Failed to be more than pseudo-random? Failed to have any kind of good score whatsoever?]
+  - We attempted to find instances, by adding a parameter `min_sum` to the `get_items`-function, and rejecting any instance whose sum of items was lower than `min_sum`. We then evaluated instances for large values of `min_sum`. This was not successful.
   - A different approach involves, instead of finding lists of items, finding _distributions_ of weights, and sampling a random instance by sampling each item iid. from that distribution. This was not successful either.
 - Clustering: We were successful in proving a new result for the Price of Hierarchical $k$-median clustering, $PoH_(k"-median") ≥ (1+√5)/2$.
   - We also tried finding better lower bounds on the Price of Hierarchy for the following objectives, for none of which FunSearch outperformed local search:
