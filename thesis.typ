@@ -5,8 +5,8 @@
 #import "@preview/lovelace:0.3.0": *;
 #import "@preview/zero:0.5.0": format-table
 #let pseudocode-list = pseudocode-list.with(booktabs: true, hooks: 0.5em)
-#let TODO = body => text(size: 0.5em, fill: green)[\[TODO: #body\]]
 
+#import "@preview/titleize:0.1.1": titlecase; #show heading: body => titlecase(body); #show outline: body => titlecase(body)
 
 #import "@preview/ctheorems:1.1.3": *; #show: thmrules.with(qed-symbol: $square$)
 #let lemma = thmbox("theorem", "Lemma", fill: black.lighten(95%), breakable: true, base_level: 2)
@@ -49,7 +49,9 @@
 #let Avg = math.op("Avg")
 #let IterRound = math.op("IterRound")
 
-#outline(depth: 2)
+#outline(depth: 3)
+
+#pagebreak()
 
 = Introduction
 FunSearch is a method for finding good solutions to optimisation-problems. It works similarly to local-search, but searches for code instead of vectors, and perturbs vectors by querying a large language model (LLM) instead of adding pseudo-random noise @romera2024mathematical. In this work, we use FunSearch to find new adversarial constructions for different combinatorial optimization problems.
@@ -2372,9 +2374,6 @@ In the previous sections, we only presented the results for problems where we ap
 - In the page-replacement-problem, we must make decisions which memory pages to keep in working memory. When a page being requested is currently not loaded (a _page-miss_), we must decide which of the currently-loaded pages to swap out, which is a relatively expensive operation. The objective then is to minimise the number of page-misses, by making smart choices about which pages to keep in working memory. A good heuristic for this is LRU, which discards the page that was Least Recently Used. Using a benchmark-instance of real-world data, we attempted to find better heuristics than this, but were unsuccessful.
 
 For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ of which ($≈29%$) led to new results. Even now, I do not feel like I have a good understanding of what problems lend themselves well to FunSearch, other than the obvious "Prefer research-questions that are more likely to have low-hanging fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of some bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
-
-#TODO[Introduction, Conclusion]
-#TODO[Grammar-/ Spell Checker]
 
 = Conclusion
 Using FunSearch with manual tuning, we obtained new results for different problems:
