@@ -12,6 +12,27 @@
     .sum()
 }
 
+// Returns only those points that are on the border of the convex hull of the cluster, using gift-wrapping algorithm
+// https://en.wikipedia.org/wiki/Gift_wrapping_algorithm
+#let cluster-border = cluster => {
+  let leftmost-point = cluster.reduce((acc, point) => if acc.at(0) < point.at(0) { acc } else { point })
+  let hull = (leftmost-point,)
+  let endpoints = (leftmost-point,)
+  for _ in range(cluster.len()) {
+    let previous-endpoint = endpoints.last()
+    let is-left-of-line = (line-x, point) => {
+      let d-line-x = sub(line-x, previous-endpoint)
+      let d-point = sub(point, previous-endpoint)
+      return 0 > d-line-x.at(0) * d-point.at(1) - d-line-x.at(1) * d-point.at(0)
+    }
+    let next-endpoint = cluster.reduce((acc, point) => if is-left-of-line(acc, point) { point } else { acc })
+    if next-endpoint == leftmost-point {
+      return endpoints
+    }
+    endpoints.push(next-endpoint)
+  }
+}
+
 #let scale = (x, s) => (x.at(0) * s, x.at(1) * s)
 #let add = (x, y) => (x.at(0) + y.at(0), x.at(1) + y.at(1))
 #let norm = v => calc.sqrt(calc.pow(v.at(0), 2) + calc.pow(v.at(1), 2))
