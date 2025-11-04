@@ -205,7 +205,7 @@ Using FunSearch, we found a sequence of instances $I_1, I_2, …$ for which $�
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ at our disposal, and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
 
-A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions -- including those that exceed the maximum weight capacity -- by plotting the tuple $(Weight(A), Profit(A))$ for all $2^(abs(I))$solutions $A$.
+A *solution* is any sub-list of the list of items $I$, regardless of whether it exceeds the capacity $c$. For some solution $A$, we denote by $Weight(A)$ its total weight (i.e. the sum of the weights of the items in $A$), and by $Profit(A)$ its total profit. We can visualize the space of _all_ possible solutions --including those that exceed the maximum weight capacity-- by plotting the tuple $(Weight(A), Profit(A))$ for all $2^(abs(I))$solutions $A$.
 
 #example[
   We denote items by a column-vector $vec("Weight", "Profit")$. We are given a capacity $c=20$ and the following items:
@@ -755,9 +755,9 @@ Making progress on the different problems introduced in @section-problems-defini
 ) <algorithm-local-search-bin-packing>
 
 == Local Search <sec-local-search>
-Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach (see e.g. @localSearch0[p:] @localSearch1[p:], or for a general overview @localSearch2[p:]) is to employ some search-algorithm that searches for an instance of a high $Score$ across the space of all instances. For bin-packing with capacity $c=1$, @algorithm-local-search-bin-packing is such an algorithm.
+Even without having intuition for or experience with the different problems, we can still attempt to find such instances. A standard approach (see e.g. @localSearch0[p:] @localSearch1[p:], @Lorieau[p:], or for a general overview @localSearch2[p:]) is to employ some search-algorithm that searches for an instance of a high $Score$ across the space of all instances. For bin-packing with capacity $c=1$, @algorithm-local-search-bin-packing is such an algorithm. It randomly changes the currently-best solution, checks whether this improves the objective, and declares this changed solution the new currently-best solution if it does.
 
-Note that $Score_≈$ is only an approximation of the actual $Score(I) = 𝔼_(π∈S_(|I|))[BestFit(π(I))/Opt(I)]$, which can be intractable to compute due to the size of the symmetric group. It is also a (pseudo-)random variable, though this can be avoided by using a fixed seed for the evaluation. In our experiments, a number of $10000$ trials was large enough to lead to accurate estimates, while still being small enough to compute quickly.
+Note that $Score_≈$ is only an approximation of the actual $Score(I) = 𝔼_(π∈S_(|I|))[BestFit(π(I))/Opt(I)]$, as the exact $Score$ can be intractable to compute due to the size of the symmetric group. It is also a (pseudo-)random variable, though this can be avoided by using a fixed seed for the evaluation. In our experiments, a number of $10000$ calculations for $Score_≈$ was large enough to lead to accurate estimates, while still being small enough to compute quickly.
 
 Variants of @algorithm-local-search-bin-packing include decreasing the mutation-rate over time, e.g. by decreasing the noise's variance in $Mutation$, or stochastically allowing to replace $I$ with $I'$ even if $I'$ has a worse score, to prevent getting stuck in local optima. See @local-search-plot for trajectories drawn from @algorithm-local-search-bin-packing.
 
@@ -782,10 +782,10 @@ Variants of @algorithm-local-search-bin-packing include decreasing the mutation-
       )
     )
   },
-  caption: [Ten example trajectories of @algorithm-local-search-bin-packing, with the termination-condition for the loop in @codeline-iteration-count set after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
+  caption: [Ten example trajectories of @algorithm-local-search-bin-packing, terminating @codeline-iteration-count after 10000 iterations. For each of the ten trajectories, we plot the score of the best solution $I$ over time.],
 ) <local-search-plot>
 
-Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat ($Score_≈$ is only an estimate of $Score$, so this is not certain), as the best trial achieves a score of $1.3725$. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ permutations, possibly exploiting symmetries in the instance. We will not do so, however, in favour of proving a better result later on. Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have any discernible pattern or noticeable symmetries.
+Enterprising readers will remember from @section-problems-bin-packing that the best-known instance for randomised Best-Fit had a score of $1.3$, which the results from @local-search-plot seem to beat ($Score_≈$ is only an estimate of $Score$, so this is not certain), as the best trial achieved a score of $1.3725$. _If_ we wanted to prove this rigorously, we would calculate the true score by running best-fit for all $10! ≈ 3.6⋅10^6$ permutations, possibly exploiting symmetries in the instance. We will not do so, however, in favour of proving a better result later on. Instead, to motivate our next steps, we will try learning from the instance, perhaps spotting structures in it, hoping to use these to manually construct instances of even higher scores. Alas, @local-search-instance gives us little hope: Unlike e.g. the instance in @example-bin-packing-sota, the instance found by @algorithm-local-search-bin-packing does not seem to have any discernible pattern or noticeable symmetries. The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance. Unable to learn from this instance, we will try a different approach.
 
 #figure(
   table(
@@ -809,8 +809,6 @@ Enterprising readers will remember from @section-problems-bin-packing that the b
   kind: image,
   caption: [The sorted best instance found in the trials of @local-search-plot, achieving a score of $1.3725$.],
 ) <local-search-instance>
-
-The four zero-weight items are a product of negative items in the mutation $I'$ being rounded up to $0$, and contribute nothing to the instance. Unable to learn from this instance, we will try a different approach.
 
 == FunSearch: Local Search on Code Instead of Vectors <sec-funsearch-introduction>
 
