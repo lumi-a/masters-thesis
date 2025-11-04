@@ -145,7 +145,7 @@ In the bin-packing problem, we are given a bin-capacity $c$ and a list of $n$ it
   )
 ] <bin-packing-example>
 
-In practice, heuristics are used, which do not attempt to find the best possible packing, but quickly find a packing that still uses few bins @binPackingRevisited @binPackingHeuristics. All of the following heuristics are _online_: The items $w_i$ arrive in sequence and the heuristic has to assign $w_i$ permanently to a bin. Once the item $w_i$ has been processed, its assignment can not be changed.
+In practice, heuristics are used, which do not attempt to find the best possible packing, but quickly find a packing that nevertheless uses few bins @binPackingRevisited @binPackingHeuristics. All of the following heuristics are _online_: The items $w_i$ arrive in sequence and the heuristic has to assign $w_i$ permanently to a bin. Once the item $w_i$ has been processed, its assignment can not be changed.
 - _Best-Fit_: When item $w_i$ arrives, pack it into a bin which has the least remaining space among the bins that can contain $w_i$. If no such bin exists, open a new one.
 - _Next-Fit_: When item $w_i$ arrives, pack it into the bin that $w_(i-1)$ was assigned to, or open a new bin if this is not possible.
 - _First-Fit_: Order the bins by the time in which they were opened, and pack $w_i$ into the oldest bin in which it fits. If no such bin exists, open a new one.
@@ -158,7 +158,7 @@ These heuristics will usually not output an optimal solution, i.e. a packing tha
     ρ_𝒜 quad≔quad sup_(I∈ℐ) 𝒜(I)/Opt(I).
   $
 ]
-The approximation-ratio of an algorithm captures the worst-case performance of an algorithm. For instance, $ρ_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
+The approximation-ratio of an algorithm captures its worst-case performance. For instance, $ρ_BestFit = 1.7$ (proven by @bestFitAbsoluteRatio[p:]), meaning that:
 - For every instance, the packing found by Best-Fit will never use more than $1.7$ times as many bins as an optimal packing, and
 - There is a sequence of instances $I_1, I_2, …$ such that $BestFit(I_j)/Opt(I_j)$ converges to $1.7$.
 
@@ -177,7 +177,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
 @bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, and @binPackingRevisited[p:] improved the lower bound to $1.3$.
 
 #example[
-  This example is (one instance of the) lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
+  This example is (one instantiation of) the lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
   Consider bins of capacity $c=3000$ and the instance:
   $
     I quad ≔ quad [1004, 1004, #h(0.5em) 1016, 1016, #h(0.5em) 992].
@@ -200,7 +200,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we find a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$. Because this matches the upper bound, this proves that $"RR"_BestFit = 1.5$ exactly. See @sec-results-bin-packing for details.
+Using FunSearch, we found a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$. Because this matches the upper bound, this proves that $"RR"_BestFit = 1.5$ exactly. The details are in @sec-results-bin-packing.
 
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
