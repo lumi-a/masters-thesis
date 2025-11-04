@@ -56,13 +56,13 @@
 = Introduction
 FunSearch is a method for finding good solutions to optimisation-problems. It works similarly to local-search, but searches for code instead of vectors, and perturbs vectors by querying a large language model (LLM) instead of adding pseudo-random noise @romera2024mathematical. In this work, we use FunSearch to find new adversarial constructions for different combinatorial optimization problems.
 
-In standard local-search, one wants to minimise some function $f: ℝ^d → ℝ$, and does so by starting with a random vector $v∈ℝ^d$, and iteratively checking some random point $v'$ in a small neighborhood around $v$. If $f(v') < f(v)$, we replace $v$ by $v'$, otherwise we leave $v$ unchanged. Thus, the values $f(v)$ decrease over time, possibly converging to a local minimum.
+In standard local-search, one minimises some function $f: ℝ^d → ℝ$ by starting with a random vector $v∈ℝ^d$, and iteratively checking some random point $v'$ in a small neighborhood around $v$. If $f(v') < f(v)$, we replace $v$ by $v'$, otherwise leaving $v$ unchanged. Thus, the values $f(v)$ decrease over time, converging to a local minimum.
 
 While this is useful for practical applications, one can also use it for theoretical purposes: If the worst-case performance of some algorithm is unknown, we could try finding worse inputs by defining $f(v)$ to be the performance of the algorithm on some input-vector $v∈ℝ^d$. After finding a set of inputs that the algorithm performs badly on, we can try analysing these sets of inputs, hoping to notice a particular structure in them and thus proving stronger results on the worst-case performance of the algorithm. Unfortunately, the sets of inputs found this way usually don't have a lot of structure.
 
 FunSearch mitigates this by not searching for vectors $v∈ℝ^d$, but by searching for python-code that produces such vectors $v$. Instead of choosing a random point in the "neighborhood" of the current python-code, we query an LLM, asking for a changed version of the supplied program. This has the advantages that:
 
-- Symmetries are much more easily encoded in python.
+- Symmetries are much more readily encoded in python.
 - Analysing python-programs is easier than analysing the vector $v∈ℝ^d$.
 - While the random-point-selection in local-search is independent of $f$, we can add context about the problem in our LLM-call.
 
@@ -72,7 +72,7 @@ We used FunSearch to find worst-case instances for certain problems in combinato
 - The competitiveness of hierarchical clustering for the $k$-median objective,
 - The iterative-rounding algorithm for the generalised Gasoline-problem.
 
-We attempted using FunSearch for several other problems as well, but were unsuccessful. See @sec-funsearch-failures for details.
+We attempted using FunSearch for several other problems as well, but were unsuccessful, see @sec-funsearch-failures for details.
 
 #figure(caption: [Comparison across different problems of: Previous state of the art, local search (see @sec-local-search), FunSearch without hand-tuning (@sec-funsearch-introduction), FunSearch with hand-tuning (@sec-funsearch-tuning-introduction), and the best-known upper bounds.])[
   #show: format-table(none, auto, auto, auto, auto)
@@ -95,21 +95,22 @@ We attempted using FunSearch for several other problems as well, but were unsucc
 For each problem, we first used FunSearch to find an instance the algorithm performed badly on. Afterwards, we analyzed and tuned the found programs by hand, until we ended up with an instance that was simple and symmetrical enough to lend itself to theoretical analysis, leading to the results in @table-results.
 
 == Structure of this Thesis
-In @section-problems-definitions, we introduce the four optimisation-problems, the specific questions we want to make progress on, and the prior results on these questions. The four subsections are independent of each other, they can be read in any order.
+In @section-problems-definitions, we introduce the four optimisation-problems, the specific questions we want to make progress on, and prior results on these questions. The four subsections are independent of each other, they can be read in any order.
 
 In @section-funsearch, we introduce local-search, motivate FunSearch, present ablations for different hyper-parameters, and give implementation-details for each of the four problems: Both local-search and FunSearch require evaluating $f(v)$ many times, which usually requires calculating the optimal-solution to some NP-hard problem.
 
 In @section-results, we show the instances found by FunSearch, how we tuned them into ones that lend themselves to mathematical analysation, and then conduct that mathematical analysation by giving proofs for the above results. For the gasoline-problem, we did not manage to find a proof, but provide empirical evidence instead. These four subsections can also be read in any order. We finally list the problems that we failed to make progress on.
 
 == Academic Integrity
-This work was the result of a collaboration between Ankit Anand from Google Deepmind, Heiko Röglin, Anurag Murty Naredla, and myself. I am deeply grateful for their support and our productive discussions. The result of this collaboration is the paper #text(weight: 500)[#cite(<paper>, form: "full")], which is currently under review. From this paper, I only copied the bibliography-file containing citation-data and parts that I wrote myself.
+This work was the result of a collaboration between Ankit Anand from Google Deepmind, Heiko Röglin, Anurag Murty Naredla, and myself. I am deeply grateful for their support and our productive discussions. The result of this collaboration was the paper #text(weight: 500)[#cite(<paper>, form: "full")], which is currently under review. For writing this thesis, I only copied the bibliography-file containing citation-data and parts that I wrote myself from that paper.
 
 Except where explicitly noted otherwise, no part of this thesis was written by a Large Language Model (LLM). I _did_ use generative AI in the following ways:
 - LLMs are an integral component of FunSearch, the search-algorithm we used (see @sec-funsearch-introduction).
 - I used #link("https://gemini.google/overview/deep-research")[Gemini Deep Research] to find existing literature and references.
-- I sparingly used generative AI for coding (see @sec-implementation-details). This was helpful for repetitive problems with lots of training-data (e.g. the JavaScript code for the website) and unhelpful for critical implementations with fewer training-data (e.g. branch and bound in the clustering-solver).
+- I sparingly used generative AI for writing the implementation (see @sec-implementation-details). This was helpful for repetitive problems with lots of training-data (e.g. the JavaScript code for the website) and unhelpful for critical implementations with fewer training-data (e.g. branch and bound in the clustering-solver).
 
-= Prior Work <section-problems-definitions>
+#pagebreak()
+= Definitions and Prior Work <section-problems-definitions>
 == Bin-Packing <section-problems-bin-packing>
 In the bin-packing problem, we are given a bin-capacity $c$ and a list of $n$ items with weights $w_1, …, w_n$, each bounded by $c$. Our task is to find a _packing_, i.e. we must pack all items into bins of capacity $c$ such that each item is in exactly one bin and for all bins, the sum of its contained items must not exceed $c$. Our objective is to use as few bins as possible. Finding a packing with the minimum number of bins is NP-hard @gareyJohnson.
 
@@ -697,7 +698,7 @@ The permutation $π$ in @example-gasoline-cookies is the output of @alg-iterativ
 @rajkovic[p:] conjectured that $ρ_(IterRound)^((1)) = 2$, and $ρ_(IterRound)^((d)) = 2$ for any $d > 1$. Though we will not make progress on the first conjecture, we did manage to disprove the second conjecture using an instance found by FunSearch. We also provide empirical data that weakly suggests $ρ_IterRound^((d)) ≥ Ω(d)$, see @sec-results-gasoline for details.
 
 
-
+#pagebreak()
 = FunSearch <section-funsearch>
 Making progress on the different problems introduced it @section-problems-definitions involves a similar task for all of them: We would like to find instances that have some problem-specific undesirable quality:
 - For bin-packing, we would like to find an instance $I$ where, if $I$ is shuffled randomly, the Best-Fit algorithm performs, in expectation, poorly compared to an optimum solution:
@@ -1079,6 +1080,7 @@ Written in rust, it is available on crates.io#footnote(link("https://crates.io/c
 === Scoring Gasoline
 An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, for which we could simply use the code#footnote(link("https://github.com/ath4nase/gasoline")) by @Lorieau[p:], specifically $Score(I) =$ `iterative_rounding.SlotOrdered().run(I)`. This solver calls Gurobi @gurobi to calculate an optimal permutation.
 
+#pagebreak()
 = Results <section-results>
 == Bin-Packing <sec-results-bin-packing>
 
@@ -2375,6 +2377,7 @@ In the previous sections, we only presented the results for problems where we ap
 
 For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ of which ($≈29%$) led to new results. Even now, I do not feel like I have a good understanding of what problems lend themselves well to FunSearch, other than the obvious "Prefer research-questions that are more likely to have low-hanging fruit left". For example, it was better to work on the rather unexplored absolute random-order-ratio of some bin-packing heuristic, rather than working on $"P" eq.quest "NP"$. It might be better to try FunSearch in a wide variety of contexts, so that one has many chances at finding new results, but also to get a better understanding of which problems FunSearch works well on.
 
+#pagebreak()
 = Conclusion
 Using FunSearch with manual tuning, we obtained new results for different problems:
 - We proved that the absolute random-order-ratio of Best-Fit bin-packing is exactly $1.5$. Future research may apply similar techniques to improve the bounds on its asymptotic random-order-ratio, which we only know to be between $1.144$ and $1.5-ε$ @breakingAsymptoticBestFit.
@@ -2384,7 +2387,7 @@ Using FunSearch with manual tuning, we obtained new results for different proble
 
 The method of FunSearch itself offers many avenues of research: Applying it to novel circumstances, extending it (see e.g. @novikov2025alphaevolve[p:]), running large-scale ablations on parameters like LLM-choice, temperature, prompt, and sample-size across different problems, or using LLMs and proof-assistants like Lean @lean for automated proofs during the search. FunSearch also seems more promising in areas that local search _can not_ be applied to, for instance finding novel heuristics for existing problems, in the form of python-programs. As LLMs grow more competent and inference faster and less expensive over time, FunSearch becomes an increasingly useful tool for mathematical research.
 
-
+#pagebreak()
 #[
   #set text(size: 0.75em)
   #show heading: set text(size: 1em * 1 / 0.75)
