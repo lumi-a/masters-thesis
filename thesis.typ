@@ -357,10 +357,10 @@ can always be bounded by some constant not depending on $I$. For the specific $I
 
 So far, the instances with the highest score only achieved a $Score$ around $2$. Using FunSearch, we were first able to find an instance with $Score$ around $5.766$, and after modifying this instance by hand, we obtained a sequence of instances $I_1,I_2,…$ with $Score(I_j) ≥ n^(Ω(√n))$, or more precisely $Score(I_j) ≥ Ω((n\/2)^((sqrt(n\/2)-3)\/2))$. These instances had the property that $P_"dedup" (I_(1:i)) = P(I_(1:i))$, so this bound can also be applied to the runtime of @alg-nemhauser-ullmann.
 
-Afterwards, we found an unrelated construction without FunSearch that achieved a $Score$ around $Ω(1.037^n)$, making the previous result obsolete. We still include the previous result and its proof. Using FunSearch, we could improve this to $Ω(1.509^n)$ for the above scoring-function, and to $Ω(1.0519^n)$ for the runtime of the Nemhauser-Ullmann algorithm, i.e. $(max_(1≤i≤n) |P_"dedup" (I_(1:i))|) / (|P_"dedup" (I)|) ≥ Ω(1.0519^(abs(I)))$. See @sec-results-knapsack for details.
+Afterwards, we found an unrelated construction without FunSearch that achieved a $Score$ around $Ω(1.037^n)$, making the previous result obsolete. We still include the previous result and its proof. Using FunSearch, we could improve this to $Ω(1.509^n)$ for the above scoring-function, and to $Ω(1.0519^n)$ for the runtime of the Nemhauser-Ullmann algorithm, i.e. $(max_(1≤i≤n) |P_"dedup" (I_(1:i))|) / (|P_"dedup" (I)|) ≥ Ω(1.0519^(abs(I)))$. The details are in @sec-results-knapsack.
 
 == $k$-median Clustering
-In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ different clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. Clustering is a useful tool for data-analysis. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
+In the clustering-problem, we are given $n$ unlabeled data points $p_1,…,p_n ∈ ℝ^d$ and a number $k$. Our task is to find a *$k$-clustering*: A partition of the $n$ points into $k$ clusters $C_1,…,C_k$, such that "close" points belong to the same cluster. Clustering is a useful tool for data-analysis. There exist different objectives to quantify "closeness" @priceOfHierarchicalClustering:
 - In $k$-median clustering, the cost of a cluster $C$ is: #h(1fr)
   $
     Cost(C)
