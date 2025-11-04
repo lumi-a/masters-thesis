@@ -455,8 +455,6 @@ When trying to cluster unlabeled data, we usually are not given a number $k$ of 
 
 This nested structure of hierarchical clusterings is useful for, for example, taxonomy. Finding _some_ hierarchical clustering in practice can be done via *agglomerative clustering*, a greedy method where we start with $H_n$ as having each point in a singleton cluster, and construct $H_(i-1)$ from $H_i$ by choosing to merge a pair of clusters that increases the objective the least.
 
-The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an _optimal_ $i$-clustering *need not exist*. The set of points in @example-hierarchical-clustering is such an example.
-
 #{
   let points = ((0.94, 0.68), (0.99, 0.12), (0.17, 1), (0.99, 0.04), (0.14, 0.92), (0.7, 0.87)).map(v => ((v.at(0) + 0.1) * 0.8, (v.at(1) + 0.1) * 0.8))
   let opt-hierarchical = parse-hierarchical("
@@ -517,11 +515,13 @@ The additional structure of hierarchical clustering does come at a cost, however
 .#..............................
 ")
   context [
-    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the (unweighted) $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points.\ There is no set of optimal clusterings with a nested structure.\
+    #figure(draw-clustering.draw-hierarchical-clustering(points, opt-hierarchical, page.width * 0.4, true) + h(1fr) + draw-clustering.draw-hierarchical-clustering(points, opt-optimal, page.width * 0.4, false), caption: [Left: An optimal hierarchical clustering on $6$ points for the (unweighted) $k$-median objective.\ Right: For each $k=1,...,6$, an optimal $k$-median clustering on the same $6$ points.\ There is no hierarchical clustering $(H_1,…,H_n)$ such that each $H_k$ is an optimal $k$-clustering.\
       The shown hierarchical and optimal clusterings only differ at level $k=2$.
     ])<example-hierarchical-clustering>
   ]
 }
+
+The additional structure of hierarchical clustering does come at a cost, however: Usually, the optimal $k$-clusterings need not have a nested structure, so a hierarchical clustering $(H_1, …, H_n)$ such that every $H_i$ is an _optimal_ $i$-clustering *need not exist*. The set of points in @example-hierarchical-clustering is such an example.
 
 To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could simply sum the the costs of each level: $Cost(H_1) + … + Cost(H_n)$. However, $k$-clusterings for small $k$ usually have significantly higher cost than $k$-clusterings for large $k$, so this would lose information about the quality of the $H_i$ for small $i$. To avoid this, we can instead compare each level $H_i$ of the hierarchy to an _optimal_ $i$-clustering, and taking the maximum across all levels @priceOfHierarchicalClustering:
 
@@ -537,9 +537,9 @@ To measure the quality of a hierarchical clustering $(H_1, …, H_n)$, we could 
 
   For a fixed cost-function $Cost$, we say that a hierarchical clustering of an instance $I$ is *optimal* if it has the lowest possible approximation-factor among all hierachical clusterings on $I$ (this always exists because the set of hierarchical clusterings is finite).
 ] <def-optimal-hierarchical-clustering>
-The hierarchical clustering shown in @example-hierarchical-clustering is optimal, it was the output of a program written for finding optimal hierarchical clusterings. Any better hierarchical clustering would have to carry the restriction $H_2 = Opt_2$, but due to the requirement of nested clusterings, this means that (as visible in the figure), $H_3 ≠ Opt_3$. The hierarchical clusterings and optimal clusterings in @example-hierarchical-clustering only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$, so the approximation-factor of that hierarchical-clustering is $1.78/1.41 ≈ 1.262$.
+The hierarchical clusterings and optimal clusterings in @example-hierarchical-clustering only differ for $k=2$, where $Cost(H_2) = 1.78$ and $Cost(Opt_i) = 1.41$, so the approximation-factor of that hierarchical-clustering is $1.78/1.41 ≈ 1.262$. This hierarchical clustering is optimal (without proof).
 
-Although agglomerative clustering computes a hierarchical clustering whose approximation-factor is low in practice, this hierarchical clustering need not be optimal among all possible hierarchical clusterings. In this work, we only concern ourselves with optimal hierarchical clusterings.
+Although agglomerative clustering computes a hierarchical clustering whose approximation-factor is low in practice, this hierarchical clustering need not be an optimal hierarchical clustering. In this work, we only concern ourselves with optimal hierarchical clusterings.
 
 For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchical structure, not just for some fixed instance $I$, but for _all_ instances $I$. This is the Price of Hierarchy @priceOfHierarchicalClustering:
 
@@ -554,7 +554,7 @@ For a cost-function $Cost$, we can ask what we sacrifice by imposing a hierarchi
 ]
 In particular, the instance in @example-hierarchical-clustering proves that $PoH_(k"-median") ≥ 1.26$, because the hierarchical clustering there is optimal for this instance.
 
-For the above cost-functions, the following bounds on the Price of Hierarchy are known:
+For the cost-functions mentioned earlier, the following bounds on their Price of Hierarchy are known:
 - $PoH_(k"-median") ≤ 16$ @dai2014
 - $PoH_(k"-means") ≤ 32$ @upperBoundKMeans
 - $PoH_(k"-center") = 4$ @priceOfHierarchicalClustering
