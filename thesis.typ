@@ -88,7 +88,7 @@ We attempted using FunSearch for several other problems as well, but were unsucc
     [FunSearch without Hand-Tuning], [1.497], [646.93], [1.538], [3.05],
     [FunSearch with Hand-Tuning], [1.5], [$1.415^n$], [1.618], [4.65],
     table.hline(stroke: gray + 0.05em),
-    [Known Upper Bound], [1.5], [$2.0^n$#h(0.91em)], [16.0], [None],
+    [Known Upper Bound], [1.7], [$2.0^n$#h(0.91em)], [16.0], [None],
   )
 ] <table-results>
 
@@ -173,8 +173,7 @@ Comparing algorithms by their absolute approximation-ratios can be a bit pessimi
   $
 ]
 
-That is to say: We still assume an adversary can choose the _items_ of the instance, but their _order_ is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items ($Opt(I) = Opt(π(I))$ for all $π∈S_(abs(I))$).
-@bestFitKenyon[p:] showed that $1.08 ≤ "RR"_BestFit ≤ 1.5$, and @binPackingRevisited[p:] improved the lower bound to $1.3$.
+That is to say: We still assume an adversary can choose the _items_ of the instance, but their _order_ is randomized before being passed on to algorithm $𝒜$. Note that $Opt(I)$ does not depend on the order of the items ($Opt(I) = Opt(π(I))$ for all $π∈S_(abs(I))$). Because $ρ_𝒜 ≥ "RR"_𝒜$, there is an upper bound of $1.7$ on $"RR"_BestFit$. @binPackingRevisited[p:] gave the first lower bound, showing $1.3 ≤ "RR"_BestFit$.
 
 #example[
   This example is (one instantiation of) the lower-bound construction by @binPackingRevisited[p:] showing $1.3 ≤ "RR"_BestFit$.
@@ -200,7 +199,7 @@ That is to say: We still assume an adversary can choose the _items_ of the insta
   )
 ] <example-bin-packing-sota>
 
-Using FunSearch, we found a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing $"RR"_BestFit ≥ 1.5$. Because this matches the upper bound, this proves that $"RR"_BestFit = 1.5$ exactly. The details are in @sec-results-bin-packing.
+Using FunSearch, we found a sequence of instances $I_1, I_2, …$ for which $𝔼_(π∈S_(|I_j|))[𝒜(π(I_j))\/Opt(I_j)]$ converges to $1.5$, showing an improved lower bound of $"RR"_BestFit ≥ 1.5$.The details are in @sec-results-bin-packing.
 
 == Knapsack Problem
 In the Knapsack-Problem, we are given a capacity $c$ and a list $I$ of $n$ items, each item having both a non-negative weight $w_i≤c$ and a non-negative profit $p_i$. Instead of minimising the number of bins we use, we only have _a single bin_ of capacity $c$ at our disposal, and the sum of weights of the items we put in this bin must not exceed $c$. Our objective instead is to _maximize_ the sum of profits of the items we put in the bin.
@@ -1084,7 +1083,7 @@ An instance $I$ was scored by its approximation-ratio $IterRound(I)\/Opt(I)$, fo
 = Results <section-results>
 == Bin-Packing <sec-results-bin-packing>
 
-We started with a trivial hardcoded instance (score $1.0$), and FunSearch soon found an instance with score $1.49815$. The theoretical upper bound is $1.5$, and the instance had an extremely simple structure.
+We started with a trivial hardcoded instance (score $1.0$), and FunSearch soon found an instance with score $1.49815$ and simple structure.
 
 #[
   #show raw: set text(size: 0.75em)
@@ -1210,10 +1209,10 @@ $
   quad≥quad 1/2 ⋅ [2 ⋅ 2/(m+2) + 3⋅m/(m+2)]
   quad=quad 3/2 - 1/(m+2).
 $
-For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$, and the upper bound $"RR"_BestFit ≤ 1.5$ by @bestFitKenyon[p:] implies:
+For $m→∞$, this shows $"RR"_BestFit ≥ 1.5$.
 
 #theorem[
-  The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is exactly $1.5$.
+  The absolute random-order-ratio of Best-Fit $"RR"_BestFit$ is at least $1.5$.
 ]
 
 == Knapsack Problem <sec-results-knapsack>
@@ -2378,7 +2377,7 @@ For the sake of providing a rough estimate, this amounts to $14$ attempts, $4$ o
 #pagebreak()
 = Conclusion
 Using FunSearch with manual tuning, we obtained new results for different problems:
-- We proved that the absolute random-order-ratio of Best-Fit bin-packing is exactly $1.5$. Future research may apply similar techniques to improve the bounds on its asymptotic random-order-ratio, which we only know to be between $1.144$ and $1.5-ε$ @breakingAsymptoticBestFit.
+- We proved that the absolute random-order-ratio of Best-Fit bin-packing is at least $1.5$, whereas the best known upper-bound is $1.7$. Future research may attempt to tighten this gap, or apply similar techniques to improve the bounds on its asymptotic random-order-ratio, which is known to be between $1.144$ and $1.5-ε$ @breakingAsymptoticBestFit.
 - Using a sequence of instances of the knapsack-problem, we showed that the size of Pareto-sets of sub-instances can be exponentially larger than the size of the final Pareto-set, with the base of this exponential growth being between $1.509$ and $2.0$. It would be interesting to identify the largest possible base of this exponential growth.
 - An instance found using FunSearch gave a lower bound on the Price of Hierarchy of $k$-median clustering of $(1+√5)/2 ≈ 1.618$, but the best-known upper-bound is $16$ @dai2014.
 - FunSearch yielded a sequence of instances where the iterative-rounding-algorith has an approximation-factor larger than $2$, and we conjecture that the approximation-factor on this sequence is linear in the dimension.
