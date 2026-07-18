@@ -1740,7 +1740,7 @@ This time, we used a recursive approach: We started with a trivial instance $I^(
     caption: [Incrementally tuning instances via FunSearch and by hand.]
   )
 ]
-Finally, we also ran local search on instanec $T^((2))$, trying to improve the score even further, and obtained:
+Finally, we also ran local search on instance $T^((2))$, trying to improve the score even further, and obtained:
 #[
   #show raw: set text(size: 0.6em)
   #show raw: body => box(fill: white.darken(2%), stroke: gray + 0.1em, radius: 0.25em, inset: 1em, align(left, body))
